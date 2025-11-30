@@ -446,8 +446,8 @@ body {
   /* border-radius: 50%; */
   /* background: rgba(0, 0, 0, 0.7); */
   /* border: 1px solid rgba(255, 255, 255, 0.2); */
-  width: 45px;
-  height: 45px;
+  width: 30px;
+  height: 30px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -474,8 +474,8 @@ body {
 } */
 
 .faction-icon {
-  width: 45px;
-  height: 45px;
+  width: 30px;
+  height: 30px;
   object-fit: contain;
   display: none;
   z-index: 2;
