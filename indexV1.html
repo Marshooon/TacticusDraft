@@ -1,0 +1,817 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Tacticus Character Wizard</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <!-- External CSS -->
+  <link rel="stylesheet" href="style.css" />
+
+  <!-- Prevent browser caching -->
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+<meta http-equiv="Pragma" content="no-cache">
+<meta http-equiv="Expires" content="0">
+
+</head>
+<body>
+  <div class="app">
+    <!-- WIZARD PANEL -->
+    <div class="wizard">
+      <h1>Tacticus Character Wizard</h1>
+      <div class="wizard-sub">Pick options on the left and watch the card update on the right. Then screenshot or export for Discord.</div>
+
+      <div class="step-tabs">
+        <button class="step-tab active" data-step="1">Info</button>
+        <button class="step-tab" data-step="2">Rarity</button>
+        <button class="step-tab" data-step="3">Faction</button>
+        <button class="step-tab" data-step="4">Visuals</button>
+        <button class="step-tab" data-step="5">Stats & Gear</button>
+      </div>
+
+      <!-- Step 1: Basic info -->
+      <div class="wizard-step active" data-step="1">
+        <div class="field">
+          <label for="nameInput">Name</label>
+          <input id="nameInput" type="text" value="Marec" />
+        </div>
+        <div class="field">
+          <label for="titleInput">Title or Type</label>
+          <input id="titleInput" type="text" value="Apothecary Biologis" />
+        </div>
+        <div class="field">
+          <label for="rankInput">Rank level</label>
+          <input id="rankInput" type="number" min="1" max="60" value="12" />
+        </div>
+
+        <div class="field">
+          <label>Traits</label>
+          <div class="trait-list" id="traitList">
+            <!-- Hook these data-icon values up to your actual filenames -->
+            <label class="trait-option">
+              <input type="checkbox" class="trait-checkbox" data-trait="Act of Faith" data-icon="Act_of_Faith_Icon.png" />
+              <span>Act of Faith</span>
+            </label>
+            <label class="trait-option">
+              <input type="checkbox" class="trait-checkbox" data-trait="Trait_2" data-icon="2-Man_Team_Icon.png" />
+              <span>2 Man Team</span>
+            </label>
+            <label class="trait-option">
+              <input type="checkbox" class="trait-checkbox" data-trait="Trait_3" data-icon="Ambush_Icon.png" />
+              <span>Ambush</span>
+            </label>
+            <label class="trait-option">
+              <input type="checkbox" class="trait-checkbox" data-trait="Trait_4" data-icon="Battle_Fatigue_Icon.png" />
+              <span>Battle Fatigue</span>
+            </label>
+            <label class="trait-option">
+              <input type="checkbox" class="trait-checkbox" data-trait="Trait_5" data-icon="Beast_Slayer_Icon.png" />
+              <span>Beast Slayer</span>
+            </label>
+            <label class="trait-option">
+              <input type="checkbox" class="trait-checkbox" data-trait="Trait_6" data-icon="Big_Target_Icon.png" />
+              <span>Big Target</span>
+            </label>
+            <label class="trait-option">
+              <input type="checkbox" class="trait-checkbox" data-trait="Trait_7" data-icon="Blessings_of_Khorne_Icon.png" />
+              <span>Blessings of Khorne</span>
+            </label>
+            <label class="trait-option">
+              <input type="checkbox" class="trait-checkbox" data-trait="Trait_8" data-icon="Camouflage_Icon.png" />
+              <span>Camouflage</span>
+            </label>
+            <label class="trait-option">
+              <input type="checkbox" class="trait-checkbox" data-trait="Trait_9" data-icon="Close_Combat_Weakness_Icon.png" />
+              <span>Close Combat Weakness</span>
+            </label>
+            <label class="trait-option">
+              <input type="checkbox" class="trait-checkbox" data-trait="Trait_10" data-icon="Contagions_of_Nurgle_Icon.png" />
+              <span>Contagions of Nurgle</span>
+            </label>
+            <label class="trait-option">
+              <input type="checkbox" class="trait-checkbox" data-trait="Trait_11" data-icon="Crushing_Strike_Icon.png" />
+              <span>Crushing Strike</span>
+            </label>
+            <label class="trait-option">
+              <input type="checkbox" class="trait-checkbox" data-trait="Trait_12" data-icon="Daemon_Icon.png" />
+              <span>Daemon</span>
+            </label>
+            <label class="trait-option">
+              <input type="checkbox" class="trait-checkbox" data-trait="Trait_13" data-icon="Deep_Strike_Icon.png" />
+              <span>Deep Strike</span>
+            </label>
+            <label class="trait-option">
+              <input type="checkbox" class="trait-checkbox" data-trait="Trait_14" data-icon="Dakka_Icon.png" />
+              <span>Dakka</span>
+            </label>
+            <label class="trait-option">
+              <input type="checkbox" class="trait-checkbox" data-trait="Trait_15" data-icon="Diminutive_Icon.png" />
+              <span>Diminutive</span>
+            </label>
+            <label class="trait-option">
+              <input type="checkbox" class="trait-checkbox" data-trait="Trait_16" data-icon="Emplacement_Icon.png" />
+              <span>Emplacement</span>
+            </label>
+            <label class="trait-option">
+              <input type="checkbox" class="trait-checkbox" data-trait="Trait_17" data-icon="Explodes_Icon.png" />
+              <span>Explodes</span>
+            </label>
+            <label class="trait-option">
+              <input type="checkbox" class="trait-checkbox" data-trait="Trait_18" data-icon="Final_Vengeance_Icon.png" />
+              <span>Final Vengeance</span>
+            </label>
+            <label class="trait-option">
+              <input type="checkbox" class="trait-checkbox" data-trait="Trait_49" data-icon="Flying_Icon.png" />
+              <span>Flying</span>
+            </label>
+            <label class="trait-option">
+              <input type="checkbox" class="trait-checkbox" data-trait="Trait_19" data-icon="Get_Stuck_In_Icon.png" />
+              <span>Get Stuck In</span>
+            </label>
+            <label class="trait-option">
+              <input type="checkbox" class="trait-checkbox" data-trait="Trait_20" data-icon="Healer_Icon.png" />
+              <span>Healer</span>
+            </label>
+            <label class="trait-option">
+              <input type="checkbox" class="trait-checkbox" data-trait="Trait_21" data-icon="Heavy_Weapon_Icon.png" />
+              <span>Heavy Weapon</span>
+            </label>
+            <label class="trait-option">
+              <input type="checkbox" class="trait-checkbox" data-trait="Trait_22" data-icon="Immune_Icon.png" />
+              <span>Immune</span>
+            </label>
+            <label class="trait-option">
+              <input type="checkbox" class="trait-checkbox" data-trait="Trait_23" data-icon="Indirect_Fire_Icon.png" />
+              <span>Indirect Fire</span>
+            </label>
+            <label class="trait-option">
+              <input type="checkbox" class="trait-checkbox" data-trait="Trait_24" data-icon="Infiltrate_Icon.png" />
+              <span>Infiltrate</span>
+            </label>
+            <label class="trait-option">
+              <input type="checkbox" class="trait-checkbox" data-trait="Trait_25" data-icon="Instinctive_Behaviour_Icon.png" />
+              <span>Instinctive Behaviour</span>
+            </label>
+            <label class="trait-option">
+              <input type="checkbox" class="trait-checkbox" data-trait="Trait_26" data-icon="Let_the_Galaxy_Burn_Icon.png" />
+              <span>Let the Galaxy Burn</span>
+            </label>
+            <label class="trait-option">
+              <input type="checkbox" class="trait-checkbox" data-trait="Trait_27" data-icon="Living_Metal_Icon.png" />
+              <span>Living Metal</span>
+            </label>
+            <label class="trait-option">
+              <input type="checkbox" class="trait-checkbox" data-trait="Trait_28" data-icon="Martial_Ka%27tah_Icon.png" />
+              <span>Martial Ka'Tah</span>
+            </label>
+            <label class="trait-option">
+              <input type="checkbox" class="trait-checkbox" data-trait="Trait_29" data-icon="Mechanic_Icon.png" />
+              <span>Mechanic</span>
+            </label>
+            <label class="trait-option">
+              <input type="checkbox" class="trait-checkbox" data-trait="Trait_30" data-icon="Mechanical_Icon.png" />
+              <span>Mechanical</span>
+            </label>
+            <label class="trait-option">
+              <input type="checkbox" class="trait-checkbox" data-trait="Trait_31" data-icon="Mk_X_Gravis_Icon.png" />
+              <span>Mk X Gravis</span>
+            </label>
+            <label class="trait-option">
+              <input type="checkbox" class="trait-checkbox" data-trait="Trait_32" data-icon="Objact_Icon.png" />
+              <span>Object</span>
+            </label>
+            <label class="trait-option">
+              <input type="checkbox" class="trait-checkbox" data-trait="Trait_33" data-icon="Overwatch_Icon.png" />
+              <span>Overwatch</span>
+            </label>
+            <label class="trait-option">
+              <input type="checkbox" class="trait-checkbox" data-trait="Trait_34" data-icon="Parry_Icon.png" />
+              <span>Parry</span>
+            </label>
+            <label class="trait-option">
+              <input type="checkbox" class="trait-checkbox" data-trait="Trait_35" data-icon="Psyker_Icon.png" />
+              <span>Psyker</span>
+            </label>
+            <label class="trait-option">
+              <input type="checkbox" class="trait-checkbox" data-trait="Trait_36" data-icon="Rapid_Assault_Icon.png" />
+              <span>Rapid Assault</span>
+            </label>
+            <label class="trait-option">
+              <input type="checkbox" class="trait-checkbox" data-trait="Trait_37" data-icon="Resilient_Icon.png" />
+              <span>Resilient</span>
+            </label>
+            <label class="trait-option">
+              <input type="checkbox" class="trait-checkbox" data-trait="Trait_38" data-icon="Shadow_in_the_Warp_Icon.png" />
+              <span>Shadow in the Warp</span>
+            </label>
+            <label class="trait-option">
+              <input type="checkbox" class="trait-checkbox" data-trait="Trait_39" data-icon="Steppable_Icon.png" />
+              <span>Steppable</span>
+            </label>
+            <label class="trait-option">
+              <input type="checkbox" class="trait-checkbox" data-trait="Trait_40" data-icon="Summon_Icon.png" />
+              <span>Summon</span>
+            </label>
+            <label class="trait-option">
+              <input type="checkbox" class="trait-checkbox" data-trait="Trait_41" data-icon="Suppressive_Fire_Icon.png" />
+              <span>Suppressive Fire</span>
+            </label>
+            <label class="trait-option">
+              <input type="checkbox" class="trait-checkbox" data-trait="Trait_42" data-icon="Swarm_Icon.png" />
+              <span>Swarm</span>
+            </label>
+            <label class="trait-option">
+              <input type="checkbox" class="trait-checkbox" data-trait="Trait_43" data-icon="Synapse_Icon.png" />
+              <span>Synapse</span>
+            </label>
+            <label class="trait-option">
+              <input type="checkbox" class="trait-checkbox" data-trait="Trait_44" data-icon="Terminator_Armour_Icon.png" />
+              <span>Terminator Armour</span>
+            </label>
+            <label class="trait-option">
+              <input type="checkbox" class="trait-checkbox" data-trait="Trait_45" data-icon="Terrifying_Icon.png" />
+              <span>Terrifying</span>
+            </label>
+            <label class="trait-option">
+              <input type="checkbox" class="trait-checkbox" data-trait="Trait_46" data-icon="Unstoppable_Icon.png" />
+              <span>Unstoppable</span>
+            </label>
+            <label class="trait-option">
+              <input type="checkbox" class="trait-checkbox" data-trait="Trait_47" data-icon="Vehicle_Icon.png" />
+              <span>Vehicle</span>
+            </label>
+            <label class="trait-option">
+              <input type="checkbox" class="trait-checkbox" data-trait="Trait_48" data-icon="Weaver_of_Fates_Icon.png" />
+              <span>Weaver of Fates</span>
+            </label>
+          </div>
+          <span class="small-note">Select up to 6 traits. Additional traits will not be displayed</span>
+        </div>
+      </div>
+
+      <!-- Step 2: Rarity -->
+      <div class="wizard-step" data-step="2">
+        <div class="field">
+          <label>Rarity trim</label>
+          <div class="choice-row" id="rarityChoices">
+            <button class="pill-btn active" data-rarity="common">Common</button>
+            <button class="pill-btn" data-rarity="rare">Rare</button>
+            <button class="pill-btn" data-rarity="epic">Epic</button>
+            <button class="pill-btn" data-rarity="legendary">Legendary</button>
+          </div>
+          <span class="small-note">Each rarity changes the outer glow. You can tune the colors in CSS.</span>
+        </div>
+      </div>
+
+      <!-- Step 3: Faction -->
+      <div class="wizard-step" data-step="3">
+        <div class="field">
+          <label>Faction</label>
+
+          <div class="damage-type-list" id="factionList">
+            <!-- One checkbox, but acts like radio: JS will uncheck others -->
+            <label class="damage-option">
+              <input type="checkbox" class="faction-choice" data-faction="Adepta Sororitas" data-icon="Adepta_Sororitas_Icon.png">
+              <span>Adepta Sororitas</span>
+            </label>
+            <label class="damage-option">
+              <input type="checkbox" class="faction-choice" data-faction="Adeptus Custodes" data-icon="Adeptus_Custodes_Icon.png">
+              <span>Adeptus Custodes</span>
+            </label>
+            <label class="damage-option">
+              <input type="checkbox" class="faction-choice" data-faction="Adeptus Mechanicus" data-icon="Adeptus_Mechanicus_Icon.png">
+              <span>Adeptus Mechanicus</span>
+            </label>
+            <label class="damage-option">
+              <input type="checkbox" class="faction-choice" data-faction="Aeldari" data-icon="Aeldari_Icon.png">
+              <span>Aeldari</span>
+            </label>
+            <label class="damage-option">
+              <input type="checkbox" class="faction-choice" data-faction="Astra Militarum" data-icon="Astra_Militarum_Icon.png">
+              <span>Astra Militarum</span>
+            </label>
+            <label class="damage-option">
+              <input type="checkbox" class="faction-choice" data-faction="Black Legion" data-icon="Black_Legion_Icon.png">
+              <span>Black Legion</span>
+            </label>
+            <label class="damage-option">
+              <input type="checkbox" class="faction-choice" data-faction="Black Templars" data-icon="Black_Templars_Icon.png">
+              <span>Black Templars</span>
+            </label>
+            <label class="damage-option">
+              <input type="checkbox" class="faction-choice" data-faction="Blood Angels" data-icon="Blood_Angels_Icon.png">
+              <span>Blood Angels</span>
+            </label>
+            <label class="damage-option">
+              <input type="checkbox" class="faction-choice" data-faction="Dark Angels" data-icon="Dark_Angels_Icon.png">
+              <span>Dark Angels</span>
+            </label>
+            <label class="damage-option">
+              <input type="checkbox" class="faction-choice" data-faction="Death Guard" data-icon="Death_Guard_Icon.png">
+              <span>Death Guard</span>
+            </label>
+            <label class="damage-option">
+              <input type="checkbox" class="faction-choice" data-faction="Emperor's Children" data-icon="Emperor's_Children_Icon.png">
+              <span>Emperor's Children</span>
+            </label>
+            <label class="damage-option">
+              <input type="checkbox" class="faction-choice" data-faction="Genestealer Cults" data-icon="Genestealer_Cults_Icon.png">
+              <span>Genestealer Cults</span>
+            </label>
+            <label class="damage-option">
+              <input type="checkbox" class="faction-choice" data-faction="Necrons" data-icon="Necrons_Icon.png">
+              <span>Necrons</span>
+            </label>
+            <label class="damage-option">
+              <input type="checkbox" class="faction-choice" data-faction="Orks" data-icon="Orks_Icon.png">
+              <span>Orks</span>
+            </label>
+            <label class="damage-option">
+              <input type="checkbox" class="faction-choice" data-faction="Space Wolves" data-icon="Space_Wolves_Icon.png">
+              <span>Space Wolves</span>
+            </label>
+            <label class="damage-option">
+              <input type="checkbox" class="faction-choice" data-faction="Tau Empire" data-icon="Tau_Empire_Icon.png">
+              <span>Tau Empire</span>
+            </label>
+            <label class="damage-option">
+              <input type="checkbox" class="faction-choice" data-faction="Thousand Sons" data-icon="Thousand_Sons_Icon.png">
+              <span>Thousand Sons</span>
+            </label>
+            <label class="damage-option">
+              <input type="checkbox" class="faction-choice" data-faction="Tyranids" data-icon="Tyranids_Icon.png">
+              <span>Tyranids</span>
+            </label>
+            <label class="damage-option">
+              <input type="checkbox" class="faction-choice" data-faction="Ultramarines" data-icon="Ultramarines_Icon.png">
+              <span>Ultramarines</span>
+            </label>
+            <label class="damage-option">
+              <input type="checkbox" class="faction-choice" data-faction="World Eaters" data-icon="World_Eaters_Icon.png">
+              <span>World Eaters</span>
+            </label>
+          </div>
+
+          <span class="small-note">Only one faction may be selected.</span>
+        </div>
+      </div>
+
+      <!-- Step 4: Visuals -->
+      <div class="wizard-step" data-step="4">
+        <div class="field">
+          <label>Background preset</label>
+          <div class="choice-row" id="bgPresetRow">
+            <button class="pill-btn" data-bg="spacewolves">Space Wolves Hall</button>
+            <button class="pill-btn" data-bg="tau">Tau Chamber</button>
+            <button class="pill-btn" data-bg="mechanicus">Mechanicus Manufactorum</button>
+          </div>
+        </div>
+
+        <div class="field">
+          <label>Portrait</label>
+          <button class="pill-btn" id="portraitUploadButton" type="button">Upload portrait</button>
+          <input type="file" id="portraitInput" accept="image/*" />
+                <div class="field">
+        <label>Portrait horizontal position</label>
+        <input id="portraitOffsetX" type="range" min="-100" max="200" value="0" />
+      </div>
+
+      <div class="field">
+        <label>Portrait vertical position</label>
+        <input id="portraitOffsetY" type="range" min="-100" max="200" value="0" />
+      </div>
+        </div>
+        <div class="field">
+          <label>Portrait zoom</label>
+          <input id="portraitZoom" type="range" min="" max="200" value="100" />
+          <span class="small-note">100% is default size, higher values zoom in.</span>
+        </div>
+      </div>
+
+
+      <!-- Step 5: Stats & Gear -->
+      <div class="wizard-step" data-step="5">
+        <div class="stat-grid">
+          <div class="field">
+            <label>Health</label>
+            <input id="statHealthInput" type="text" value="270" />
+          </div>
+          <div class="field">
+            <label>Armor</label>
+            <input id="statArmorInput" type="text" value="100" />
+          </div>
+          <div class="field">
+            <label>Damage</label>
+            <input id="statDamageInput" type="text" value="30" />
+          </div>
+          <div class="field">
+            <label>Move Speed</label>
+            <input id="statMoveInput" type="text" value="3" />
+          </div>
+        </div>
+
+        <div class="field">
+          <label>
+            <input type="checkbox" id="meleeEnabled" checked />
+            Melee Attack
+          </label>
+        </div>
+
+        <div id="meleeConfigGroup">
+          <div class="field">
+            <label>Melee Damage Type</label>
+            <input id="meleeTypeInput" type="text" value="" readonly/>
+          </div>
+
+          <div class="field">
+            <label>Melee damage type</label>
+            <div class="damage-type-list" id="meleeDamageList">
+              <label class="damage-option">
+                <input type="radio" name="meleeDamageType" value="Bio" data-icon="Bio_Icon.png" />
+                <span>Bio</span>
+              </label>
+              <label class="damage-option">
+                <input type="radio" name="meleeDamageType" value="Blast" data-icon="Blast_Icon.png" />
+                <span>Blast</span>
+              </label>
+              <label class="damage-option">
+                <input type="radio" name="meleeDamageType" value="Chain" data-icon="Chain_Icon.png" />
+                <span>Chain</span>
+              </label>
+              <label class="damage-option">
+                <input type="radio" name="meleeDamageType" value="Direct" data-icon="Direct_Icon.png" />
+                <span>Direct</span>
+              </label>
+              <label class="damage-option">
+                <input type="radio" name="meleeDamageType" value="Energy" data-icon="Energy_Icon.png" />
+                <span>Energy</span>
+              </label>
+              <label class="damage-option">
+                <input type="radio" name="meleeDamageType" value="Eviscerating" data-icon="Eviscerating_Icon.png" />
+                <span>Eviscerating</span>
+              </label>
+              <label class="damage-option">
+                <input type="radio" name="meleeDamageType" value="Flame" data-icon="Flame_Icon.png" />
+                <span>Flame</span>
+              </label>
+              <label class="damage-option">
+                <input type="radio" name="meleeDamageType" value="Heavy Round" data-icon="Heavy_Round_Icon.png" />
+                <span>Heavy Round</span>
+              </label>
+              <label class="damage-option">
+                <input type="radio" name="meleeDamageType" value="Las" data-icon="Las_Icon.png" />
+                <span>Las</span>
+              </label>
+              <label class="damage-option">
+                <input type="radio" name="meleeDamageType" value="Melta" data-icon="Melta_Icon.png" />
+                <span>Melta</span>
+              </label>
+              <label class="damage-option">
+                <input type="radio" name="meleeDamageType" value="Molecular" data-icon="Molecular_Icon.png" />
+                <span>Molecular</span>
+              </label>
+              <label class="damage-option">
+                <input type="radio" name="meleeDamageType" value="Particle" data-icon="Particle_Icon.png" />
+                <span>Particle</span>
+              </label>
+              <label class="damage-option">
+                <input type="radio" name="meleeDamageType" value="Physical" data-icon="Physical_Icon.png" />
+                <span>Physical</span>
+              </label>
+              <label class="damage-option">
+                <input type="radio" name="meleeDamageType" value="Piercing" data-icon="Piercing_Icon.png" />
+                <span>Piercing</span>
+              </label>
+              <label class="damage-option">
+                <input type="radio" name="meleeDamageType" value="Plasma" data-icon="Plasma_Icon.png" />
+                <span>Plasma</span>
+              </label>
+              <label class="damage-option">
+                <input type="radio" name="meleeDamageType" value="Power" data-icon="Power_Icon.png" />
+                <span>Power</span>
+              </label>
+              <label class="damage-option">
+                <input type="radio" name="meleeDamageType" value="Projectile" data-icon="Projectile_Icon.png" />
+                <span>Projectile</span>
+              </label>
+              <label class="damage-option">
+                <input type="radio" name="meleeDamageType" value="Psychic" data-icon="Psychic_Icon.png" />
+                <span>Psychic</span>
+              </label>
+              <label class="damage-option">
+                <input type="radio" name="meleeDamageType" value="Pulse" data-icon="Pulse_Icon.png" />
+                <span>Pulse</span>
+              </label>
+              <label class="damage-option">
+                <input type="radio" name="meleeDamageType" value="Toxic" data-icon="Toxic_Icon.png" />
+                <span>Toxic</span>
+              </label>
+            </div>
+          </div>
+        </div>
+
+        <div class="field">
+          <label>
+            <input type="checkbox" id="rangeEnabled" checked />
+            Ranged Attack
+          </label>
+        </div>
+
+        <div id="rangeConfigGroup">
+          <div class="field">
+            <label>Ranged Damage Type</label>
+            <input id="rangeTypeInput" type="text" value="" readonly/>
+          </div>
+
+          <div class="field">
+            <label>Ranged damage type</label>
+            <div class="damage-type-list" id="rangeDamageList">
+              <label class="damage-option">
+                <input type="radio" name="rangeDamageType" value="Bio" data-icon="Bio_Icon.png" />
+                <span>Bio</span>
+              </label>
+              <label class="damage-option">
+                <input type="radio" name="rangeDamageType" value="Blast" data-icon="Blast_Icon.png" />
+                <span>Blast</span>
+              </label>
+              <label class="damage-option">
+                <input type="radio" name="rangeDamageType" value="Chain" data-icon="Chain_Icon.png" />
+                <span>Chain</span>
+              </label>
+              <label class="damage-option">
+                <input type="radio" name="rangeDamageType" value="Direct" data-icon="Direct_Icon.png" />
+                <span>Direct</span>
+              </label>
+              <label class="damage-option">
+                <input type="radio" name="rangeDamageType" value="Energy" data-icon="Energy_Icon.png" />
+                <span>Energy</span>
+              </label>
+              <label class="damage-option">
+                <input type="radio" name="rangeDamageType" value="Eviscerating" data-icon="Eviscerating_Icon.png" />
+                <span>Eviscerating</span>
+              </label>
+              <label class="damage-option">
+                <input type="radio" name="rangeDamageType" value="Flame" data-icon="Flame_Icon.png" />
+                <span>Flame</span>
+              </label>
+              <label class="damage-option">
+                <input type="radio" name="rangeDamageType" value="Heavy Round" data-icon="Heavy_Round_Icon.png" />
+                <span>Heavy Round</span>
+              </label>
+              <label class="damage-option">
+                <input type="radio" name="rangeDamageType" value="Las" data-icon="Las_Icon.png" />
+                <span>Las</span>
+              </label>
+              <label class="damage-option">
+                <input type="radio" name="rangeDamageType" value="Melta" data-icon="Melta_Icon.png" />
+                <span>Melta</span>
+              </label>
+              <label class="damage-option">
+                <input type="radio" name="rangeDamageType" value="Molecular" data-icon="Molecular_Icon.png" />
+                <span>Molecular</span>
+              </label>
+              <label class="damage-option">
+                <input type="radio" name="rangeDamageType" value="Particle" data-icon="Particle_Icon.png" />
+                <span>Particle</span>
+              </label>
+              <label class="damage-option">
+                <input type="radio" name="rangeDamageType" value="Physical" data-icon="Physical_Icon.png" />
+                <span>Physical</span>
+              </label>
+              <label class="damage-option">
+                <input type="radio" name="rangeDamageType" value="Piercing" data-icon="Piercing_Icon.png" />
+                <span>Piercing</span>
+              </label>
+              <label class="damage-option">
+                <input type="radio" name="rangeDamageType" value="Plasma" data-icon="Plasma_Icon.png" />
+                <span>Plasma</span>
+              </label>
+              <label class="damage-option">
+                <input type="radio" name="rangeDamageType" value="Power" data-icon="Power_Icon.png" />
+                <span>Power</span>
+              </label>
+              <label class="damage-option">
+                <input type="radio" name="rangeDamageType" value="Projectile" data-icon="Projectile_Icon.png" />
+                <span>Projectile</span>
+              </label>
+              <label class="damage-option">
+                <input type="radio" name="rangeDamageType" value="Psychic" data-icon="Psychic_Icon.png" />
+                <span>Psychic</span>
+              </label>
+              <label class="damage-option">
+                <input type="radio" name="rangeDamageType" value="Pulse" data-icon="Pulse_Icon.png" />
+                <span>Pulse</span>
+              </label>
+              <label class="damage-option">
+                <input type="radio" name="rangeDamageType" value="Toxic" data-icon="Toxic_Icon.png" />
+                <span>Toxic</span>
+              </label>
+            </div>
+          </div>
+
+          <div class="field">
+            <label>Range</label>
+            <select id="rangePatternSelect">
+              <option value="range2">Range 2</option>
+              <option value="range3">Range 3</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="field">
+          <label>Number of hits</label>
+          <input id="hitsInput" type="number" value="1" />
+          <span class="small-note">Currently used for both melee and ranged lines.</span>
+        </div>
+
+        <div class="field">
+          <label>Crit and block stats</label>
+          <div class="stat-grid">
+            <div class="field">
+              <label>Crit Damage</label>
+              <input id="critDamageInput" type="text" value="0%" />
+            </div>
+            <div class="field">
+              <label>Crit Chance</label>
+              <input id="critChanceInput" type="text" value="0%" />
+            </div>
+            <div class="field">
+              <label>Damage Blocked</label>
+              <input id="blockDamageInput" type="text" value="0%" />
+            </div>
+            <div class="field">
+              <label>Block Chance</label>
+              <input id="blockChanceInput" type="text" value="0%" />
+            </div>
+          </div>
+        </div>
+
+        <div class="field">
+          <label>Items</label>
+          <div class="stat-grid">
+            <select id="itemSlot1"></select>
+            <select id="itemSlot2"></select>
+            <select id="itemSlot3"></select>
+          </div>
+          <span class="small-note">Global pool. These names will map to item icons later.</span>
+        </div>
+      </div>
+
+      <div class="wizard-footer">
+        When your card looks right, zoom the browser if needed and either screenshot or use the Export button under the phone.
+      </div>
+    </div>
+
+    <!-- PHONE PREVIEW -->
+    <div class="phone-shell">
+      <div class="phone rarity-common" id="phoneRoot">
+        <div class="screen">
+          <div class="top-panel" id="screenBg">
+            <div class="faction-chip" id="previewFactionChip">
+              <img id="previewFactionIcon" class="faction-icon" alt="" />
+            </div>
+
+            <label class="portrait-frame" for="portraitInput">
+              <img id="portraitImage" class="portrait-image" alt="Character portrait" />
+              <span class="portrait-placeholder" id="portraitPlaceholder">No Portrait</span>
+
+              <div class="trait-stack">
+                <div class="trait-circle">
+                  <img class="trait-icon" id="previewTrait1" />
+                </div>
+                <div class="trait-circle">
+                  <img class="trait-icon" id="previewTrait2" />
+                </div>
+                <div class="trait-circle">
+                  <img class="trait-icon" id="previewTrait3" />
+                </div>
+                <div class="trait-circle">
+                  <img class="trait-icon" id="previewTrait4" />
+                </div>
+                <div class="trait-circle">
+                  <img class="trait-icon" id="previewTrait5" />
+                </div>
+                <div class="trait-circle">
+                  <img class="trait-icon" id="previewTrait6" />
+                </div>
+              </div>
+
+              <div class="rank-chip">
+                <img id="rankImg" alt="Rank" />
+                <span id="previewRank">Rank 12</span>
+              </div>
+            </label>
+          </div>
+
+          <div class="bottom-panel">
+            <div class="identity-row">
+              <div class="ability-circle">
+                <span>Ability: Active</span>
+              </div>
+              <div class="identity-card">
+                <div class="char-name" id="previewName">Marec</div>
+                <div class="char-title" id="previewTitle">Apothecary Biologis</div>
+              </div>
+              <div class="ability-circle">
+                <span>Ability: Passive</span>
+              </div>
+            </div>
+
+            <div class="xp-bar">
+              <div class="xp-fill"></div>
+              <div class="xp-label">Maximum for Current Character Rarity</div>
+            </div>
+
+            <div class="bottom-content">
+              <div class="left-column">
+                <div class="item-row">
+                  <div class="item-slot" id="previewItem1">I1</div>
+                  <div class="item-slot" id="previewItem2">I2</div>
+                  <div class="item-slot" id="previewItem3">I3</div>
+                </div>
+              </div>
+
+              <div class="right-column">
+                <div class="stat-block stat-quad">
+                  <div class="stat-quad-cell">
+                    <img src="assets/statIcons/Health_Icon.png" class="stat-icon" alt="Health" />
+                    <span class="stat-quad-value" id="statHealth">270</span>
+                  </div>
+
+                  <div class="stat-quad-cell">
+                    <img src="assets/statIcons/Armor_Icon.png" class="stat-icon" alt="Armor" />
+                    <span class="stat-quad-value" id="statArmor">100</span>
+                  </div>
+
+                  <div class="stat-quad-cell">
+                    <img src="assets/statIcons/Damage_Icon.png" class="stat-icon" alt="Damage" />
+                    <span class="stat-quad-value" id="statDamage">30</span>
+                  </div>
+
+                  <div class="stat-quad-cell">
+                    <img src="assets/statIcons/Move_Icon.png" class="stat-icon" alt="Move Speed" />
+                    <span class="stat-quad-value" id="statMove">3</span>
+                  </div>
+                </div>
+
+                <div class="stat-block">
+                  <div class="attack-line" id="meleeAttackRow">
+                    <div class="attack-icons">
+                      <div class="atk-kind-icon">
+                        <img id="meleeKindIcon" class="attack-icon-img" alt="Melee Icon" />
+                      </div>
+                      <div class="atk-type-icon">
+                        <img id="meleeTypeIcon" class="attack-icon-img" alt="Melee Damage Type" />
+                      </div>
+                    </div>
+                    <span class="attack-text" id="meleeAttackLine">Melee · x1</span>
+                  </div>
+
+                  <div class="attack-line" id="rangeAttackRow">
+                    <div class="attack-icons">
+                      <div class="atk-kind-icon">
+                        <img id="rangeKindIcon" class="attack-icon-img" alt="Ranged Icon" />
+                      </div>
+
+                      <div class="atk-type-icon">
+                        <img id="rangeTypeIcon" class="attack-icon-img" alt="Ranged Damage Type" />
+                      </div>
+                    </div>
+                    <span class="attack-text" id="rangeAttackLine">Ranged · x1</span>
+                  </div>
+                </div>
+
+                <div class="stat-block">
+                  <div class="crit-grid">
+                    <div class="stat-row">
+                      <span class="stat-label">Crit Damage</span>
+                      <span class="stat-value" id="critDamage">0%</span>
+                    </div>
+                    <div class="stat-row">
+                      <span class="stat-label">Crit Chance</span>
+                      <span class="stat-value" id="critChance">0%</span>
+                    </div>
+                    <div class="stat-row">
+                      <span class="stat-label">Damage Blocked</span>
+                      <span class="stat-value" id="blockDamage">0%</span>
+                    </div>
+                    <div class="stat-row">
+                      <span class="stat-label">Block Chance</span>
+                      <span class="stat-value" id="blockChance">0%</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div> <!-- bottom-panel -->
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- dom-to-image-more for clean exports -->
+  <script src="https://cdn.jsdelivr.net/npm/dom-to-image-more@3.3.6/dist/dom-to-image-more.min.js"></script>
+  <!-- Your app logic -->
+  <script src="script.js"></script>
+</body>
+</html>
