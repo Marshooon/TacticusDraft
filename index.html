@@ -10,14 +10,27 @@
   <div class="app">
     <aside class="wizard">
       <h1>Tacticus Character Wizard</h1>
-      <p class="wizard-sub">Slim prototype: core layout + live name/title + rarity.</p>
 
       <div class="wizard-tabs">
-        <button class="wizard-tab active" data-tab="controls">Controls</button>
-        <button class="wizard-tab" data-tab="shape">Shape Test</button>
+        <button class="wizard-tab is-required" data-tab="assets" id="assetsTab">Assets</button>
+        <button class="wizard-tab active" data-tab="identity">Identity</button>
+        <button class="wizard-tab" data-tab="visuals">Visuals</button>
+        <button class="wizard-tab" data-tab="abilities">Abilities</button>
+        <button class="wizard-tab" data-tab="stats">Stats</button>
+        <button class="wizard-tab" data-tab="utilities" data-role="utilities-tab">Utilities</button>
+        <button class="wizard-tab" data-tab="ui-test" data-role="ui-test-tab">UI Test</button>
       </div>
 
-      <div class="wizard-panel active" data-tab="controls">
+      <div class="wizard-panel" data-tab="assets">
+        <div class="field">
+          <label>Assets Folder</label>
+          <button class="pill-btn" id="assetsFolderButton" type="button">Select assets folder</button>
+          <input id="assetsFolderInput" type="file" webkitdirectory multiple hidden />
+          <p class="field-note">Needed for self-contained HTML export when running locally.</p>
+        </div>
+      </div>
+
+      <div class="wizard-panel active" data-tab="identity">
         <div class="field">
           <label for="nameInput">Name</label>
           <input id="nameInput" type="text" value="SHO'SYL" />
@@ -28,261 +41,307 @@
           <input id="titleInput" type="text" value="Firesight Marksman" />
         </div>
 
-      <div class="field">
-        <label>Rarity</label>
-        <div class="choice-row" id="rarityChoices">
-          <button class="pill-btn" data-rarity="common">Common</button>
-          <button class="pill-btn" data-rarity="uncommon">Uncommon</button>
-          <button class="pill-btn" data-rarity="rare">Rare</button>
-          <button class="pill-btn" data-rarity="epic">Epic</button>
-          <button class="pill-btn active" data-rarity="legendary">Legendary</button>
+        <div class="field">
+          <label for="descriptionInput">Description</label>
+          <textarea id="descriptionInput" placeholder="Character description"></textarea>
         </div>
-      </div>
 
-      <div class="field">
-        <label>Reference</label>
-        <button class="pill-btn" id="toggleReference" type="button" >Show reference</button>
-      </div>
-
-      <div class="field">
-        <label>Preview Window</label>
-        <button class="pill-btn" id="openPhoneWindow" type="button">Open phone preview</button>
-      </div>
-
-      <div class="field">
-        <label>Traits</label>
-        <div class="trait-list" id="traitList"></div>
-        <span class="field-note">Select up to 6 traits.</span>
-      </div>
-
-      <div class="field">
-        <label>Portrait</label>
-        <button class="pill-btn" id="portraitUploadButton" type="button">Upload portrait</button>
-        <input id="portraitInput" class="file-input" type="file" accept="image/*" />
-      </div>
-
-      <details class="field-dropdown">
-        <summary>Portrait Position</summary>
-        <div class="slider-grid">
-          <label for="portraitOffsetX">X</label>
-          <input id="portraitOffsetX" type="range" min="-80" max="80" value="0" />
-          <label for="portraitOffsetY">Y</label>
-          <input id="portraitOffsetY" type="range" min="-80" max="80" value="0" />
-          <label for="portraitZoom">Zoom</label>
-          <input id="portraitZoom" type="range" min="60" max="160" value="100" />
+        <div class="field">
+          <label>Rarity</label>
+          <div class="choice-row" id="rarityChoices">
+            <button class="pill-btn" data-rarity="common">Common</button>
+            <button class="pill-btn" data-rarity="uncommon">Uncommon</button>
+            <button class="pill-btn" data-rarity="rare">Rare</button>
+            <button class="pill-btn" data-rarity="epic">Epic</button>
+            <button class="pill-btn active" data-rarity="legendary">Legendary</button>
+          </div>
         </div>
-      </details>
 
-      <div class="field">
-        <label>Ability Icons</label>
-        <div class="ability-upload-row">
-          <button class="pill-btn" id="activeAbilityUploadButton" type="button">Upload active</button>
-          <button class="pill-btn" id="passiveAbilityUploadButton" type="button">Upload passive</button>
+        <div class="field">
+          <label>Traits</label>
+          <div class="trait-list" id="traitList"></div>
+          <span class="field-note">Select up to 6 traits.</span>
         </div>
-        <input id="activeAbilityInput" class="file-input" type="file" accept="image/*" />
-        <input id="passiveAbilityInput" class="file-input" type="file" accept="image/*" />
-      </div>
 
-      <details class="field-dropdown">
-        <summary>Ability Icon Position</summary>
-        <div class="slider-grid">
-          <label for="abilityOffsetX">X</label>
-          <input id="abilityOffsetX" type="range" min="-20" max="20" value="0" />
-          <label for="abilityOffsetY">Y</label>
-          <input id="abilityOffsetY" type="range" min="-20" max="20" value="0" />
-          <label for="abilityZoom">Zoom</label>
-          <input id="abilityZoom" type="range" min="80" max="140" value="100" />
-        </div>
-      </details>
-
-      <details class="field-dropdown">
-        <summary>Ability Tooltips</summary>
-        <div class="tooltip-toolbar">
-          <button class="pill-btn" type="button" data-tooltip-action="underline">Underline</button>
-          <label class="tooltip-color">
-            <span>Color</span>
-            <input type="color" id="tooltipColorPicker" value="#f8f9ff" />
+        <div class="field">
+          <label class="inline-label">
+            <input type="checkbox" id="customTraitEnabled" />
+            Custom Trait
           </label>
+          <div class="custom-trait-fields" id="customTraitFields">
+            <div class="field">
+              <label for="customTraitName">Name</label>
+              <input id="customTraitName" type="text" placeholder="Custom trait name" />
+            </div>
+            <div class="field">
+              <label for="customTraitDesc">Description</label>
+              <textarea id="customTraitDesc" placeholder="Custom trait description"></textarea>
+            </div>
+            <div class="field">
+              <label>Icon</label>
+              <button class="pill-btn" id="customTraitUploadButton" type="button">Upload icon</button>
+              <input id="customTraitInput" class="file-input" type="file" accept="image/*" />
+            </div>
+            <div class="field">
+              <label>Custom Trait Icon Library</label>
+              <div class="icon-library-controls">
+                <input id="customTraitSearch" type="text" placeholder="Search trait icons..." />
+              </div>
+              <div class="icon-library-grid" id="customTraitLibraryGrid"></div>
+            </div>
+          </div>
         </div>
-        <div class="stat-input-grid two-col">
-          <div class="field">
-            <label for="activeTooltipTitleInput">Active Ability Name</label>
-            <input id="activeTooltipTitleInput" type="text" placeholder="Active Ability" />
-          </div>
-          <div class="field">
-            <label for="passiveTooltipTitleInput">Passive Ability Name</label>
-            <input id="passiveTooltipTitleInput" type="text" placeholder="Passive Ability" />
-          </div>
-          <div class="field">
-            <label for="activeTooltipInput">Active Tooltip</label>
-            <div id="activeTooltipInput" class="tooltip-editor" contenteditable="true" data-placeholder="Description"></div>
-          </div>
-          <div class="field">
-            <label for="passiveTooltipInput">Passive Tooltip</label>
-            <div id="passiveTooltipInput" class="tooltip-editor" contenteditable="true" data-placeholder="Description"></div>
-          </div>
-        </div>
-      </details>
 
-      <div class="field">
-        <button class="pill-btn" id="exportButton" type="button">Export</button>
-      </div>
-      <div class="field">
-        <button class="pill-btn" id="assetsFolderButton" type="button">Select assets folder</button>
-        <input id="assetsFolderInput" class="file-input" type="file" webkitdirectory directory />
-      </div>
-
-      <div class="field">
-        <label>Background</label>
-        <div class="choice-row" id="bgPresetRow">
-          <button class="pill-btn" data-bg="spacewolves">Space Wolves</button>
-          <button class="pill-btn" data-bg="tau">Tau</button>
-          <button class="pill-btn" data-bg="mechanicus">Mechanicus</button>
+        <div id="traitTooltip" class="trait-tooltip" aria-hidden="true">
+          <div class="trait-tooltip-title"></div>
+          <div class="trait-tooltip-body"></div>
         </div>
       </div>
 
-      <div class="field">
-        <label>Core Stats</label>
-        <div class="stat-input-grid">
-          <div class="field">
-            <label for="healthInput">Health</label>
-            <input id="healthInput" type="number" value="3325" />
+      <div class="wizard-panel" data-tab="visuals">
+        <div class="field">
+          <label>Background</label>
+          <div class="trait-list bg-list" id="bgPresetList"></div>
+        </div>
+
+        <div class="field">
+          <label>Portrait</label>
+          <button class="pill-btn" id="portraitUploadButton" type="button">Upload portrait</button>
+          <input id="portraitInput" class="file-input" type="file" accept="image/*" />
+        </div>
+
+        <details class="field-dropdown">
+          <summary>Portrait Position</summary>
+          <div class="slider-grid">
+            <label for="portraitOffsetX">X</label>
+            <input id="portraitOffsetX" type="range" min="-80" max="80" value="0" />
+            <label for="portraitOffsetY">Y</label>
+            <input id="portraitOffsetY" type="range" min="-80" max="80" value="0" />
+            <label for="portraitZoom">Zoom</label>
+            <input id="portraitZoom" type="range" min="60" max="160" value="100" />
           </div>
-          <div class="field">
-            <label for="armorInput">Armor</label>
-            <input id="armorInput" type="number" value="874" />
+        </details>
+      </div>
+
+      <div class="wizard-panel" data-tab="abilities">
+        <div class="field">
+          <label>Ability Icons</label>
+          <div class="ability-upload-row">
+            <button class="pill-btn" id="activeAbilityUploadButton" type="button">Upload active</button>
+            <button class="pill-btn" id="passiveAbilityUploadButton" type="button">Upload passive</button>
           </div>
-          <div class="field">
-            <label for="damageInput">Damage</label>
-            <input id="damageInput" type="number" value="2293" />
+          <input id="activeAbilityInput" class="file-input" type="file" accept="image/*" />
+          <input id="passiveAbilityInput" class="file-input" type="file" accept="image/*" />
+        </div>
+
+        <div class="field">
+          <label>Ability Icon Library</label>
+          <div class="icon-library-controls">
+            <div class="choice-row">
+              <button class="pill-btn active" id="iconTargetActive" type="button">Active</button>
+              <button class="pill-btn" id="iconTargetPassive" type="button">Passive</button>
+            </div>
+            <input id="iconLibrarySearch" type="text" placeholder="Search icons..." />
           </div>
-          <div class="field">
-            <label for="moveInput">Movement</label>
-            <input id="moveInput" type="number" value="3" />
+          <div class="icon-library-grid" id="iconLibraryGrid"></div>
+        </div>
+
+        <details class="field-dropdown" open>
+          <summary>Ability Description</summary>
+          <div class="tooltip-toolbar">
+            <label class="tooltip-color">
+              <span>Color</span>
+              <input type="color" id="tooltipColorPicker" value="#f8f9ff" />
+            </label>
+          </div>
+          <div class="stat-input-grid two-col">
+            <div class="field">
+              <label for="activeTooltipTitleInput">Active Ability Name</label>
+              <input id="activeTooltipTitleInput" type="text" placeholder="Active Ability" />
+            </div>
+            <div class="field">
+              <label for="passiveTooltipTitleInput">Passive Ability Name</label>
+              <input id="passiveTooltipTitleInput" type="text" placeholder="Passive Ability" />
+            </div>
+            <div class="field">
+              <label for="activeTooltipInput">Active Tooltip</label>
+              <div id="activeTooltipInput" class="tooltip-editor" contenteditable="true" data-placeholder="Description"></div>
+            </div>
+            <div class="field">
+              <label for="passiveTooltipInput">Passive Tooltip</label>
+              <div id="passiveTooltipInput" class="tooltip-editor" contenteditable="true" data-placeholder="Description"></div>
+            </div>
+          </div>
+        </details>
+
+        <details class="field-dropdown">
+          <summary>Ability Icon Position</summary>
+          <div class="slider-grid">
+            <label for="abilityOffsetX">X</label>
+            <input id="abilityOffsetX" type="range" min="-20" max="20" value="0" />
+            <label for="abilityOffsetY">Y</label>
+            <input id="abilityOffsetY" type="range" min="-20" max="20" value="0" />
+            <label for="abilityZoom">Zoom</label>
+            <input id="abilityZoom" type="range" min="80" max="140" value="100" />
+          </div>
+        </details>
+      </div>
+
+      <div class="wizard-panel" data-tab="stats">
+        <div class="field">
+          <label>Core Stats</label>
+          <div class="stat-input-grid">
+            <div class="field">
+              <label for="healthInput">Health</label>
+              <input id="healthInput" type="number" value="3325" />
+            </div>
+            <div class="field">
+              <label for="armorInput">Armor</label>
+              <input id="armorInput" type="number" value="874" />
+            </div>
+            <div class="field">
+              <label for="damageInput">Damage</label>
+              <input id="damageInput" type="number" value="2293" />
+            </div>
+            <div class="field">
+              <label for="moveInput">Movement</label>
+              <input id="moveInput" type="number" value="3" />
+            </div>
+          </div>
+        </div>
+
+        <div class="field">
+          <label class="inline-label">
+            <input type="checkbox" id="meleeEnabled" checked />
+            Melee Attack
+          </label>
+          <div class="stat-input-grid two-col">
+            <div class="field">
+              <label for="meleeTypeSelect">Damage Type</label>
+              <select id="meleeTypeSelect">
+                <option value="Bio" data-icon="Bio_Icon.png">Bio</option>
+                <option value="Blast" data-icon="Blast_Icon.png">Blast</option>
+                <option value="Chain" data-icon="Chain_Icon.png">Chain</option>
+                <option value="Direct" data-icon="Direct_Icon.png">Direct</option>
+                <option value="Energy" data-icon="Energy_Icon.png">Energy</option>
+                <option value="Eviscerating" data-icon="Eviscerating_Icon.png">Eviscerating</option>
+                <option value="Flame" data-icon="Flame_Icon.png">Flame</option>
+                <option value="Heavy Round" data-icon="Heavy_Round_Icon.png">Heavy Round</option>
+                <option value="Las" data-icon="Las_Icon.png">Las</option>
+                <option value="Melta" data-icon="Melta_Icon.png">Melta</option>
+                <option value="Molecular" data-icon="Molecular_Icon.png">Molecular</option>
+                <option value="Particle" data-icon="Particle_Icon.png">Particle</option>
+                <option value="Physical" data-icon="Physical_Icon.png">Physical</option>
+                <option value="Piercing" data-icon="Piercing_Icon.png">Piercing</option>
+                <option value="Plasma" data-icon="Plasma_Icon.png">Plasma</option>
+                <option value="Power" data-icon="Power_Icon.png">Power</option>
+                <option value="Projectile" data-icon="Projectile_Icon.png">Projectile</option>
+                <option value="Psychic" data-icon="Psychic_Icon.png">Psychic</option>
+                <option value="Pulse" data-icon="Pulse_Icon.png">Pulse</option>
+                <option value="Toxic" data-icon="Toxic_Icon.png">Toxic</option>
+              </select>
+            </div>
+            <div class="field">
+              <label for="meleeHitsInput">Hits</label>
+              <input id="meleeHitsInput" type="number" value="1" min="1" />
+            </div>
+          </div>
+        </div>
+
+        <div class="field">
+          <label class="inline-label">
+            <input type="checkbox" id="rangeEnabled" checked />
+            Ranged Attack
+          </label>
+          <div class="stat-input-grid two-col">
+            <div class="field">
+              <label for="rangeTypeSelect">Damage Type</label>
+              <select id="rangeTypeSelect">
+                <option value="Bio" data-icon="Bio_Icon.png">Bio</option>
+                <option value="Blast" data-icon="Blast_Icon.png">Blast</option>
+                <option value="Chain" data-icon="Chain_Icon.png">Chain</option>
+                <option value="Direct" data-icon="Direct_Icon.png">Direct</option>
+                <option value="Energy" data-icon="Energy_Icon.png">Energy</option>
+                <option value="Eviscerating" data-icon="Eviscerating_Icon.png">Eviscerating</option>
+                <option value="Flame" data-icon="Flame_Icon.png">Flame</option>
+                <option value="Heavy Round" data-icon="Heavy_Round_Icon.png">Heavy Round</option>
+                <option value="Las" data-icon="Las_Icon.png">Las</option>
+                <option value="Melta" data-icon="Melta_Icon.png">Melta</option>
+                <option value="Molecular" data-icon="Molecular_Icon.png">Molecular</option>
+                <option value="Particle" data-icon="Particle_Icon.png">Particle</option>
+                <option value="Physical" data-icon="Physical_Icon.png">Physical</option>
+                <option value="Piercing" data-icon="Piercing_Icon.png">Piercing</option>
+                <option value="Plasma" data-icon="Plasma_Icon.png">Plasma</option>
+                <option value="Power" data-icon="Power_Icon.png">Power</option>
+                <option value="Projectile" data-icon="Projectile_Icon.png">Projectile</option>
+                <option value="Psychic" data-icon="Psychic_Icon.png">Psychic</option>
+                <option value="Pulse" data-icon="Pulse_Icon.png" selected>Pulse</option>
+                <option value="Toxic" data-icon="Toxic_Icon.png">Toxic</option>
+              </select>
+            </div>
+            <div class="field">
+              <label for="rangeHitsInput">Hits</label>
+              <input id="rangeHitsInput" type="number" value="1" min="1" />
+            </div>
+            <div class="field">
+              <label for="rangePatternSelect">Range</label>
+              <select id="rangePatternSelect">
+                <option value="range2">Range 2</option>
+                <option value="range3">Range 3</option>
+              </select>
+            </div>
+          </div>
+        </div>
+
+        <div class="field">
+          <label class="inline-label">
+            <input type="checkbox" id="critEnabled" checked />
+            Crit Stats
+          </label>
+          <div class="stat-input-grid two-col">
+            <div class="field">
+              <label for="critValueInput">Crit Value</label>
+              <input id="critValueInput" type="text" value="+1121" />
+            </div>
+            <div class="field">
+              <label for="critChanceInput">Crit Chance</label>
+              <input id="critChanceInput" type="text" value="40%" />
+            </div>
+          </div>
+        </div>
+
+        <div class="field">
+          <label class="inline-label">
+            <input type="checkbox" id="blockEnabled" checked />
+            Block Stats
+          </label>
+          <div class="stat-input-grid two-col">
+            <div class="field">
+              <label for="blockValueInput">Block Value</label>
+              <input id="blockValueInput" type="text" value="+874" />
+            </div>
+            <div class="field">
+              <label for="blockChanceInput">Block Chance</label>
+              <input id="blockChanceInput" type="text" value="20%" />
+            </div>
           </div>
         </div>
       </div>
 
-      <div class="field">
-        <label class="inline-label">
-          <input type="checkbox" id="meleeEnabled" checked />
-          Melee Attack
-        </label>
-        <div class="stat-input-grid two-col">
-          <div class="field">
-            <label for="meleeTypeSelect">Damage Type</label>
-            <select id="meleeTypeSelect">
-              <option value="Bio" data-icon="Bio_Icon.png">Bio</option>
-              <option value="Blast" data-icon="Blast_Icon.png">Blast</option>
-              <option value="Chain" data-icon="Chain_Icon.png">Chain</option>
-              <option value="Direct" data-icon="Direct_Icon.png">Direct</option>
-              <option value="Energy" data-icon="Energy_Icon.png">Energy</option>
-              <option value="Eviscerating" data-icon="Eviscerating_Icon.png">Eviscerating</option>
-              <option value="Flame" data-icon="Flame_Icon.png">Flame</option>
-              <option value="Heavy Round" data-icon="Heavy_Round_Icon.png">Heavy Round</option>
-              <option value="Las" data-icon="Las_Icon.png">Las</option>
-              <option value="Melta" data-icon="Melta_Icon.png">Melta</option>
-              <option value="Molecular" data-icon="Molecular_Icon.png">Molecular</option>
-              <option value="Particle" data-icon="Particle_Icon.png">Particle</option>
-              <option value="Physical" data-icon="Physical_Icon.png">Physical</option>
-              <option value="Piercing" data-icon="Piercing_Icon.png">Piercing</option>
-              <option value="Plasma" data-icon="Plasma_Icon.png">Plasma</option>
-              <option value="Power" data-icon="Power_Icon.png">Power</option>
-              <option value="Projectile" data-icon="Projectile_Icon.png">Projectile</option>
-              <option value="Psychic" data-icon="Psychic_Icon.png">Psychic</option>
-              <option value="Pulse" data-icon="Pulse_Icon.png">Pulse</option>
-              <option value="Toxic" data-icon="Toxic_Icon.png">Toxic</option>
-            </select>
-          </div>
-          <div class="field">
-            <label for="meleeHitsInput">Hits</label>
-            <input id="meleeHitsInput" type="number" value="1" min="1" />
-          </div>
+      <div class="wizard-panel" data-tab="utilities" data-role="utilities-panel">
+        <div class="field">
+          <label>Reference</label>
+          <button class="pill-btn" id="toggleReference" type="button">Show reference</button>
+        </div>
+
+        <div class="field">
+          <label>Export</label>
+          <button class="pill-btn" id="exportHtmlButton" type="button">Export HTML</button>
         </div>
       </div>
 
-      <div class="field">
-        <label class="inline-label">
-          <input type="checkbox" id="rangeEnabled" checked />
-          Ranged Attack
-        </label>
-        <div class="stat-input-grid two-col">
-          <div class="field">
-            <label for="rangeTypeSelect">Damage Type</label>
-            <select id="rangeTypeSelect">
-              <option value="Bio" data-icon="Bio_Icon.png">Bio</option>
-              <option value="Blast" data-icon="Blast_Icon.png">Blast</option>
-              <option value="Chain" data-icon="Chain_Icon.png">Chain</option>
-              <option value="Direct" data-icon="Direct_Icon.png">Direct</option>
-              <option value="Energy" data-icon="Energy_Icon.png">Energy</option>
-              <option value="Eviscerating" data-icon="Eviscerating_Icon.png">Eviscerating</option>
-              <option value="Flame" data-icon="Flame_Icon.png">Flame</option>
-              <option value="Heavy Round" data-icon="Heavy_Round_Icon.png">Heavy Round</option>
-              <option value="Las" data-icon="Las_Icon.png">Las</option>
-              <option value="Melta" data-icon="Melta_Icon.png">Melta</option>
-              <option value="Molecular" data-icon="Molecular_Icon.png">Molecular</option>
-              <option value="Particle" data-icon="Particle_Icon.png">Particle</option>
-              <option value="Physical" data-icon="Physical_Icon.png">Physical</option>
-              <option value="Piercing" data-icon="Piercing_Icon.png">Piercing</option>
-              <option value="Plasma" data-icon="Plasma_Icon.png">Plasma</option>
-              <option value="Power" data-icon="Power_Icon.png">Power</option>
-              <option value="Projectile" data-icon="Projectile_Icon.png">Projectile</option>
-              <option value="Psychic" data-icon="Psychic_Icon.png">Psychic</option>
-              <option value="Pulse" data-icon="Pulse_Icon.png" selected>Pulse</option>
-              <option value="Toxic" data-icon="Toxic_Icon.png">Toxic</option>
-            </select>
-          </div>
-          <div class="field">
-            <label for="rangeHitsInput">Hits</label>
-            <input id="rangeHitsInput" type="number" value="1" min="1" />
-          </div>
-          <div class="field">
-            <label for="rangePatternSelect">Range</label>
-            <select id="rangePatternSelect">
-              <option value="range2">Range 2</option>
-              <option value="range3">Range 3</option>
-            </select>
-          </div>
-        </div>
-      </div>
-
-      <div class="field">
-        <label class="inline-label">
-          <input type="checkbox" id="critEnabled" checked />
-          Crit Stats
-        </label>
-        <div class="stat-input-grid two-col">
-          <div class="field">
-            <label for="critValueInput">Crit Value</label>
-            <input id="critValueInput" type="text" value="+1121" />
-          </div>
-          <div class="field">
-            <label for="critChanceInput">Crit Chance</label>
-            <input id="critChanceInput" type="text" value="40%" />
-          </div>
-        </div>
-      </div>
-
-      <div class="field">
-        <label class="inline-label">
-          <input type="checkbox" id="blockEnabled" checked />
-          Block Stats
-        </label>
-        <div class="stat-input-grid two-col">
-          <div class="field">
-            <label for="blockValueInput">Block Value</label>
-            <input id="blockValueInput" type="text" value="+874" />
-          </div>
-          <div class="field">
-            <label for="blockChanceInput">Block Chance</label>
-            <input id="blockChanceInput" type="text" value="20%" />
-          </div>
-        </div>
-      </div>
-      </div>
-
-      <div class="wizard-panel" data-tab="shape">
-        <p class="field-note">Add more tabs as you build out the wizard.</p>
+      <div class="wizard-panel" data-tab="ui-test" data-role="ui-test-panel">
+        <p class="field-note">Add more UI tests as you build out the wizard.</p>
         <div class="field">
           <label for="shapeGlowStrength">Shape Glow Strength</label>
           <input id="shapeGlowStrength" type="range" min="0" max="40" value="2" />
@@ -307,13 +366,17 @@
         <div class="screen">
           <div class="reference-overlay" id="referenceOverlay" aria-hidden="true"></div>
           <section class="top-panel">
-            <div class="trait-stack">
+            <div class="trait-stack" id="traitStack">
               <div class="trait-circle"><img class="trait-icon" id="previewTrait1" alt="" /></div>
               <div class="trait-circle"><img class="trait-icon" id="previewTrait2" alt="" /></div>
               <div class="trait-circle"><img class="trait-icon" id="previewTrait3" alt="" /></div>
               <div class="trait-circle"><img class="trait-icon" id="previewTrait4" alt="" /></div>
               <div class="trait-circle"><img class="trait-icon" id="previewTrait5" alt="" /></div>
               <div class="trait-circle"><img class="trait-icon" id="previewTrait6" alt="" /></div>
+            </div>
+            <div id="stackTraitTooltip" class="stack-trait-tooltip" aria-hidden="true">
+              <div class="stack-trait-tooltip-title"></div>
+              <div class="stack-trait-tooltip-body"></div>
             </div>
             <div class="portrait-frame">
               <img id="portraitImage" class="portrait-image" alt="Character portrait" />
@@ -342,6 +405,10 @@
             <div class="identity-card">
               <div class="char-name" id="previewName">SHO'SYL</div>
               <div class="char-title" id="previewTitle">Firesight Marksman</div>
+            </div>
+            <div class="character-tooltip" id="characterTooltip" aria-hidden="true">
+              <div class="character-tooltip-title" id="characterTooltipTitle"></div>
+              <div class="character-tooltip-body" id="characterTooltipBody"></div>
             </div>
             <div class="xp-bar legacy">
               <div class="xp-fill"></div>
