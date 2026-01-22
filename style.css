@@ -369,6 +369,18 @@ body {
   color: var(--accent);
 }
 
+.lighting-grid {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 8px;
+  align-items: center;
+  font-size: 0.75rem;
+  padding: 8px;
+  border-radius: 10px;
+  border: 1px solid var(--border-soft);
+  background: #0b111b;
+}
+
 .custom-trait-fields {
   display: grid;
   grid-template-columns: 1fr;
@@ -669,6 +681,56 @@ body {
   align-items: center;
   justify-content: center;
   pointer-events: none;
+  z-index: 1;
+  isolation: isolate;
+}
+
+.portrait-tint {
+  position: absolute;
+  inset: 0;
+  background: var(--portrait-tint, transparent);
+  mix-blend-mode: soft-light;
+  opacity: 1;
+  pointer-events: none;
+  z-index: 2;
+  -webkit-mask-repeat: no-repeat;
+  -webkit-mask-position: center;
+  -webkit-mask-size: contain;
+  mask-repeat: no-repeat;
+  mask-position: center;
+  mask-size: contain;
+}
+
+.portrait-light {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(var(--portrait-light-angle, 135deg), var(--portrait-light-color, rgba(255, 255, 255, 0)) 0%, rgba(0, 0, 0, 0) 60%);
+  mix-blend-mode: screen;
+  opacity: 1;
+  pointer-events: none;
+  z-index: 3;
+  -webkit-mask-repeat: no-repeat;
+  -webkit-mask-position: center;
+  -webkit-mask-size: contain;
+  mask-repeat: no-repeat;
+  mask-position: center;
+  mask-size: contain;
+}
+
+.portrait-shadow {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(var(--portrait-shadow-angle, 315deg), var(--portrait-shadow-color, rgba(0, 0, 0, 0)) 0%, rgba(0, 0, 0, 0) 60%);
+  mix-blend-mode: multiply;
+  opacity: 1;
+  pointer-events: none;
+  z-index: 4;
+  -webkit-mask-repeat: no-repeat;
+  -webkit-mask-position: center;
+  -webkit-mask-size: contain;
+  mask-repeat: no-repeat;
+  mask-position: center;
+  mask-size: contain;
 }
 
 .portrait-image {
@@ -677,6 +739,8 @@ body {
   object-fit: contain;
   transform-origin: 50% 50%;
   display: none;
+  position: relative;
+  z-index: 1;
 }
 
 .portrait-placeholder {
@@ -698,6 +762,7 @@ body {
   display: flex;
   flex-direction: column;
   gap: 8px;
+  z-index: 3;
 }
 
 .trait-circle {

@@ -80,6 +80,20 @@ const portraitUploadButton = document.getElementById("portraitUploadButton");
 const portraitInput = document.getElementById("portraitInput");
 const portraitImage = document.getElementById("portraitImage");
 const portraitPlaceholder = document.getElementById("portraitPlaceholder");
+const portraitTint = document.querySelector(".portrait-tint");
+const portraitLight = document.querySelector(".portrait-light");
+const portraitShadow = document.querySelector(".portrait-shadow");
+const portraitTintColor = document.getElementById("portraitTintColor");
+const portraitTintStrength = document.getElementById("portraitTintStrength");
+const portraitLightColor = document.getElementById("portraitLightColor");
+const portraitLightStrength = document.getElementById("portraitLightStrength");
+const portraitLightAngle = document.getElementById("portraitLightAngle");
+const portraitTintEnabled = document.getElementById("portraitTintEnabled");
+const portraitLightEnabled = document.getElementById("portraitLightEnabled");
+const portraitShadowColor = document.getElementById("portraitShadowColor");
+const portraitShadowStrength = document.getElementById("portraitShadowStrength");
+const portraitShadowAngle = document.getElementById("portraitShadowAngle");
+const portraitShadowEnabled = document.getElementById("portraitShadowEnabled");
 const portraitOffsetX = document.getElementById("portraitOffsetX");
 const portraitOffsetY = document.getElementById("portraitOffsetY");
 const portraitZoom = document.getElementById("portraitZoom");
@@ -181,6 +195,7 @@ const TRAIT_DESCRIPTIONS = {
   "Vehicle": "Movement is not blocked by special hexes. Does not gain bonuses from Tall Grass. Cannot end movement on a trench but may move through it.",
   "Weaver of Fates": "In a turn when three or more enemy units have taken psychic damage, this unit deals the maximum possible damage with its attacks and abilities. It maximizes natural damage variance and uses the maximum value for abilities with variable damage. It does not automatically crit or chain crits."
 };
+// Ability icon library: add new icons by file path here (assets/abilityIcons).
 const ABILITY_ICON_LIBRARY = [
   "assets/abilityIcons/Abaddon_The_Despoiler_Ability_1_Icon.webp",
   "assets/abilityIcons/Abaddon_The_Despoiler_Ability_2_Icon.webp",
@@ -351,6 +366,7 @@ bindInput(critChanceInput, critChance);
 bindInput(blockValueInput, blockValue);
 bindInput(blockChanceInput, blockChance);
 
+// Trait list: add new traits here and matching entries in TRAIT_DESCRIPTIONS.
 const TRAITS = [
   { label: "Act of Faith", icon: "Act_of_Faith_Icon.png" },
   { label: "2 Man Team", icon: "2-Man_Team_Icon.png" },
@@ -843,6 +859,11 @@ function updatePortraitTransform() {
   const y = Number(portraitOffsetY?.value || 0);
   const z = Number(portraitZoom?.value || 100) / 100;
   portraitImage.style.transform = `translate(${x}px, ${y}px) scale(${z})`;
+  const transform = `translate(${x}px, ${y}px) scale(${z})`;
+  if (portraitTint) portraitTint.style.transform = transform;
+  if (portraitLight) portraitLight.style.transform = transform;
+  if (portraitShadow) portraitShadow.style.transform = transform;
+  updatePortraitMasks();
 }
 
 if (portraitUploadButton && portraitInput) {
@@ -865,17 +886,119 @@ portraitOffsetX?.addEventListener("input", updatePortraitTransform);
 portraitOffsetY?.addEventListener("input", updatePortraitTransform);
 portraitZoom?.addEventListener("input", updatePortraitTransform);
 updatePortraitTransform();
+portraitTintColor?.addEventListener("change", updatePortraitLighting);
+portraitTintStrength?.addEventListener("input", updatePortraitLighting);
+portraitLightColor?.addEventListener("change", updatePortraitLighting);
+portraitLightStrength?.addEventListener("input", updatePortraitLighting);
+portraitLightAngle?.addEventListener("input", updatePortraitLighting);
+portraitTintEnabled?.addEventListener("change", updatePortraitLighting);
+portraitLightEnabled?.addEventListener("change", updatePortraitLighting);
+portraitShadowColor?.addEventListener("change", updatePortraitLighting);
+portraitShadowStrength?.addEventListener("input", updatePortraitLighting);
+portraitShadowAngle?.addEventListener("input", updatePortraitLighting);
+portraitShadowEnabled?.addEventListener("change", updatePortraitLighting);
+updatePortraitMasks();
+if (portraitImage) {
+  portraitImage.src = "assets/portraits/marecTacticus.png";
+  portraitImage.style.display = "block";
+  if (portraitPlaceholder) portraitPlaceholder.style.display = "none";
+  updatePortraitTransform();
+}
 
+// Background list: add/remove entries here (key must be unique, src must match assets/backgrounds file).
 const bgPresets = [
+  { key: "astra_militarum", label: "Astra Militarum", src: "assets/backgrounds/Background_Astra_Militarum.jpg" },
+  { key: "bile_pits", label: "Bile Pits", src: "assets/backgrounds/Background_Bile_Pits.png" },
+  { key: "black_legion", label: "Black Legion", src: "assets/backgrounds/Background_Black_Legion.jpg" },
+  { key: "blood_angels", label: "Blood Angels", src: "assets/backgrounds/Background_Blood_Angels.jpg" },
+  { key: "custodes", label: "Custodes", src: "assets/backgrounds/Background_Custodes.jpg" },
+  { key: "dark_angels", label: "Dark Angels", src: "assets/backgrounds/Background_Dark_Angels.jpg" },
+  { key: "eldar", label: "Eldar", src: "assets/backgrounds/Background_Eldar.jpg" },
+  { key: "emperors_children", label: "Emperors Children", src: "assets/backgrounds/Background_Emperors_Children.jpg" },
+  { key: "genestealers", label: "Genestealers", src: "assets/backgrounds/Background_Genestealers.jpg" },
+  { key: "golden_hall", label: "Golden Hall", src: "assets/backgrounds/Background_Golden_Hall.png" },
+  { key: "imperium_ruins", label: "Imperium Ruins", src: "assets/backgrounds/Background_Imperium_Ruins.png" },
   { key: "lions_adamant", label: "Lions Adamant", src: "assets/backgrounds/Background_Lions_Adamant.jpg" },
+  { key: "mechanicus", label: "Mechanicus", src: "assets/backgrounds/Background_Mechanicus.jpg" },
+  { key: "orkz", label: "Orkz", src: "assets/backgrounds/Background_Orkz.jpg" },
   { key: "spacewolves", label: "Space Wolves", src: "assets/backgrounds/Background_SpaceWolves.jpg" },
   { key: "tau", label: "Tau", src: "assets/backgrounds/Background_Tau.jpg" },
-  { key: "mechanicus", label: "Mechanicus", src: "assets/backgrounds/Background_Mechanicus.jpg" }
+  { key: "thousand_sons", label: "Thousand Sons", src: "assets/backgrounds/Background_Thousand_Sons.jpg" },
+  { key: "tyranids", label: "Tyranids", src: "assets/backgrounds/Background_Tyranids.jpg" },
+  { key: "ultramarines", label: "Ultramarines", src: "assets/backgrounds/Background_Ultramarines.jpg" },
+  { key: "verdant_lions", label: "Verdant Lions", src: "assets/backgrounds/Background_Verdant_Lions.png" },
+  { key: "world_eaters", label: "World Eaters", src: "assets/backgrounds/Background_World_Eaters.jpg" },
+  { key: "xenos_mauseleoum", label: "Xenos Mauseleoum", src: "assets/backgrounds/Background_Xenos_Mauseleoum.jpg" }
 ];
+let currentBgKey = bgPresets[0]?.key || "";
+
+function hexToRgba(hex, alpha) {
+  const raw = hex.replace("#", "").trim();
+  if (raw.length === 3) {
+    const r = parseInt(raw[0] + raw[0], 16);
+    const g = parseInt(raw[1] + raw[1], 16);
+    const b = parseInt(raw[2] + raw[2], 16);
+    return `rgba(${r}, ${g}, ${b}, ${alpha})`;
+  }
+  if (raw.length === 6) {
+    const r = parseInt(raw.slice(0, 2), 16);
+    const g = parseInt(raw.slice(2, 4), 16);
+    const b = parseInt(raw.slice(4, 6), 16);
+    return `rgba(${r}, ${g}, ${b}, ${alpha})`;
+  }
+  return `rgba(0, 0, 0, ${alpha})`;
+}
+
+function updatePortraitMasks() {
+  if (!portraitImage) return;
+  const src = portraitImage.src;
+  const isVisible = portraitImage.style.display !== "none" && Boolean(src);
+  const maskValue = isVisible ? `url("${src}")` : "none";
+  if (portraitTint) {
+    portraitTint.style.webkitMaskImage = maskValue;
+    portraitTint.style.maskImage = maskValue;
+    portraitTint.style.display = isVisible ? "block" : "none";
+  }
+  if (portraitLight) {
+    portraitLight.style.webkitMaskImage = maskValue;
+    portraitLight.style.maskImage = maskValue;
+    portraitLight.style.display = isVisible ? "block" : "none";
+  }
+  if (portraitShadow) {
+    portraitShadow.style.webkitMaskImage = maskValue;
+    portraitShadow.style.maskImage = maskValue;
+    portraitShadow.style.display = isVisible ? "block" : "none";
+  }
+}
+
+function updatePortraitLighting() {
+  if (!topPanel) return;
+  const tintOn = portraitTintEnabled ? portraitTintEnabled.checked : true;
+  const lightOn = portraitLightEnabled ? portraitLightEnabled.checked : true;
+  const shadowOn = portraitShadowEnabled ? portraitShadowEnabled.checked : true;
+  const tintColor = portraitTintColor?.value || "#000000";
+  const tintAlpha = Number(portraitTintStrength?.value || 0) / 100;
+  const lightColor = portraitLightColor?.value || "#ffffff";
+  const lightAlpha = Number(portraitLightStrength?.value || 0) / 100;
+  const angle = Number(portraitLightAngle?.value || 135);
+  const shadowColor = portraitShadowColor?.value || "#000000";
+  const shadowAlpha = Number(portraitShadowStrength?.value || 0) / 100;
+  const shadowAngle = Number(portraitShadowAngle?.value || 315);
+  topPanel.style.setProperty("--portrait-tint", tintOn ? hexToRgba(tintColor, tintAlpha) : "transparent");
+  topPanel.style.setProperty("--portrait-light-color", lightOn ? hexToRgba(lightColor, lightAlpha) : "transparent");
+  topPanel.style.setProperty("--portrait-light-angle", `${angle}deg`);
+  topPanel.style.setProperty("--portrait-shadow-color", shadowOn ? hexToRgba(shadowColor, shadowAlpha) : "transparent");
+  topPanel.style.setProperty("--portrait-shadow-angle", `${shadowAngle}deg`);
+  if (portraitTint) portraitTint.style.display = tintOn ? "" : "none";
+  if (portraitLight) portraitLight.style.display = lightOn ? "" : "none";
+  if (portraitShadow) portraitShadow.style.display = shadowOn ? "" : "none";
+  updatePortraitMasks();
+}
 
 function applyBackgroundPreset(key) {
   const preset = bgPresets.find(item => item.key === key);
   if (!preset || !topPanel) return;
+  currentBgKey = key;
   topPanel.style.backgroundImage = `url(${preset.src})`;
   topPanel.style.backgroundSize = "cover";
   topPanel.style.backgroundPosition = "center";
@@ -898,6 +1021,10 @@ function renderBackgroundList() {
     input.value = preset.key;
     input.id = `bg-preset-${index}`;
     input.addEventListener("change", () => applyBackgroundPreset(preset.key));
+    if (preset.key === currentBgKey) {
+      input.checked = true;
+      label.classList.add("active");
+    }
     const text = document.createElement("span");
     text.textContent = preset.label;
     label.appendChild(input);
@@ -908,6 +1035,7 @@ function renderBackgroundList() {
 }
 
 renderBackgroundList();
+updatePortraitLighting();
 
 function updateAbilityTransform() {
   const x = Number(abilityOffsetX?.value || 0);

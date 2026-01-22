@@ -33,12 +33,12 @@
       <div class="wizard-panel active" data-tab="identity">
         <div class="field">
           <label for="nameInput">Name</label>
-          <input id="nameInput" type="text" value="SHO'SYL" />
+          <input id="nameInput" type="text" value="Marec" />
         </div>
 
         <div class="field">
           <label for="titleInput">Title</label>
-          <input id="titleInput" type="text" value="Firesight Marksman" />
+          <input id="titleInput" type="text" value="Warden of the Archine" />
         </div>
 
         <div class="field">
@@ -102,6 +102,43 @@
         <div class="field">
           <label>Background</label>
           <div class="trait-list bg-list" id="bgPresetList"></div>
+        </div>
+
+        <div class="field">
+          <label>Portrait Lighting</label>
+          <div class="lighting-grid">
+            <label class="inline-label" for="portraitTintEnabled">
+              <input type="checkbox" id="portraitTintEnabled" checked />
+              Tint Enabled
+            </label>
+            <span></span>
+            <label for="portraitTintColor">Tint</label>
+            <input id="portraitTintColor" type="color" value="#5f7aa8" />
+            <label for="portraitTintStrength">Tint Strength</label>
+            <input id="portraitTintStrength" type="range" min="0" max="50" value="12" />
+            <label class="inline-label" for="portraitLightEnabled">
+              <input type="checkbox" id="portraitLightEnabled" checked />
+              Light Enabled
+            </label>
+            <span></span>
+            <label for="portraitLightColor">Light</label>
+            <input id="portraitLightColor" type="color" value="#ffd9a6" />
+            <label for="portraitLightStrength">Light Strength</label>
+            <input id="portraitLightStrength" type="range" min="0" max="60" value="18" />
+            <label for="portraitLightAngle">Light Angle</label>
+            <input id="portraitLightAngle" type="range" min="0" max="360" value="135" />
+            <label class="inline-label" for="portraitShadowEnabled">
+              <input type="checkbox" id="portraitShadowEnabled" checked />
+              Shadow Enabled
+            </label>
+            <span></span>
+            <label for="portraitShadowColor">Shadow</label>
+            <input id="portraitShadowColor" type="color" value="#0b0f18" />
+            <label for="portraitShadowStrength">Shadow Strength</label>
+            <input id="portraitShadowStrength" type="range" min="0" max="60" value="18" />
+            <label for="portraitShadowAngle">Shadow Angle</label>
+            <input id="portraitShadowAngle" type="range" min="0" max="360" value="315" />
+          </div>
         </div>
 
         <div class="field">
@@ -380,6 +417,9 @@
             </div>
             <div class="portrait-frame">
               <img id="portraitImage" class="portrait-image" alt="Character portrait" />
+              <div class="portrait-tint" aria-hidden="true"></div>
+              <div class="portrait-light" aria-hidden="true"></div>
+              <div class="portrait-shadow" aria-hidden="true"></div>
               <span class="portrait-placeholder" id="portraitPlaceholder">Portrait</span>
             </div>
           </section>
