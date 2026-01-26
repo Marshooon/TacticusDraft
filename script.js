@@ -1,12 +1,16 @@
 const nameInput = document.getElementById("nameInput");
 const titleInput = document.getElementById("titleInput");
 const descriptionInput = document.getElementById("descriptionInput");
+const unlockRequirementsInput = document.getElementById("unlockRequirementsInput");
+const unlockRequirementsPreview = document.getElementById("unlockRequirementsPreview");
 const previewName = document.getElementById("previewName");
 const previewTitle = document.getElementById("previewTitle");
 const phoneRoot = document.getElementById("phoneRoot");
+const phoneShell = document.querySelector(".phone-shell");
 const rarityButtons = document.querySelectorAll("#rarityChoices .pill-btn");
 const wizardTabs = document.querySelectorAll(".wizard-tab");
 const wizardPanels = document.querySelectorAll(".wizard-panel");
+const mobileWizardQuery = window.matchMedia("(max-width: 775px)");
 const SHOW_UTILITIES_TAB = true;
 const SHOW_UI_TEST_TAB = false;
 const toggleReference = document.getElementById("toggleReference");
@@ -18,6 +22,7 @@ const exportAssetMap = new Map();
 const screenEl = document.querySelector(".screen");
 const topPanel = document.querySelector(".top-panel");
 const phoneLock = document.getElementById("phoneLock");
+const presetList = document.getElementById("presetList");
 const healthInput = document.getElementById("healthInput");
 const armorInput = document.getElementById("armorInput");
 const damageInput = document.getElementById("damageInput");
@@ -54,6 +59,10 @@ const blockValue = document.getElementById("blockValue");
 const blockChance = document.getElementById("blockChance");
 const critRow = document.getElementById("critRow");
 const blockRow = document.getElementById("blockRow");
+const activeTooltipTitleInput = document.getElementById("activeTooltipTitleInput");
+const passiveTooltipTitleInput = document.getElementById("passiveTooltipTitleInput");
+const activeTooltipInput = document.getElementById("activeTooltipInput");
+const passiveTooltipInput = document.getElementById("passiveTooltipInput");
 const DAMAGE_META = {
   Bio: { color: "#7ad383" },
   Blast: { color: "#ffb347" },
@@ -83,6 +92,7 @@ const portraitPlaceholder = document.getElementById("portraitPlaceholder");
 const portraitTint = document.querySelector(".portrait-tint");
 const portraitLight = document.querySelector(".portrait-light");
 const portraitShadow = document.querySelector(".portrait-shadow");
+const portraitGroundShadow = document.querySelector(".portrait-ground-shadow");
 const portraitTintColor = document.getElementById("portraitTintColor");
 const portraitTintStrength = document.getElementById("portraitTintStrength");
 const portraitLightColor = document.getElementById("portraitLightColor");
@@ -94,6 +104,34 @@ const portraitShadowColor = document.getElementById("portraitShadowColor");
 const portraitShadowStrength = document.getElementById("portraitShadowStrength");
 const portraitShadowAngle = document.getElementById("portraitShadowAngle");
 const portraitShadowEnabled = document.getElementById("portraitShadowEnabled");
+const portraitGroundEnabled = document.getElementById("portraitGroundEnabled");
+const portraitGroundColor = document.getElementById("portraitGroundColor");
+const portraitGroundStrength = document.getElementById("portraitGroundStrength");
+const portraitGroundSize = document.getElementById("portraitGroundSize");
+const portraitGroundBlur = document.getElementById("portraitGroundBlur");
+const portraitGroundOffsetX = document.getElementById("portraitGroundOffsetX");
+const portraitGroundOffsetY = document.getElementById("portraitGroundOffsetY");
+
+const DEFAULT_LIGHTING = {
+  tintEnabled: true,
+  tintColor: "#ca611c",
+  tintStrength: "37",
+  lightEnabled: true,
+  lightColor: "#f18c09",
+  lightStrength: "30",
+  lightAngle: "141",
+  shadowEnabled: true,
+  shadowColor: "#000000",
+  shadowStrength: "36",
+  shadowAngle: "312",
+  groundEnabled: true,
+  groundColor: "#000000",
+  groundStrength: "104",
+  groundSize: "102",
+  groundBlur: "23",
+  groundOffsetX: "0",
+  groundOffsetY: "18"
+};
 const portraitOffsetX = document.getElementById("portraitOffsetX");
 const portraitOffsetY = document.getElementById("portraitOffsetY");
 const portraitZoom = document.getElementById("portraitZoom");
@@ -107,10 +145,6 @@ const passiveAbilityIcon = document.getElementById("passiveAbilityIcon");
 const abilityOffsetX = document.getElementById("abilityOffsetX");
 const abilityOffsetY = document.getElementById("abilityOffsetY");
 const abilityZoom = document.getElementById("abilityZoom");
-const activeTooltipInput = document.getElementById("activeTooltipInput");
-const passiveTooltipInput = document.getElementById("passiveTooltipInput");
-const activeTooltipTitleInput = document.getElementById("activeTooltipTitleInput");
-const passiveTooltipTitleInput = document.getElementById("passiveTooltipTitleInput");
 const shapeGlowStrength = document.getElementById("shapeGlowStrength");
 const previewWrap = document.querySelector(".preview");
 const traitList = document.getElementById("traitList");
@@ -365,6 +399,15 @@ bindInput(critValueInput, critValue);
 bindInput(critChanceInput, critChance);
 bindInput(blockValueInput, blockValue);
 bindInput(blockChanceInput, blockChance);
+
+if (unlockRequirementsInput && unlockRequirementsPreview) {
+  const syncUnlockRequirements = () => {
+    const value = unlockRequirementsInput.value.trim();
+    unlockRequirementsPreview.textContent = value || "Unlock requirements";
+  };
+  unlockRequirementsInput.addEventListener("input", syncUnlockRequirements);
+  syncUnlockRequirements();
+}
 
 // Trait list: add new traits here and matching entries in TRAIT_DESCRIPTIONS.
 const TRAITS = [
@@ -764,6 +807,9 @@ rarityButtons.forEach(btn => {
 });
 
 function syncWizardTabs() {
+  const isMobile = mobileWizardQuery.matches;
+  document.body.classList.toggle("is-mobile", isMobile);
+  const assetsReady = exportAssetMap.size > 0;
   const tabVisibility = {
     identity: true,
     visuals: true,
@@ -777,12 +823,14 @@ function syncWizardTabs() {
     const isVisible = tabVisibility[key] !== false;
     tab.style.display = isVisible ? "" : "none";
     tab.classList.toggle("is-hidden", !isVisible);
+    tab.classList.toggle("is-disabled", !assetsReady && key !== "assets");
   });
   wizardPanels.forEach(panel => {
     const key = panel.dataset.tab;
     const isVisible = tabVisibility[key] !== false;
     panel.style.display = isVisible ? "" : "none";
     panel.classList.toggle("is-hidden", !isVisible);
+    panel.classList.toggle("is-disabled", !assetsReady && key !== "assets");
   });
 
   const firstVisibleTab = Array.from(wizardTabs).find(tab => tab.style.display !== "none");
@@ -798,6 +846,8 @@ function syncWizardTabs() {
 wizardTabs.forEach(tab => {
   tab.addEventListener("click", () => {
     if (tab.style.display === "none") return;
+    if (exportAssetMap.size === 0 && tab.dataset.tab !== "assets") return;
+    if (mobileWizardQuery.matches) return;
     const key = tab.dataset.tab;
     wizardTabs.forEach(t => t.classList.toggle("active", t === tab));
     wizardPanels.forEach(panel => panel.classList.toggle("active", panel.dataset.tab === key));
@@ -805,6 +855,42 @@ wizardTabs.forEach(tab => {
 });
 
 syncWizardTabs();
+mobileWizardQuery.addEventListener("change", syncWizardTabs);
+
+function buildMobileAccordion() {
+  if (!mobileWizardQuery.matches) return;
+  if (!wizardPanels.length) return;
+  const tabLabels = {};
+  wizardTabs.forEach(tab => {
+    const key = tab.dataset.tab;
+    const label = tab.textContent?.trim() || key;
+    if (key) tabLabels[key] = label;
+  });
+  wizardPanels.forEach(panel => {
+    if (panel.dataset.accordionBuilt === "true") return;
+    const summary = document.createElement("summary");
+    summary.className = "wizard-panel-summary";
+    summary.textContent = tabLabels[panel.dataset.tab] || "Section";
+    const body = document.createElement("div");
+    body.className = "wizard-panel-body";
+    while (panel.firstChild) {
+      body.appendChild(panel.firstChild);
+    }
+    panel.appendChild(summary);
+    panel.appendChild(body);
+    panel.dataset.accordionBuilt = "true";
+    summary.addEventListener("click", () => {
+      if (!mobileWizardQuery.matches) return;
+      const willOpen = !panel.classList.contains("is-open");
+      wizardPanels.forEach(other => other.classList.remove("is-open"));
+      if (willOpen) panel.classList.add("is-open");
+    });
+  });
+  wizardPanels[0]?.classList.add("is-open");
+}
+
+buildMobileAccordion();
+mobileWizardQuery.addEventListener("change", buildMobileAccordion);
 
 if (toggleReference && screenEl) {
   toggleReference.addEventListener("click", () => {
@@ -849,6 +935,7 @@ assetsFolderInput?.addEventListener("change", async () => {
   });
   assetsFolderButton.textContent = `Assets loaded (${exportAssetMap.size})`;
   assetsTab?.classList.toggle("is-required", exportAssetMap.size === 0);
+  syncWizardTabs();
 });
 
 assetsTab?.classList.toggle("is-required", exportAssetMap.size === 0);
@@ -866,6 +953,182 @@ function updatePortraitTransform() {
   updatePortraitMasks();
 }
 
+const PRESET_CHARACTERS = [
+  {
+    key: "marec",
+    label: "Marec",
+    subtitle: "Legendary • Lions Adamant",
+    name: "Marec",
+    title: "Warden of the Archine",
+    description: "A steadfast sentinel of the Lions Adamant, known for unbreakable resolve.",
+    rarity: "legendary",
+    bgKey: "lions_adamant",
+    portrait: "assets/portraits/marecTacticus.png",
+    traits: ["Act of Faith", "Battle Fatigue", "Big Target"],
+    stats: { health: 3325, armor: 874, damage: 2293, move: 3 },
+    abilities: {
+      activeIcon: "assets/abilityIcons/Actus_Ability_1_Icon.webp",
+      passiveIcon: "assets/abilityIcons/Actus_Ability_2_Icon.webp",
+      activeTitle: "Active Ability",
+      passiveTitle: "Passive Ability",
+      activeDesc: "Unleash a focused barrage that empowers allies in range.",
+      passiveDesc: "Steadfast vigilance grants bonus protection to nearby units."
+    }
+  },
+  {
+    key: "aesoth",
+    label: "Aesoth",
+    subtitle: "Epic • Golden Hall",
+    name: "Aesoth",
+    title: "Vexilus Praetor",
+    description: "A gilded exemplar who inspires nearby warriors to push forward.",
+    rarity: "epic",
+    bgKey: "golden_hall",
+    portrait: "assets/portraits/marecTacticus.png",
+    traits: ["Blessings of Khorne", "Crushing Strike", "Terrifying"],
+    stats: { health: 2990, armor: 745, damage: 2010, move: 3 },
+    abilities: {
+      activeIcon: "assets/abilityIcons/Aesoth_Ability_1_Icon.webp",
+      passiveIcon: "assets/abilityIcons/Aesoth_Ability_2_Icon.webp",
+      activeTitle: "Vexilus Rally",
+      passiveTitle: "Praetor's Guard",
+      activeDesc: "Raise the standard to embolden nearby allies.",
+      passiveDesc: "Orders restore morale and mitigate incoming damage."
+    }
+  }
+];
+
+function setInputValue(input, value) {
+  if (!input) return;
+  input.value = value ?? "";
+  input.dispatchEvent(new Event("input", { bubbles: true }));
+}
+
+function resolveAssetSrc(src) {
+  if (!src) return "";
+  return exportAssetMap.get(src) || src;
+}
+
+function setPortraitSource(src) {
+  if (!portraitImage) return;
+  if (!src) {
+    portraitImage.removeAttribute("src");
+    portraitImage.style.display = "none";
+    if (portraitPlaceholder) portraitPlaceholder.style.display = "block";
+    updatePortraitMasks();
+    return;
+  }
+  portraitImage.addEventListener("load", () => {
+    updatePortraitMasks();
+    updatePortraitLighting();
+  }, { once: true });
+  portraitImage.src = src;
+  portraitImage.style.display = "block";
+  if (portraitPlaceholder) portraitPlaceholder.style.display = "none";
+  updatePortraitTransform();
+  updatePortraitLighting();
+}
+
+function setAbilityIconTarget(icon, src) {
+  if (!icon) return;
+  if (!src) {
+    icon.removeAttribute("src");
+    icon.style.display = "none";
+    const placeholder = icon.parentElement?.querySelector(".ability-placeholder");
+    if (placeholder) placeholder.style.display = "";
+    return;
+  }
+  icon.src = src;
+  icon.style.display = "block";
+  const placeholder = icon.parentElement?.querySelector(".ability-placeholder");
+  if (placeholder) placeholder.style.display = "none";
+  updateAbilityTransform();
+}
+
+function applyPresetCharacter(preset) {
+  if (!preset) return;
+  setInputValue(nameInput, preset.name);
+  setInputValue(titleInput, preset.title);
+  setInputValue(descriptionInput, preset.description);
+  if (preset.stats) {
+    setInputValue(healthInput, preset.stats.health);
+    setInputValue(armorInput, preset.stats.armor);
+    setInputValue(damageInput, preset.stats.damage);
+    setInputValue(moveInput, preset.stats.move);
+  }
+  if (preset.rarity) {
+    const btn = Array.from(rarityButtons).find(b => b.dataset.rarity === preset.rarity);
+    btn?.click();
+  }
+  if (preset.bgKey) {
+    currentBgKey = preset.bgKey;
+    applyBackgroundPreset(preset.bgKey);
+  } else if (topPanel) {
+    currentBgKey = "";
+    topPanel.style.backgroundImage = "";
+  }
+
+  const portraitSrc = resolveAssetSrc(preset.portrait);
+  setPortraitSource(portraitSrc);
+
+  const activeSrc = resolveAssetSrc(preset.abilities?.activeIcon);
+  const passiveSrc = resolveAssetSrc(preset.abilities?.passiveIcon);
+  setAbilityIconTarget(activeAbilityIcon, activeSrc);
+  setAbilityIconTarget(passiveAbilityIcon, passiveSrc);
+
+  if (activeTooltipTitleInput) activeTooltipTitleInput.value = preset.abilities?.activeTitle || "";
+  if (passiveTooltipTitleInput) passiveTooltipTitleInput.value = preset.abilities?.passiveTitle || "";
+  if (activeTooltipInput) activeTooltipInput.innerHTML = preset.abilities?.activeDesc || "";
+  if (passiveTooltipInput) passiveTooltipInput.innerHTML = preset.abilities?.passiveDesc || "";
+  updateAbilityTooltips();
+
+  const checkboxes = document.querySelectorAll(".trait-checkbox");
+  const selected = new Set(preset.traits || []);
+  checkboxes.forEach(cb => {
+    cb.checked = selected.has(cb.dataset.label || "");
+  });
+  refreshTraitPreview();
+}
+
+function renderPresetList() {
+  if (!presetList) return;
+  presetList.textContent = "";
+  const frag = document.createDocumentFragment();
+  PRESET_CHARACTERS.forEach(preset => {
+    const button = document.createElement("button");
+    button.type = "button";
+    button.className = "preset-button";
+    button.innerHTML = `${preset.label}<span>${preset.subtitle}</span>`;
+    button.addEventListener("click", () => applyPresetCharacter(preset));
+    frag.appendChild(button);
+  });
+  presetList.appendChild(frag);
+}
+
+renderPresetList();
+
+function applyLightingDefaults() {
+  if (portraitTintEnabled) portraitTintEnabled.checked = DEFAULT_LIGHTING.tintEnabled;
+  if (portraitTintColor) portraitTintColor.value = DEFAULT_LIGHTING.tintColor;
+  if (portraitTintStrength) portraitTintStrength.value = DEFAULT_LIGHTING.tintStrength;
+  if (portraitLightEnabled) portraitLightEnabled.checked = DEFAULT_LIGHTING.lightEnabled;
+  if (portraitLightColor) portraitLightColor.value = DEFAULT_LIGHTING.lightColor;
+  if (portraitLightStrength) portraitLightStrength.value = DEFAULT_LIGHTING.lightStrength;
+  if (portraitLightAngle) portraitLightAngle.value = DEFAULT_LIGHTING.lightAngle;
+  if (portraitShadowEnabled) portraitShadowEnabled.checked = DEFAULT_LIGHTING.shadowEnabled;
+  if (portraitShadowColor) portraitShadowColor.value = DEFAULT_LIGHTING.shadowColor;
+  if (portraitShadowStrength) portraitShadowStrength.value = DEFAULT_LIGHTING.shadowStrength;
+  if (portraitShadowAngle) portraitShadowAngle.value = DEFAULT_LIGHTING.shadowAngle;
+  if (portraitGroundEnabled) portraitGroundEnabled.checked = DEFAULT_LIGHTING.groundEnabled;
+  if (portraitGroundColor) portraitGroundColor.value = DEFAULT_LIGHTING.groundColor;
+  if (portraitGroundStrength) portraitGroundStrength.value = DEFAULT_LIGHTING.groundStrength;
+  if (portraitGroundSize) portraitGroundSize.value = DEFAULT_LIGHTING.groundSize;
+  if (portraitGroundBlur) portraitGroundBlur.value = DEFAULT_LIGHTING.groundBlur;
+  if (portraitGroundOffsetX) portraitGroundOffsetX.value = DEFAULT_LIGHTING.groundOffsetX;
+  if (portraitGroundOffsetY) portraitGroundOffsetY.value = DEFAULT_LIGHTING.groundOffsetY;
+  updatePortraitLighting();
+}
+
 if (portraitUploadButton && portraitInput) {
   portraitUploadButton.addEventListener("click", () => portraitInput.click());
   portraitInput.addEventListener("change", () => {
@@ -877,6 +1140,7 @@ if (portraitUploadButton && portraitInput) {
       portraitImage.style.display = "block";
       if (portraitPlaceholder) portraitPlaceholder.style.display = "none";
       updatePortraitTransform();
+      updatePortraitLighting();
     };
     reader.readAsDataURL(file);
   });
@@ -897,13 +1161,20 @@ portraitShadowColor?.addEventListener("change", updatePortraitLighting);
 portraitShadowStrength?.addEventListener("input", updatePortraitLighting);
 portraitShadowAngle?.addEventListener("input", updatePortraitLighting);
 portraitShadowEnabled?.addEventListener("change", updatePortraitLighting);
+portraitGroundEnabled?.addEventListener("change", updatePortraitLighting);
+portraitGroundColor?.addEventListener("change", updatePortraitLighting);
+portraitGroundStrength?.addEventListener("input", updatePortraitLighting);
+portraitGroundSize?.addEventListener("input", updatePortraitLighting);
+portraitGroundBlur?.addEventListener("input", updatePortraitLighting);
+portraitGroundOffsetX?.addEventListener("input", updatePortraitLighting);
+portraitGroundOffsetY?.addEventListener("input", updatePortraitLighting);
 updatePortraitMasks();
 if (portraitImage) {
-  portraitImage.src = "assets/portraits/marecTacticus.png";
-  portraitImage.style.display = "block";
-  if (portraitPlaceholder) portraitPlaceholder.style.display = "none";
-  updatePortraitTransform();
+  portraitImage.removeAttribute("src");
+  portraitImage.style.display = "none";
+  if (portraitPlaceholder) portraitPlaceholder.style.display = "block";
 }
+applyLightingDefaults();
 
 // Background list: add/remove entries here (key must be unique, src must match assets/backgrounds file).
 const bgPresets = [
@@ -930,7 +1201,7 @@ const bgPresets = [
   { key: "world_eaters", label: "World Eaters", src: "assets/backgrounds/Background_World_Eaters.jpg" },
   { key: "xenos_mauseleoum", label: "Xenos Mauseleoum", src: "assets/backgrounds/Background_Xenos_Mauseleoum.jpg" }
 ];
-let currentBgKey = bgPresets[0]?.key || "";
+let currentBgKey = "";
 
 function hexToRgba(hex, alpha) {
   const raw = hex.replace("#", "").trim();
@@ -951,9 +1222,9 @@ function hexToRgba(hex, alpha) {
 
 function updatePortraitMasks() {
   if (!portraitImage) return;
-  const src = portraitImage.src;
-  const isVisible = portraitImage.style.display !== "none" && Boolean(src);
-  const maskValue = isVisible ? `url("${src}")` : "none";
+  const rawSrc = portraitImage.getAttribute("src") || portraitImage.src;
+  const isVisible = portraitImage.style.display !== "none" && Boolean(rawSrc);
+  const maskValue = isVisible ? `url("${rawSrc}")` : "none";
   if (portraitTint) {
     portraitTint.style.webkitMaskImage = maskValue;
     portraitTint.style.maskImage = maskValue;
@@ -984,14 +1255,27 @@ function updatePortraitLighting() {
   const shadowColor = portraitShadowColor?.value || "#000000";
   const shadowAlpha = Number(portraitShadowStrength?.value || 0) / 100;
   const shadowAngle = Number(portraitShadowAngle?.value || 315);
+  const groundOn = portraitGroundEnabled ? portraitGroundEnabled.checked : true;
+  const groundColor = portraitGroundColor?.value || "#0b0f18";
+  const groundAlpha = Number(portraitGroundStrength?.value || 0) / 100;
+  const groundSize = Number(portraitGroundSize?.value || 100) / 100;
+  const groundBlur = Number(portraitGroundBlur?.value || 0);
+  const groundX = Number(portraitGroundOffsetX?.value || 0);
+  const groundY = Number(portraitGroundOffsetY?.value || 40);
   topPanel.style.setProperty("--portrait-tint", tintOn ? hexToRgba(tintColor, tintAlpha) : "transparent");
   topPanel.style.setProperty("--portrait-light-color", lightOn ? hexToRgba(lightColor, lightAlpha) : "transparent");
   topPanel.style.setProperty("--portrait-light-angle", `${angle}deg`);
   topPanel.style.setProperty("--portrait-shadow-color", shadowOn ? hexToRgba(shadowColor, shadowAlpha) : "transparent");
   topPanel.style.setProperty("--portrait-shadow-angle", `${shadowAngle}deg`);
+  topPanel.style.setProperty("--portrait-ground-color", groundOn ? hexToRgba(groundColor, groundAlpha) : "transparent");
+  topPanel.style.setProperty("--portrait-ground-scale", `${groundSize}`);
+  topPanel.style.setProperty("--portrait-ground-blur", `${groundBlur}px`);
+  topPanel.style.setProperty("--portrait-ground-x", `${groundX}px`);
+  topPanel.style.setProperty("--portrait-ground-y", `${groundY}px`);
   if (portraitTint) portraitTint.style.display = tintOn ? "" : "none";
   if (portraitLight) portraitLight.style.display = lightOn ? "" : "none";
   if (portraitShadow) portraitShadow.style.display = shadowOn ? "" : "none";
+  if (portraitGroundShadow) portraitGroundShadow.style.display = groundOn ? "" : "none";
   updatePortraitMasks();
 }
 
@@ -1021,7 +1305,7 @@ function renderBackgroundList() {
     input.value = preset.key;
     input.id = `bg-preset-${index}`;
     input.addEventListener("change", () => applyBackgroundPreset(preset.key));
-    if (preset.key === currentBgKey) {
+    if (currentBgKey && preset.key === currentBgKey) {
       input.checked = true;
       label.classList.add("active");
     }
@@ -1386,6 +1670,49 @@ async function exportPhoneHtml() {
     return { resolvedUrl, normalized };
   };
 
+  const fetchAsDataUrl = async (resolvedUrl) => {
+    try {
+      const response = await fetch(resolvedUrl);
+      if (!response.ok) return "";
+      const blob = await response.blob();
+      return await new Promise((resolve) => {
+        const reader = new FileReader();
+        reader.onload = () => resolve(reader.result || "");
+        reader.readAsDataURL(blob);
+      });
+    } catch (err) {
+      return "";
+    }
+  };
+
+  const primeDefaultPortraitCache = async () => {
+    if (!portraitImage) return;
+    const src = portraitImage.getAttribute("src") || "";
+    if (!src) return;
+    const defaultPortrait = "assets/portraits/marecTacticus.png";
+    if (!src.includes(defaultPortrait)) return;
+    const { resolvedUrl, normalized } = normalizeAssetPath(src);
+    if (normalized && exportAssetMap.has(normalized)) return;
+    const dataUrl = await fetchAsDataUrl(resolvedUrl || defaultPortrait);
+    if (!dataUrl) return;
+    assetCache.set(src, dataUrl);
+    assetCache.set(resolvedUrl, dataUrl);
+    if (normalized) assetCache.set(normalized, dataUrl);
+  };
+
+  const primeDefaultBackgroundCache = async () => {
+    const preset = bgPresets.find(item => item.key === currentBgKey);
+    const src = preset?.src || "";
+    if (!src) return;
+    const { resolvedUrl, normalized } = normalizeAssetPath(src);
+    if (normalized && exportAssetMap.has(normalized)) return;
+    const dataUrl = await fetchAsDataUrl(resolvedUrl || src);
+    if (!dataUrl) return;
+    assetCache.set(src, dataUrl);
+    assetCache.set(resolvedUrl, dataUrl);
+    if (normalized) assetCache.set(normalized, dataUrl);
+  };
+
   const primeImageCache = async () => {
     const imgs = Array.from(document.querySelectorAll("img[src]"));
     for (const img of imgs) {
@@ -1423,6 +1750,8 @@ async function exportPhoneHtml() {
     }
   };
 
+  await primeDefaultPortraitCache();
+  await primeDefaultBackgroundCache();
   await primeImageCache();
 
   const toDataUrl = async (assetPath) => {
@@ -1945,7 +2274,15 @@ async function exportPhoneHtml() {
 exportHtmlButton?.addEventListener("click", exportPhoneHtml);
 
 function fitPhoneInPreview() {
-  if (!phoneRoot || !previewWrap) return;
+  if (!phoneRoot || !previewWrap || !phoneShell) return;
+  if (mobileWizardQuery.matches) {
+    phoneShell.style.transform = "";
+    if (phoneLock) {
+      phoneLock.style.removeProperty("width");
+      phoneLock.style.removeProperty("height");
+    }
+    return;
+  }
   window.requestAnimationFrame(() => {
     const baseWidth = phoneRoot.offsetWidth || 1;
     const baseHeight = phoneRoot.offsetHeight || 1;
@@ -1957,8 +2294,8 @@ function fitPhoneInPreview() {
     const containerHeight = previewWrap.getBoundingClientRect().height || viewportHeight;
     const targetHeight = Math.min(containerHeight, viewportHeight);
     const scale = targetHeight / baseHeight;
-    phoneRoot.style.transformOrigin = "top left";
-    phoneRoot.style.transform = `scale(${scale.toFixed(4)})`;
+    phoneShell.style.transformOrigin = "top left";
+    phoneShell.style.transform = `scale(${scale.toFixed(4)})`;
     if (phoneLock) {
       phoneLock.style.width = `${baseWidth * scale}px`;
       phoneLock.style.height = `${baseHeight * scale}px`;

@@ -12,8 +12,8 @@
       <h1>Tacticus Character Wizard</h1>
 
       <div class="wizard-tabs">
-        <button class="wizard-tab is-required" data-tab="assets" id="assetsTab">Assets</button>
-        <button class="wizard-tab active" data-tab="identity">Identity</button>
+        <button class="wizard-tab active is-required" data-tab="assets" id="assetsTab">Assets</button>
+        <button class="wizard-tab" data-tab="identity">Identity</button>
         <button class="wizard-tab" data-tab="visuals">Visuals</button>
         <button class="wizard-tab" data-tab="abilities">Abilities</button>
         <button class="wizard-tab" data-tab="stats">Stats</button>
@@ -21,24 +21,29 @@
         <button class="wizard-tab" data-tab="ui-test" data-role="ui-test-tab">UI Test</button>
       </div>
 
-      <div class="wizard-panel" data-tab="assets">
+      <div class="wizard-panel active" data-tab="assets">
         <div class="field">
           <label>Assets Folder</label>
           <button class="pill-btn" id="assetsFolderButton" type="button">Select assets folder</button>
           <input id="assetsFolderInput" type="file" webkitdirectory multiple hidden />
-          <p class="field-note">Needed for self-contained HTML export when running locally.</p>
+          <p class="field-note">Required for export!</p>
+        </div>
+
+        <div class="field">
+          <label>Premade Characters</label>
+          <div class="preset-list" id="presetList"></div>
         </div>
       </div>
 
-      <div class="wizard-panel active" data-tab="identity">
+      <div class="wizard-panel" data-tab="identity">
         <div class="field">
           <label for="nameInput">Name</label>
-          <input id="nameInput" type="text" value="Marec" />
+          <input id="nameInput" type="text" value="" placeholder="Name" />
         </div>
 
         <div class="field">
           <label for="titleInput">Title</label>
-          <input id="titleInput" type="text" value="Warden of the Archine" />
+          <input id="titleInput" type="text" value="" placeholder="Title" />
         </div>
 
         <div class="field">
@@ -61,6 +66,11 @@
           <label>Traits</label>
           <div class="trait-list" id="traitList"></div>
           <span class="field-note">Select up to 6 traits.</span>
+        </div>
+
+        <div class="field">
+          <label for="unlockRequirementsInput">Unlock Requirements</label>
+          <textarea id="unlockRequirementsInput" placeholder="Unlock requirements"></textarea>
         </div>
 
         <div class="field">
@@ -113,31 +123,48 @@
             </label>
             <span></span>
             <label for="portraitTintColor">Tint</label>
-            <input id="portraitTintColor" type="color" value="#5f7aa8" />
+            <input id="portraitTintColor" type="color" value="#ca611c" />
             <label for="portraitTintStrength">Tint Strength</label>
-            <input id="portraitTintStrength" type="range" min="0" max="50" value="12" />
+            <input id="portraitTintStrength" type="range" min="0" max="50" value="37" />
             <label class="inline-label" for="portraitLightEnabled">
               <input type="checkbox" id="portraitLightEnabled" checked />
               Light Enabled
             </label>
             <span></span>
             <label for="portraitLightColor">Light</label>
-            <input id="portraitLightColor" type="color" value="#ffd9a6" />
+            <input id="portraitLightColor" type="color" value="#f18c09" />
             <label for="portraitLightStrength">Light Strength</label>
-            <input id="portraitLightStrength" type="range" min="0" max="60" value="18" />
+            <input id="portraitLightStrength" type="range" min="0" max="60" value="30" />
             <label for="portraitLightAngle">Light Angle</label>
-            <input id="portraitLightAngle" type="range" min="0" max="360" value="135" />
+            <input id="portraitLightAngle" type="range" min="0" max="360" value="141" />
             <label class="inline-label" for="portraitShadowEnabled">
               <input type="checkbox" id="portraitShadowEnabled" checked />
               Shadow Enabled
             </label>
             <span></span>
             <label for="portraitShadowColor">Shadow</label>
-            <input id="portraitShadowColor" type="color" value="#0b0f18" />
+            <input id="portraitShadowColor" type="color" value="#000000" />
             <label for="portraitShadowStrength">Shadow Strength</label>
-            <input id="portraitShadowStrength" type="range" min="0" max="60" value="18" />
+            <input id="portraitShadowStrength" type="range" min="0" max="60" value="36" />
             <label for="portraitShadowAngle">Shadow Angle</label>
-            <input id="portraitShadowAngle" type="range" min="0" max="360" value="315" />
+            <input id="portraitShadowAngle" type="range" min="0" max="360" value="312" />
+            <label class="inline-label" for="portraitGroundEnabled">
+              <input type="checkbox" id="portraitGroundEnabled" checked />
+              Quick Shadow
+            </label>
+            <span></span>
+            <label for="portraitGroundColor">Shadow Color</label>
+            <input id="portraitGroundColor" type="color" value="#000000" />
+            <label for="portraitGroundStrength">Shadow Strength</label>
+            <input id="portraitGroundStrength" type="range" min="0" max="200" value="104" />
+            <label for="portraitGroundSize">Shadow Size</label>
+            <input id="portraitGroundSize" type="range" min="60" max="160" value="102" />
+            <label for="portraitGroundBlur">Shadow Blur</label>
+            <input id="portraitGroundBlur" type="range" min="0" max="60" value="23" />
+            <label for="portraitGroundOffsetX">Shadow X</label>
+            <input id="portraitGroundOffsetX" type="range" min="-80" max="80" value="0" />
+            <label for="portraitGroundOffsetY">Shadow Y</label>
+            <input id="portraitGroundOffsetY" type="range" min="-80" max="80" value="18" />
           </div>
         </div>
 
@@ -399,30 +426,32 @@
 
     <main class="preview">
       <div class="phone-lock" id="phoneLock">
-      <div class="phone rarity-legendary" id="phoneRoot" data-phone-width="474" data-phone-height="948">
+      <div class="phone-shell">
+        <div class="phone rarity-legendary" id="phoneRoot" data-phone-width="474" data-phone-height="948">
         <div class="screen">
           <div class="reference-overlay" id="referenceOverlay" aria-hidden="true"></div>
+          <div class="trait-stack" id="traitStack">
+            <div class="trait-circle"><img class="trait-icon" id="previewTrait1" alt="" /></div>
+            <div class="trait-circle"><img class="trait-icon" id="previewTrait2" alt="" /></div>
+            <div class="trait-circle"><img class="trait-icon" id="previewTrait3" alt="" /></div>
+            <div class="trait-circle"><img class="trait-icon" id="previewTrait4" alt="" /></div>
+            <div class="trait-circle"><img class="trait-icon" id="previewTrait5" alt="" /></div>
+            <div class="trait-circle"><img class="trait-icon" id="previewTrait6" alt="" /></div>
+          </div>
+          <div id="stackTraitTooltip" class="stack-trait-tooltip" aria-hidden="true">
+            <div class="stack-trait-tooltip-title"></div>
+            <div class="stack-trait-tooltip-body"></div>
+          </div>
           <section class="top-panel">
-            <div class="trait-stack" id="traitStack">
-              <div class="trait-circle"><img class="trait-icon" id="previewTrait1" alt="" /></div>
-              <div class="trait-circle"><img class="trait-icon" id="previewTrait2" alt="" /></div>
-              <div class="trait-circle"><img class="trait-icon" id="previewTrait3" alt="" /></div>
-              <div class="trait-circle"><img class="trait-icon" id="previewTrait4" alt="" /></div>
-              <div class="trait-circle"><img class="trait-icon" id="previewTrait5" alt="" /></div>
-              <div class="trait-circle"><img class="trait-icon" id="previewTrait6" alt="" /></div>
-            </div>
-            <div id="stackTraitTooltip" class="stack-trait-tooltip" aria-hidden="true">
-              <div class="stack-trait-tooltip-title"></div>
-              <div class="stack-trait-tooltip-body"></div>
-            </div>
             <div class="portrait-frame">
               <img id="portraitImage" class="portrait-image" alt="Character portrait" />
-              <div class="portrait-tint" aria-hidden="true"></div>
-              <div class="portrait-light" aria-hidden="true"></div>
-              <div class="portrait-shadow" aria-hidden="true"></div>
-              <span class="portrait-placeholder" id="portraitPlaceholder">Portrait</span>
-            </div>
-          </section>
+            <div class="portrait-tint" aria-hidden="true"></div>
+            <div class="portrait-light" aria-hidden="true"></div>
+            <div class="portrait-shadow" aria-hidden="true"></div>
+            <div class="portrait-ground-shadow" aria-hidden="true"></div>
+            <span class="portrait-placeholder" id="portraitPlaceholder">Portrait</span>
+          </div>
+        </section>
 
           <section class="bottom-panel">
             <div class="bottom-panel-top">
@@ -457,7 +486,12 @@
             </div>
 
             <div class="bottom-panel-columns">
-              <div class="bottom-panel-left"></div>
+              <div class="bottom-panel-left">
+                <div class="unlock-panel">
+                  <div class="unlock-title">Unlock</div>
+                  <div class="unlock-body" id="unlockRequirementsPreview">Unlock requirements</div>
+                </div>
+              </div>
               <div class="bottom-panel-right">
                 <div class="stat-quad">
                   <div class="stat-cell">
@@ -571,7 +605,8 @@
             </svg>
           </div>
         </div>
-      </div>
+        </div>
+        </div>
       </div>
     </main>
   </div>
