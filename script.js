@@ -810,7 +810,7 @@ rarityButtons.forEach(btn => {
 function syncWizardTabs() {
   const isMobile = mobileWizardQuery.matches;
   document.body.classList.toggle("is-mobile", isMobile);
-  const assetsReady = !isLocalFile || exportAssetMap.size > 0;
+  const assetsReady = isLocalFile ? exportAssetMap.size > 0 : true;
   const tabVisibility = {
     identity: true,
     visuals: true,
@@ -847,7 +847,7 @@ function syncWizardTabs() {
 wizardTabs.forEach(tab => {
   tab.addEventListener("click", () => {
     if (tab.style.display === "none") return;
-    const assetsReady = !isLocalFile || exportAssetMap.size > 0;
+    const assetsReady = isLocalFile ? exportAssetMap.size > 0 : true;
     if (!assetsReady && tab.dataset.tab !== "assets") return;
     if (mobileWizardQuery.matches) return;
     const key = tab.dataset.tab;
@@ -936,11 +936,11 @@ assetsFolderInput?.addEventListener("change", async () => {
     exportAssetMap.set(key, value);
   });
   assetsFolderButton.textContent = `Assets loaded (${exportAssetMap.size})`;
-  assetsTab?.classList.toggle("is-required", exportAssetMap.size === 0);
+  assetsTab?.classList.toggle("is-required", isLocalFile && exportAssetMap.size === 0);
   syncWizardTabs();
 });
 
-assetsTab?.classList.toggle("is-required", exportAssetMap.size === 0);
+assetsTab?.classList.toggle("is-required", isLocalFile && exportAssetMap.size === 0);
 
 function updatePortraitTransform() {
   if (!portraitImage) return;
