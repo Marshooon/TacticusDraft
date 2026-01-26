@@ -19,6 +19,7 @@ const assetsFolderButton = document.getElementById("assetsFolderButton");
 const assetsFolderInput = document.getElementById("assetsFolderInput");
 const assetsTab = document.getElementById("assetsTab");
 const exportAssetMap = new Map();
+const isLocalFile = window.location.protocol === "file:";
 const screenEl = document.querySelector(".screen");
 const topPanel = document.querySelector(".top-panel");
 const phoneLock = document.getElementById("phoneLock");
@@ -809,7 +810,7 @@ rarityButtons.forEach(btn => {
 function syncWizardTabs() {
   const isMobile = mobileWizardQuery.matches;
   document.body.classList.toggle("is-mobile", isMobile);
-  const assetsReady = exportAssetMap.size > 0;
+  const assetsReady = !isLocalFile || exportAssetMap.size > 0;
   const tabVisibility = {
     identity: true,
     visuals: true,
@@ -846,7 +847,8 @@ function syncWizardTabs() {
 wizardTabs.forEach(tab => {
   tab.addEventListener("click", () => {
     if (tab.style.display === "none") return;
-    if (exportAssetMap.size === 0 && tab.dataset.tab !== "assets") return;
+    const assetsReady = !isLocalFile || exportAssetMap.size > 0;
+    if (!assetsReady && tab.dataset.tab !== "assets") return;
     if (mobileWizardQuery.matches) return;
     const key = tab.dataset.tab;
     wizardTabs.forEach(t => t.classList.toggle("active", t === tab));
