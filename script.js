@@ -2267,14 +2267,7 @@ exportHtmlButton?.addEventListener("click", exportPhoneHtml);
 
 function fitPhoneInPreview() {
   if (!phoneRoot || !previewWrap || !phoneShell) return;
-  if (mobileWizardQuery.matches) {
-    phoneShell.style.transform = "";
-    if (phoneLock) {
-      phoneLock.style.removeProperty("width");
-      phoneLock.style.removeProperty("height");
-    }
-    return;
-  }
+  // Mobile scaling disabled previously; allow desktop height-fit scaling to run on mobile for testing.
   window.requestAnimationFrame(() => {
     const baseWidth = phoneRoot.offsetWidth || 1;
     const baseHeight = phoneRoot.offsetHeight || 1;
