@@ -143,9 +143,12 @@ const activeAbilityInput = document.getElementById("activeAbilityInput");
 const passiveAbilityInput = document.getElementById("passiveAbilityInput");
 const activeAbilityIcon = document.getElementById("activeAbilityIcon");
 const passiveAbilityIcon = document.getElementById("passiveAbilityIcon");
-const abilityOffsetX = document.getElementById("abilityOffsetX");
-const abilityOffsetY = document.getElementById("abilityOffsetY");
-const abilityZoom = document.getElementById("abilityZoom");
+const activeAbilityOffsetX = document.getElementById("activeAbilityOffsetX");
+const activeAbilityOffsetY = document.getElementById("activeAbilityOffsetY");
+const activeAbilityZoom = document.getElementById("activeAbilityZoom");
+const passiveAbilityOffsetX = document.getElementById("passiveAbilityOffsetX");
+const passiveAbilityOffsetY = document.getElementById("passiveAbilityOffsetY");
+const passiveAbilityZoom = document.getElementById("passiveAbilityZoom");
 const shapeGlowStrength = document.getElementById("shapeGlowStrength");
 const previewWrap = document.querySelector(".preview");
 const traitList = document.getElementById("traitList");
@@ -161,10 +164,10 @@ const customTraitInput = document.getElementById("customTraitInput");
 const stackTraitTooltip = document.getElementById("stackTraitTooltip");
 const customTraitSearch = document.getElementById("customTraitSearch");
 const customTraitLibraryGrid = document.getElementById("customTraitLibraryGrid");
-const iconLibraryGrid = document.getElementById("iconLibraryGrid");
-const iconLibrarySearch = document.getElementById("iconLibrarySearch");
-const iconTargetActive = document.getElementById("iconTargetActive");
-const iconTargetPassive = document.getElementById("iconTargetPassive");
+const activeIconLibraryGrid = document.getElementById("activeIconLibraryGrid");
+const activeIconLibrarySearch = document.getElementById("activeIconLibrarySearch");
+const passiveIconLibraryGrid = document.getElementById("passiveIconLibraryGrid");
+const passiveIconLibrarySearch = document.getElementById("passiveIconLibrarySearch");
 const identityCard = document.querySelector(".identity-card");
 const characterTooltip = document.getElementById("characterTooltip");
 const characterTooltipTitle = document.getElementById("characterTooltipTitle");
@@ -966,6 +969,7 @@ const PRESET_CHARACTERS = [
     rarity: "legendary",
     bgKey: "lions_adamant",
     portrait: "assets/portraits/marecTacticus.png",
+    portraitPosition: { x: "0", y: "-21", zoom: "110" },
     traits: ["Act of Faith", "Battle Fatigue", "Big Target"],
     stats: { health: 3325, armor: 874, damage: 2293, move: 3 },
     abilities: {
@@ -975,27 +979,6 @@ const PRESET_CHARACTERS = [
       passiveTitle: "Passive Ability",
       activeDesc: "Unleash a focused barrage that empowers allies in range.",
       passiveDesc: "Steadfast vigilance grants bonus protection to nearby units."
-    }
-  },
-  {
-    key: "aesoth",
-    label: "Aesoth",
-    subtitle: "Epic • Golden Hall",
-    name: "Aesoth",
-    title: "Vexilus Praetor",
-    description: "A gilded exemplar who inspires nearby warriors to push forward.",
-    rarity: "epic",
-    bgKey: "golden_hall",
-    portrait: "assets/portraits/marecTacticus.png",
-    traits: ["Blessings of Khorne", "Crushing Strike", "Terrifying"],
-    stats: { health: 2990, armor: 745, damage: 2010, move: 3 },
-    abilities: {
-      activeIcon: "assets/abilityIcons/Aesoth_Ability_1_Icon.webp",
-      passiveIcon: "assets/abilityIcons/Aesoth_Ability_2_Icon.webp",
-      activeTitle: "Vexilus Rally",
-      passiveTitle: "Praetor's Guard",
-      activeDesc: "Raise the standard to embolden nearby allies.",
-      passiveDesc: "Orders restore morale and mitigate incoming damage."
     }
   }
 ];
@@ -1072,11 +1055,17 @@ function applyPresetCharacter(preset) {
 
   const portraitSrc = resolveAssetSrc(preset.portrait);
   setPortraitSource(portraitSrc);
+  if (preset.portraitPosition) {
+    if (portraitOffsetX) portraitOffsetX.value = preset.portraitPosition.x ?? portraitOffsetX.value;
+    if (portraitOffsetY) portraitOffsetY.value = preset.portraitPosition.y ?? portraitOffsetY.value;
+    if (portraitZoom) portraitZoom.value = preset.portraitPosition.zoom ?? portraitZoom.value;
+    updatePortraitTransform();
+  }
 
   const activeSrc = resolveAssetSrc(preset.abilities?.activeIcon);
   const passiveSrc = resolveAssetSrc(preset.abilities?.passiveIcon);
-  setAbilityIconTarget(activeAbilityIcon, activeSrc);
-  setAbilityIconTarget(passiveAbilityIcon, passiveSrc);
+  setAbilityIcon(activeAbilityIcon, activeSrc, activeAbilityOffsetX, activeAbilityOffsetY, activeAbilityZoom);
+  setAbilityIcon(passiveAbilityIcon, passiveSrc, passiveAbilityOffsetX, passiveAbilityOffsetY, passiveAbilityZoom);
 
   if (activeTooltipTitleInput) activeTooltipTitleInput.value = preset.abilities?.activeTitle || "";
   if (passiveTooltipTitleInput) passiveTooltipTitleInput.value = preset.abilities?.passiveTitle || "";
@@ -1323,26 +1312,29 @@ function renderBackgroundList() {
 renderBackgroundList();
 updatePortraitLighting();
 
-function updateAbilityTransform() {
-  const x = Number(abilityOffsetX?.value || 0);
-  const y = Number(abilityOffsetY?.value || 0);
-  const z = Number(abilityZoom?.value || 100) / 100;
+function updateAbilityTransform(icon, offsetX, offsetY, zoom) {
+  if (!icon) return;
+  const x = Number(offsetX?.value || 0);
+  const y = Number(offsetY?.value || 0);
+  const z = Number(zoom?.value || 100) / 100;
   const transform = `translate(${x}px, ${y}px) scale(${z})`;
-  if (activeAbilityIcon) activeAbilityIcon.style.transform = transform;
-  if (passiveAbilityIcon) passiveAbilityIcon.style.transform = transform;
+  icon.style.transform = transform;
 }
 
-let abilityIconTarget = "active";
-
-function setAbilityIcon(src) {
-  const isActive = abilityIconTarget === "active";
-  const icon = isActive ? activeAbilityIcon : passiveAbilityIcon;
+function setAbilityIcon(icon, src, offsetX, offsetY, zoom) {
   if (!icon) return;
+  if (!src) {
+    icon.removeAttribute("src");
+    icon.style.display = "none";
+    const placeholder = icon.parentElement?.querySelector(".ability-placeholder");
+    if (placeholder) placeholder.style.display = "";
+    return;
+  }
   icon.src = src;
   icon.style.display = "block";
   const placeholder = icon.parentElement?.querySelector(".ability-placeholder");
   if (placeholder) placeholder.style.display = "none";
-  updateAbilityTransform();
+  updateAbilityTransform(icon, offsetX, offsetY, zoom);
 }
 
 function getAbilityLabel(src) {
@@ -1356,10 +1348,10 @@ function getAbilityLabel(src) {
     .trim();
 }
 
-function renderAbilityIconLibrary() {
-  if (!iconLibraryGrid) return;
-  const query = (iconLibrarySearch?.value || "").trim().toLowerCase();
-  iconLibraryGrid.textContent = "";
+function renderAbilityIconLibrary(grid, searchInput, iconTarget, offsetX, offsetY, zoom) {
+  if (!grid) return;
+  const query = (searchInput?.value || "").trim().toLowerCase();
+  grid.textContent = "";
   const frag = document.createDocumentFragment();
   ABILITY_ICON_LIBRARY.forEach((src) => {
     const label = getAbilityLabel(src);
@@ -1372,13 +1364,13 @@ function renderAbilityIconLibrary() {
     img.src = src;
     img.alt = label;
     button.appendChild(img);
-    button.addEventListener("click", () => setAbilityIcon(src));
+    button.addEventListener("click", () => setAbilityIcon(iconTarget, src, offsetX, offsetY, zoom));
     frag.appendChild(button);
   });
-  iconLibraryGrid.appendChild(frag);
+  grid.appendChild(frag);
 }
 
-function wireAbilityUpload(button, input, target) {
+function wireAbilityUpload(button, input, target, offsetX, offsetY, zoom) {
   if (!button || !input || !target) return;
   button.addEventListener("click", () => input.click());
   input.addEventListener("change", () => {
@@ -1390,33 +1382,27 @@ function wireAbilityUpload(button, input, target) {
       target.style.display = "block";
       const placeholder = target.parentElement?.querySelector(".ability-placeholder");
       if (placeholder) placeholder.style.display = "none";
-      updateAbilityTransform();
+      updateAbilityTransform(target, offsetX, offsetY, zoom);
     };
     reader.readAsDataURL(file);
   });
 }
 
-wireAbilityUpload(activeAbilityUploadButton, activeAbilityInput, activeAbilityIcon);
-wireAbilityUpload(passiveAbilityUploadButton, passiveAbilityInput, passiveAbilityIcon);
-abilityOffsetX?.addEventListener("input", updateAbilityTransform);
-abilityOffsetY?.addEventListener("input", updateAbilityTransform);
-abilityZoom?.addEventListener("input", updateAbilityTransform);
-updateAbilityTransform();
+wireAbilityUpload(activeAbilityUploadButton, activeAbilityInput, activeAbilityIcon, activeAbilityOffsetX, activeAbilityOffsetY, activeAbilityZoom);
+wireAbilityUpload(passiveAbilityUploadButton, passiveAbilityInput, passiveAbilityIcon, passiveAbilityOffsetX, passiveAbilityOffsetY, passiveAbilityZoom);
+activeAbilityOffsetX?.addEventListener("input", () => updateAbilityTransform(activeAbilityIcon, activeAbilityOffsetX, activeAbilityOffsetY, activeAbilityZoom));
+activeAbilityOffsetY?.addEventListener("input", () => updateAbilityTransform(activeAbilityIcon, activeAbilityOffsetX, activeAbilityOffsetY, activeAbilityZoom));
+activeAbilityZoom?.addEventListener("input", () => updateAbilityTransform(activeAbilityIcon, activeAbilityOffsetX, activeAbilityOffsetY, activeAbilityZoom));
+passiveAbilityOffsetX?.addEventListener("input", () => updateAbilityTransform(passiveAbilityIcon, passiveAbilityOffsetX, passiveAbilityOffsetY, passiveAbilityZoom));
+passiveAbilityOffsetY?.addEventListener("input", () => updateAbilityTransform(passiveAbilityIcon, passiveAbilityOffsetX, passiveAbilityOffsetY, passiveAbilityZoom));
+passiveAbilityZoom?.addEventListener("input", () => updateAbilityTransform(passiveAbilityIcon, passiveAbilityOffsetX, passiveAbilityOffsetY, passiveAbilityZoom));
+updateAbilityTransform(activeAbilityIcon, activeAbilityOffsetX, activeAbilityOffsetY, activeAbilityZoom);
+updateAbilityTransform(passiveAbilityIcon, passiveAbilityOffsetX, passiveAbilityOffsetY, passiveAbilityZoom);
 
-iconTargetActive?.addEventListener("click", () => {
-  abilityIconTarget = "active";
-  iconTargetActive.classList.add("active");
-  iconTargetPassive?.classList.remove("active");
-});
-
-iconTargetPassive?.addEventListener("click", () => {
-  abilityIconTarget = "passive";
-  iconTargetPassive.classList.add("active");
-  iconTargetActive?.classList.remove("active");
-});
-
-iconLibrarySearch?.addEventListener("input", renderAbilityIconLibrary);
-renderAbilityIconLibrary();
+activeIconLibrarySearch?.addEventListener("input", () => renderAbilityIconLibrary(activeIconLibraryGrid, activeIconLibrarySearch, activeAbilityIcon, activeAbilityOffsetX, activeAbilityOffsetY, activeAbilityZoom));
+passiveIconLibrarySearch?.addEventListener("input", () => renderAbilityIconLibrary(passiveIconLibraryGrid, passiveIconLibrarySearch, passiveAbilityIcon, passiveAbilityOffsetX, passiveAbilityOffsetY, passiveAbilityZoom));
+renderAbilityIconLibrary(activeIconLibraryGrid, activeIconLibrarySearch, activeAbilityIcon, activeAbilityOffsetX, activeAbilityOffsetY, activeAbilityZoom);
+renderAbilityIconLibrary(passiveIconLibraryGrid, passiveIconLibrarySearch, passiveAbilityIcon, passiveAbilityOffsetX, passiveAbilityOffsetY, passiveAbilityZoom);
 
 function getFieldContent(field) {
   if (!field) return { html: "", text: "" };
@@ -1466,8 +1452,8 @@ shapeGlowStrength?.addEventListener("input", updateShapeGlowStrength);
 updateShapeGlowStrength();
 
 const abilityCircles = document.querySelectorAll(".ability-circle");
-const tooltipToolbar = document.querySelector(".tooltip-toolbar");
-const tooltipColorPicker = document.getElementById("tooltipColorPicker");
+const tooltipToolbars = document.querySelectorAll(".tooltip-toolbar");
+const tooltipColorPickers = document.querySelectorAll(".tooltip-color-picker");
 const tooltipEditors = document.querySelectorAll(".tooltip-editor");
 let activeTooltipEditor = null;
 let savedTooltipRange = null;
@@ -1562,12 +1548,16 @@ tooltipEditors.forEach(editor => {
   editor.addEventListener("input", saveTooltipSelection);
 });
 
-tooltipToolbar?.addEventListener("mousedown", (event) => {
-  event.preventDefault();
+tooltipToolbars.forEach(toolbar => {
+  toolbar.addEventListener("mousedown", (event) => {
+    event.preventDefault();
+  });
 });
 
-tooltipColorPicker?.addEventListener("input", (event) => {
-  applyTooltipColor(event.target.value);
+tooltipColorPickers.forEach((picker) => {
+  picker.addEventListener("input", (event) => {
+    applyTooltipColor(event.target.value);
+  });
 });
 
 function getCircleTooltip(circle) {

@@ -14,10 +14,10 @@
       <div class="wizard-tabs">
         <button class="wizard-tab active is-required" data-tab="assets" id="assetsTab">Assets</button>
         <button class="wizard-tab" data-tab="identity">Identity</button>
-        <button class="wizard-tab" data-tab="visuals">Visuals</button>
+        
         <button class="wizard-tab" data-tab="abilities">Abilities</button>
         <button class="wizard-tab" data-tab="stats">Stats</button>
-        <button class="wizard-tab" data-tab="utilities" data-role="utilities-tab">Utilities</button>
+        <button class="wizard-tab" data-tab="utilities" data-role="utilities-tab">Export</button>
         <button class="wizard-tab" data-tab="ui-test" data-role="ui-test-tab">UI Test</button>
       </div>
 
@@ -52,70 +52,30 @@
         </div>
 
         <div class="field">
-          <label>Rarity</label>
-          <div class="choice-row" id="rarityChoices">
-            <button class="pill-btn" data-rarity="common">Common</button>
-            <button class="pill-btn" data-rarity="uncommon">Uncommon</button>
-            <button class="pill-btn" data-rarity="rare">Rare</button>
-            <button class="pill-btn" data-rarity="epic">Epic</button>
-            <button class="pill-btn active" data-rarity="legendary">Legendary</button>
-          </div>
-        </div>
-
-        <div class="field">
-          <label>Traits</label>
-          <div class="trait-list" id="traitList"></div>
-          <span class="field-note">Select up to 6 traits.</span>
-        </div>
-
-        <div class="field">
-          <label for="unlockRequirementsInput">Unlock Requirements</label>
-          <textarea id="unlockRequirementsInput" placeholder="Unlock requirements"></textarea>
-        </div>
-
-        <div class="field">
-          <label class="inline-label">
-            <input type="checkbox" id="customTraitEnabled" />
-            Custom Trait
-          </label>
-          <div class="custom-trait-fields" id="customTraitFields">
-            <div class="field">
-              <label for="customTraitName">Name</label>
-              <input id="customTraitName" type="text" placeholder="Custom trait name" />
-            </div>
-            <div class="field">
-              <label for="customTraitDesc">Description</label>
-              <textarea id="customTraitDesc" placeholder="Custom trait description"></textarea>
-            </div>
-            <div class="field">
-              <label>Icon</label>
-              <button class="pill-btn" id="customTraitUploadButton" type="button">Upload icon</button>
-              <input id="customTraitInput" class="file-input" type="file" accept="image/*" />
-            </div>
-            <div class="field">
-              <label>Custom Trait Icon Library</label>
-              <div class="icon-library-controls">
-                <input id="customTraitSearch" type="text" placeholder="Search trait icons..." />
-              </div>
-              <div class="icon-library-grid" id="customTraitLibraryGrid"></div>
-            </div>
-          </div>
-        </div>
-
-        <div id="traitTooltip" class="trait-tooltip" aria-hidden="true">
-          <div class="trait-tooltip-title"></div>
-          <div class="trait-tooltip-body"></div>
-        </div>
-      </div>
-
-      <div class="wizard-panel" data-tab="visuals">
-        <div class="field">
           <label>Background</label>
           <div class="trait-list bg-list" id="bgPresetList"></div>
         </div>
 
         <div class="field">
-          <label>Portrait Lighting</label>
+          <label>Portrait</label>
+          <button class="pill-btn" id="portraitUploadButton" type="button">Upload portrait</button>
+          <input id="portraitInput" class="file-input" type="file" accept="image/*" />
+        </div>
+
+        <details class="field-dropdown">
+          <summary>Portrait Position</summary>
+          <div class="slider-grid">
+            <label for="portraitOffsetX">X</label>
+            <input id="portraitOffsetX" type="range" min="-80" max="80" value="0" />
+            <label for="portraitOffsetY">Y</label>
+            <input id="portraitOffsetY" type="range" min="-80" max="80" value="0" />
+            <label for="portraitZoom">Zoom</label>
+            <input id="portraitZoom" type="range" min="60" max="160" value="100" />
+          </div>
+        </details>
+
+        <details class="field-dropdown">
+          <summary>Portrait Lighting</summary>
           <div class="lighting-grid">
             <label class="inline-label" for="portraitTintEnabled">
               <input type="checkbox" id="portraitTintEnabled" checked />
@@ -166,89 +126,150 @@
             <label for="portraitGroundOffsetY">Shadow Y</label>
             <input id="portraitGroundOffsetY" type="range" min="-80" max="80" value="18" />
           </div>
+        </details>
+
+        <div class="field">
+          <label>Rarity</label>
+          <div class="choice-row" id="rarityChoices">
+            <button class="pill-btn" data-rarity="common">Common</button>
+            <button class="pill-btn" data-rarity="uncommon">Uncommon</button>
+            <button class="pill-btn" data-rarity="rare">Rare</button>
+            <button class="pill-btn" data-rarity="epic">Epic</button>
+            <button class="pill-btn active" data-rarity="legendary">Legendary</button>
+          </div>
         </div>
 
         <div class="field">
-          <label>Portrait</label>
-          <button class="pill-btn" id="portraitUploadButton" type="button">Upload portrait</button>
-          <input id="portraitInput" class="file-input" type="file" accept="image/*" />
+          <label for="unlockRequirementsInput">Unlock Requirements</label>
+          <textarea id="unlockRequirementsInput" placeholder="Unlock requirements"></textarea>
         </div>
-
-        <details class="field-dropdown">
-          <summary>Portrait Position</summary>
-          <div class="slider-grid">
-            <label for="portraitOffsetX">X</label>
-            <input id="portraitOffsetX" type="range" min="-80" max="80" value="0" />
-            <label for="portraitOffsetY">Y</label>
-            <input id="portraitOffsetY" type="range" min="-80" max="80" value="0" />
-            <label for="portraitZoom">Zoom</label>
-            <input id="portraitZoom" type="range" min="60" max="160" value="100" />
-          </div>
-        </details>
       </div>
 
       <div class="wizard-panel" data-tab="abilities">
-        <div class="field">
-          <label>Ability Icons</label>
-          <div class="ability-upload-row">
-            <button class="pill-btn" id="activeAbilityUploadButton" type="button">Upload active</button>
-            <button class="pill-btn" id="passiveAbilityUploadButton" type="button">Upload passive</button>
-          </div>
-          <input id="activeAbilityInput" class="file-input" type="file" accept="image/*" />
-          <input id="passiveAbilityInput" class="file-input" type="file" accept="image/*" />
-        </div>
-
-        <div class="field">
-          <label>Ability Icon Library</label>
-          <div class="icon-library-controls">
-            <div class="choice-row">
-              <button class="pill-btn active" id="iconTargetActive" type="button">Active</button>
-              <button class="pill-btn" id="iconTargetPassive" type="button">Passive</button>
-            </div>
-            <input id="iconLibrarySearch" type="text" placeholder="Search icons..." />
-          </div>
-          <div class="icon-library-grid" id="iconLibraryGrid"></div>
-        </div>
-
         <details class="field-dropdown" open>
-          <summary>Ability Description</summary>
+          <summary>Active Ability</summary>
+          <div class="field">
+            <label>Active Icon</label>
+            <button class="pill-btn" id="activeAbilityUploadButton" type="button">Upload active</button>
+            <input id="activeAbilityInput" class="file-input" type="file" accept="image/*" />
+          </div>
+          <details class="field-dropdown">
+            <summary>Active Icon Library</summary>
+            <div class="icon-library-controls">
+              <input id="activeIconLibrarySearch" type="text" placeholder="Search icons..." />
+            </div>
+            <div class="icon-library-grid" id="activeIconLibraryGrid"></div>
+          </details>
+          <details class="field-dropdown">
+            <summary>Active Icon Position</summary>
+            <div class="slider-grid">
+              <label for="activeAbilityOffsetX">X</label>
+              <input id="activeAbilityOffsetX" type="range" min="-20" max="20" value="0" />
+              <label for="activeAbilityOffsetY">Y</label>
+              <input id="activeAbilityOffsetY" type="range" min="-20" max="20" value="0" />
+              <label for="activeAbilityZoom">Zoom</label>
+              <input id="activeAbilityZoom" type="range" min="80" max="140" value="100" />
+            </div>
+          </details>
           <div class="tooltip-toolbar">
             <label class="tooltip-color">
               <span>Color</span>
-              <input type="color" id="tooltipColorPicker" value="#f8f9ff" />
+              <input type="color" class="tooltip-color-picker" value="#f8f9ff" />
             </label>
           </div>
-          <div class="stat-input-grid two-col">
-            <div class="field">
-              <label for="activeTooltipTitleInput">Active Ability Name</label>
-              <input id="activeTooltipTitleInput" type="text" placeholder="Active Ability" />
-            </div>
-            <div class="field">
-              <label for="passiveTooltipTitleInput">Passive Ability Name</label>
-              <input id="passiveTooltipTitleInput" type="text" placeholder="Passive Ability" />
-            </div>
-            <div class="field">
-              <label for="activeTooltipInput">Active Tooltip</label>
-              <div id="activeTooltipInput" class="tooltip-editor" contenteditable="true" data-placeholder="Description"></div>
-            </div>
-            <div class="field">
-              <label for="passiveTooltipInput">Passive Tooltip</label>
-              <div id="passiveTooltipInput" class="tooltip-editor" contenteditable="true" data-placeholder="Description"></div>
-            </div>
+          <div class="field">
+            <label for="activeTooltipTitleInput">Active Ability Name</label>
+            <input id="activeTooltipTitleInput" type="text" placeholder="Active Ability" />
+          </div>
+          <div class="field">
+            <label for="activeTooltipInput">Active Tooltip</label>
+            <div id="activeTooltipInput" class="tooltip-editor" contenteditable="true" data-placeholder="Description"></div>
           </div>
         </details>
 
         <details class="field-dropdown">
-          <summary>Ability Icon Position</summary>
-          <div class="slider-grid">
-            <label for="abilityOffsetX">X</label>
-            <input id="abilityOffsetX" type="range" min="-20" max="20" value="0" />
-            <label for="abilityOffsetY">Y</label>
-            <input id="abilityOffsetY" type="range" min="-20" max="20" value="0" />
-            <label for="abilityZoom">Zoom</label>
-            <input id="abilityZoom" type="range" min="80" max="140" value="100" />
+          <summary>Passive Ability</summary>
+          <div class="field">
+            <label>Passive Icon</label>
+            <button class="pill-btn" id="passiveAbilityUploadButton" type="button">Upload passive</button>
+            <input id="passiveAbilityInput" class="file-input" type="file" accept="image/*" />
+          </div>
+          <details class="field-dropdown">
+            <summary>Passive Icon Library</summary>
+            <div class="icon-library-controls">
+              <input id="passiveIconLibrarySearch" type="text" placeholder="Search icons..." />
+            </div>
+            <div class="icon-library-grid" id="passiveIconLibraryGrid"></div>
+          </details>
+          <details class="field-dropdown">
+            <summary>Passive Icon Position</summary>
+            <div class="slider-grid">
+              <label for="passiveAbilityOffsetX">X</label>
+              <input id="passiveAbilityOffsetX" type="range" min="-20" max="20" value="0" />
+              <label for="passiveAbilityOffsetY">Y</label>
+              <input id="passiveAbilityOffsetY" type="range" min="-20" max="20" value="0" />
+              <label for="passiveAbilityZoom">Zoom</label>
+              <input id="passiveAbilityZoom" type="range" min="80" max="140" value="100" />
+            </div>
+          </details>
+          <div class="tooltip-toolbar">
+            <label class="tooltip-color">
+              <span>Color</span>
+              <input type="color" class="tooltip-color-picker" value="#f8f9ff" />
+            </label>
+          </div>
+          <div class="field">
+            <label for="passiveTooltipTitleInput">Passive Ability Name</label>
+            <input id="passiveTooltipTitleInput" type="text" placeholder="Passive Ability" />
+          </div>
+          <div class="field">
+            <label for="passiveTooltipInput">Passive Tooltip</label>
+            <div id="passiveTooltipInput" class="tooltip-editor" contenteditable="true" data-placeholder="Description"></div>
           </div>
         </details>
+
+        <details class="field-dropdown">
+          <summary>Traits</summary>
+          <div class="field">
+            <label>Traits</label>
+            <div class="trait-list" id="traitList"></div>
+            <span class="field-note">Select up to 6 traits.</span>
+          </div>
+
+          <div class="field">
+            <label class="inline-label">
+              <input type="checkbox" id="customTraitEnabled" />
+              Custom Trait
+            </label>
+            <div class="custom-trait-fields" id="customTraitFields">
+              <div class="field">
+                <label for="customTraitName">Name</label>
+                <input id="customTraitName" type="text" placeholder="Custom trait name" />
+              </div>
+              <div class="field">
+                <label for="customTraitDesc">Description</label>
+                <textarea id="customTraitDesc" placeholder="Custom trait description"></textarea>
+              </div>
+              <div class="field">
+                <label>Icon</label>
+                <button class="pill-btn" id="customTraitUploadButton" type="button">Upload icon</button>
+                <input id="customTraitInput" class="file-input" type="file" accept="image/*" />
+              </div>
+              <div class="field">
+                <label>Custom Trait Icon Library</label>
+                <div class="icon-library-controls">
+                  <input id="customTraitSearch" type="text" placeholder="Search trait icons..." />
+                </div>
+                <div class="icon-library-grid" id="customTraitLibraryGrid"></div>
+              </div>
+            </div>
+          </div>
+        </details>
+
+        <div id="traitTooltip" class="trait-tooltip" aria-hidden="true">
+          <div class="trait-tooltip-title"></div>
+          <div class="trait-tooltip-body"></div>
+        </div>
       </div>
 
       <div class="wizard-panel" data-tab="stats">
@@ -393,11 +414,6 @@
       </div>
 
       <div class="wizard-panel" data-tab="utilities" data-role="utilities-panel">
-        <div class="field">
-          <label>Reference</label>
-          <button class="pill-btn" id="toggleReference" type="button">Show reference</button>
-        </div>
-
         <div class="field">
           <label>Export</label>
           <button class="pill-btn" id="exportHtmlButton" type="button">Export HTML</button>
