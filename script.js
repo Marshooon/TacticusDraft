@@ -2267,8 +2267,22 @@ exportHtmlButton?.addEventListener("click", exportPhoneHtml);
 
 function fitPhoneInPreview() {
   if (!phoneRoot || !previewWrap || !phoneShell) return;
-  // Mobile scaling disabled previously; allow desktop height-fit scaling to run on mobile for testing.
   window.requestAnimationFrame(() => {
+    if (mobileWizardQuery.matches) {
+      phoneShell.style.transform = "";
+      phoneShell.style.transformOrigin = "";
+      if (phoneLock) {
+        phoneLock.style.width = "100%";
+        phoneLock.style.height = "auto";
+      }
+      phoneShell.style.width = "100%";
+      phoneShell.style.height = "auto";
+      if (phoneRoot) {
+        phoneRoot.style.width = "100%";
+        phoneRoot.style.height = "auto";
+      }
+      return;
+    }
     const baseWidth = phoneRoot.offsetWidth || 1;
     const baseHeight = phoneRoot.offsetHeight || 1;
     const viewportHeight =
@@ -2277,8 +2291,7 @@ function fitPhoneInPreview() {
       document.documentElement.clientHeight ||
       baseHeight;
     const containerHeight = previewWrap.getBoundingClientRect().height || viewportHeight;
-    const targetHeight = Math.min(containerHeight, viewportHeight);
-    const scale = targetHeight / baseHeight;
+    let scale = Math.min(containerHeight, viewportHeight) / baseHeight;
     phoneShell.style.transformOrigin = "top left";
     phoneShell.style.transform = `scale(${scale.toFixed(4)})`;
     if (phoneLock) {
