@@ -38,12 +38,12 @@
       <div class="wizard-panel" data-tab="identity">
         <div class="field">
           <label for="nameInput">Name</label>
-          <input id="nameInput" type="text" value="" placeholder="Name" />
+          <input id="nameInput" type="text" value="Marec" placeholder="Name" />
         </div>
 
         <div class="field">
           <label for="titleInput">Title</label>
-          <input id="titleInput" type="text" value="" placeholder="Title" />
+          <input id="titleInput" type="text" value="Warden of the Archine" placeholder="Title" />
         </div>
 
         <div class="field">
@@ -62,7 +62,7 @@
           <input id="portraitInput" class="file-input" type="file" accept="image/*" />
         </div>
 
-        <details class="field-dropdown">
+        <details class="field-dropdown" open>
           <summary>Portrait Position</summary>
           <div class="slider-grid">
             <label for="portraitOffsetX">X</label>
@@ -74,7 +74,7 @@
           </div>
         </details>
 
-        <details class="field-dropdown">
+        <details class="field-dropdown" open>
           <summary>Portrait Lighting</summary>
           <div class="lighting-grid">
             <label class="inline-label" for="portraitTintEnabled">
@@ -153,14 +153,14 @@
             <button class="pill-btn" id="activeAbilityUploadButton" type="button">Upload active</button>
             <input id="activeAbilityInput" class="file-input" type="file" accept="image/*" />
           </div>
-          <details class="field-dropdown">
+          <details class="field-dropdown" open>
             <summary>Active Icon Library</summary>
             <div class="icon-library-controls">
               <input id="activeIconLibrarySearch" type="text" placeholder="Search icons..." />
             </div>
             <div class="icon-library-grid" id="activeIconLibraryGrid"></div>
           </details>
-          <details class="field-dropdown">
+          <details class="field-dropdown" open>
             <summary>Active Icon Position</summary>
             <div class="slider-grid">
               <label for="activeAbilityOffsetX">X</label>
@@ -168,7 +168,7 @@
               <label for="activeAbilityOffsetY">Y</label>
               <input id="activeAbilityOffsetY" type="range" min="-20" max="20" value="0" />
               <label for="activeAbilityZoom">Zoom</label>
-              <input id="activeAbilityZoom" type="range" min="80" max="140" value="100" />
+              <input id="activeAbilityZoom" type="range" min="80" max="280" value="100" />
             </div>
           </details>
           <div class="tooltip-toolbar">
@@ -187,21 +187,21 @@
           </div>
         </details>
 
-        <details class="field-dropdown">
+        <details class="field-dropdown" open>
           <summary>Passive Ability</summary>
           <div class="field">
             <label>Passive Icon</label>
             <button class="pill-btn" id="passiveAbilityUploadButton" type="button">Upload passive</button>
             <input id="passiveAbilityInput" class="file-input" type="file" accept="image/*" />
           </div>
-          <details class="field-dropdown">
+          <details class="field-dropdown" open>
             <summary>Passive Icon Library</summary>
             <div class="icon-library-controls">
               <input id="passiveIconLibrarySearch" type="text" placeholder="Search icons..." />
             </div>
             <div class="icon-library-grid" id="passiveIconLibraryGrid"></div>
           </details>
-          <details class="field-dropdown">
+          <details class="field-dropdown" open>
             <summary>Passive Icon Position</summary>
             <div class="slider-grid">
               <label for="passiveAbilityOffsetX">X</label>
@@ -209,7 +209,7 @@
               <label for="passiveAbilityOffsetY">Y</label>
               <input id="passiveAbilityOffsetY" type="range" min="-20" max="20" value="0" />
               <label for="passiveAbilityZoom">Zoom</label>
-              <input id="passiveAbilityZoom" type="range" min="80" max="140" value="100" />
+              <input id="passiveAbilityZoom" type="range" min="80" max="280" value="100" />
             </div>
           </details>
           <div class="tooltip-toolbar">
@@ -228,7 +228,7 @@
           </div>
         </details>
 
-        <details class="field-dropdown">
+        <details class="field-dropdown" open>
           <summary>Traits</summary>
           <div class="field">
             <label>Traits</label>
@@ -417,6 +417,7 @@
         <div class="field">
           <label>Export</label>
           <button class="pill-btn" id="exportHtmlButton" type="button">Export HTML</button>
+          <button class="pill-btn" id="exportPresetButton" type="button">Export Preset JSON</button>
         </div>
       </div>
 

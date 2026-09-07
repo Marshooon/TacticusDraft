@@ -5,16 +5,18 @@ const unlockRequirementsInput = document.getElementById("unlockRequirementsInput
 const unlockRequirementsPreview = document.getElementById("unlockRequirementsPreview");
 const previewName = document.getElementById("previewName");
 const previewTitle = document.getElementById("previewTitle");
+const appRoot = document.querySelector(".app");
 const phoneRoot = document.getElementById("phoneRoot");
 const phoneShell = document.querySelector(".phone-shell");
+const wizard = document.querySelector(".wizard");
 const rarityButtons = document.querySelectorAll("#rarityChoices .pill-btn");
 const wizardTabs = document.querySelectorAll(".wizard-tab");
 const wizardPanels = document.querySelectorAll(".wizard-panel");
-const mobileWizardQuery = window.matchMedia("(max-width: 775px)");
 const SHOW_UTILITIES_TAB = true;
 const SHOW_UI_TEST_TAB = false;
 const toggleReference = document.getElementById("toggleReference");
 const exportHtmlButton = document.getElementById("exportHtmlButton");
+const exportPresetButton = document.getElementById("exportPresetButton");
 const assetsFolderButton = document.getElementById("assetsFolderButton");
 const assetsFolderInput = document.getElementById("assetsFolderInput");
 const assetsTab = document.getElementById("assetsTab");
@@ -153,7 +155,6 @@ const shapeGlowStrength = document.getElementById("shapeGlowStrength");
 const previewWrap = document.querySelector(".preview");
 const traitList = document.getElementById("traitList");
 const traitTooltip = document.getElementById("traitTooltip");
-const wizard = document.querySelector(".wizard");
 const traitStack = document.getElementById("traitStack");
 const customTraitEnabled = document.getElementById("customTraitEnabled");
 const customTraitFields = document.getElementById("customTraitFields");
@@ -528,7 +529,7 @@ function refreshTraitPreview() {
     circle.dataset.traitLabel = entry.label || "";
     circle.dataset.traitDesc = entry.description || "";
     if (entry.icon) {
-      icon.src = entry.icon;
+      icon.src = resolveAssetSrc(entry.icon);
       icon.style.display = "block";
       icon.style.width = "";
       icon.style.height = "";
@@ -592,7 +593,7 @@ function renderCustomTraitLibrary() {
     button.dataset.src = `assets/traitIcons/${trait.icon}`;
     button.title = label;
     const img = document.createElement("img");
-    img.src = `assets/traitIcons/${trait.icon}`;
+    img.src = resolveAssetSrc(`assets/traitIcons/${trait.icon}`);
     img.alt = label;
     button.appendChild(img);
     button.addEventListener("click", () => {
@@ -811,8 +812,6 @@ rarityButtons.forEach(btn => {
 });
 
 function syncWizardTabs() {
-  const isMobile = mobileWizardQuery.matches;
-  document.body.classList.toggle("is-mobile", isMobile);
   const assetsReady = isLocalFile ? exportAssetMap.size > 0 : true;
   const tabVisibility = {
     identity: true,
@@ -852,7 +851,6 @@ wizardTabs.forEach(tab => {
     if (tab.style.display === "none") return;
     const assetsReady = isLocalFile ? exportAssetMap.size > 0 : true;
     if (!assetsReady && tab.dataset.tab !== "assets") return;
-    if (mobileWizardQuery.matches) return;
     const key = tab.dataset.tab;
     wizardTabs.forEach(t => t.classList.toggle("active", t === tab));
     wizardPanels.forEach(panel => panel.classList.toggle("active", panel.dataset.tab === key));
@@ -860,42 +858,6 @@ wizardTabs.forEach(tab => {
 });
 
 syncWizardTabs();
-mobileWizardQuery.addEventListener("change", syncWizardTabs);
-
-function buildMobileAccordion() {
-  if (!mobileWizardQuery.matches) return;
-  if (!wizardPanels.length) return;
-  const tabLabels = {};
-  wizardTabs.forEach(tab => {
-    const key = tab.dataset.tab;
-    const label = tab.textContent?.trim() || key;
-    if (key) tabLabels[key] = label;
-  });
-  wizardPanels.forEach(panel => {
-    if (panel.dataset.accordionBuilt === "true") return;
-    const summary = document.createElement("summary");
-    summary.className = "wizard-panel-summary";
-    summary.textContent = tabLabels[panel.dataset.tab] || "Section";
-    const body = document.createElement("div");
-    body.className = "wizard-panel-body";
-    while (panel.firstChild) {
-      body.appendChild(panel.firstChild);
-    }
-    panel.appendChild(summary);
-    panel.appendChild(body);
-    panel.dataset.accordionBuilt = "true";
-    summary.addEventListener("click", () => {
-      if (!mobileWizardQuery.matches) return;
-      const willOpen = !panel.classList.contains("is-open");
-      wizardPanels.forEach(other => other.classList.remove("is-open"));
-      if (willOpen) panel.classList.add("is-open");
-    });
-  });
-  wizardPanels[0]?.classList.add("is-open");
-}
-
-buildMobileAccordion();
-mobileWizardQuery.addEventListener("change", buildMobileAccordion);
 
 if (toggleReference && screenEl) {
   toggleReference.addEventListener("click", () => {
@@ -940,6 +902,11 @@ assetsFolderInput?.addEventListener("change", async () => {
   });
   assetsFolderButton.textContent = `Assets loaded (${exportAssetMap.size})`;
   assetsTab?.classList.toggle("is-required", isLocalFile && exportAssetMap.size === 0);
+  renderAbilityIconLibrary(activeIconLibraryGrid, activeIconLibrarySearch, activeAbilityIcon, activeAbilityOffsetX, activeAbilityOffsetY, activeAbilityZoom);
+  renderAbilityIconLibrary(passiveIconLibraryGrid, passiveIconLibrarySearch, passiveAbilityIcon, passiveAbilityOffsetX, passiveAbilityOffsetY, passiveAbilityZoom);
+  renderCustomTraitLibrary();
+  refreshTraitPreview();
+  if (currentBgKey) applyBackgroundPreset(currentBgKey);
   syncWizardTabs();
 });
 
@@ -994,6 +961,22 @@ function resolveAssetSrc(src) {
   return exportAssetMap.get(src) || src;
 }
 
+function normalizeAssetPath(src) {
+  if (!src) return "";
+  if (src.startsWith("data:")) return src;
+  try {
+    const url = new URL(src, window.location.href);
+    const decoded = decodeURIComponent(url.pathname).replace(/\\/g, "/");
+    const marker = "/assets/";
+    const idx = decoded.toLowerCase().indexOf(marker);
+    if (idx !== -1) return decoded.slice(idx + 1);
+    if (decoded.startsWith("/")) return decoded.slice(1);
+    return decoded;
+  } catch {
+    return src;
+  }
+}
+
 function setPortraitSource(src) {
   if (!portraitImage) return;
   if (!src) {
@@ -1023,7 +1006,7 @@ function setAbilityIconTarget(icon, src) {
     if (placeholder) placeholder.style.display = "";
     return;
   }
-  icon.src = src;
+  icon.src = resolveAssetSrc(src);
   icon.style.display = "block";
   const placeholder = icon.parentElement?.querySelector(".ability-placeholder");
   if (placeholder) placeholder.style.display = "none";
@@ -1079,6 +1062,137 @@ function applyPresetCharacter(preset) {
     cb.checked = selected.has(cb.dataset.label || "");
   });
   refreshTraitPreview();
+}
+
+function getCurrentRarityKey() {
+  const active = Array.from(rarityButtons).find(btn => btn.classList.contains("active"));
+  return active?.dataset?.rarity || "legendary";
+}
+
+function collectCurrentPresetData() {
+  const selectedTraits = Array.from(document.querySelectorAll(".trait-checkbox:checked"))
+    .map(cb => cb.dataset.label || "")
+    .filter(Boolean);
+
+  const portraitSrc = normalizeAssetPath(portraitImage?.getAttribute("src") || "");
+  const activeSrc = normalizeAssetPath(activeAbilityIcon?.getAttribute("src") || "");
+  const passiveSrc = normalizeAssetPath(passiveAbilityIcon?.getAttribute("src") || "");
+  const customTraitIcon = normalizeAssetPath(customTraitIconSrc || "");
+
+  const preset = {
+    key: (nameInput?.value || "character")
+      .toLowerCase()
+      .replace(/[^a-z0-9]+/g, "_")
+      .replace(/^_+|_+$/g, ""),
+    label: nameInput?.value || "",
+    subtitle: `${(getCurrentRarityKey() || "").replace(/^./, m => m.toUpperCase())} • ${currentBgKey || "No Background"}`,
+    name: nameInput?.value || "",
+    title: titleInput?.value || "",
+    description: descriptionInput?.value || "",
+    unlockRequirements: unlockRequirementsInput?.value || "",
+    rarity: getCurrentRarityKey(),
+    bgKey: currentBgKey || "",
+    portrait: portraitSrc,
+    portraitPosition: {
+      x: portraitOffsetX?.value || "0",
+      y: portraitOffsetY?.value || "0",
+      zoom: portraitZoom?.value || "100"
+    },
+    lighting: {
+      portraitTintEnabled: !!portraitTintEnabled?.checked,
+      portraitTintColor: portraitTintColor?.value || "#ffffff",
+      portraitTintStrength: portraitTintStrength?.value || "0",
+      portraitLightEnabled: !!portraitLightEnabled?.checked,
+      portraitLightColor: portraitLightColor?.value || "#ffffff",
+      portraitLightStrength: portraitLightStrength?.value || "0",
+      portraitLightAngle: portraitLightAngle?.value || "0",
+      portraitShadowEnabled: !!portraitShadowEnabled?.checked,
+      portraitShadowColor: portraitShadowColor?.value || "#000000",
+      portraitShadowStrength: portraitShadowStrength?.value || "0",
+      portraitShadowAngle: portraitShadowAngle?.value || "0",
+      portraitGroundEnabled: !!portraitGroundEnabled?.checked,
+      portraitGroundColor: portraitGroundColor?.value || "#000000",
+      portraitGroundStrength: portraitGroundStrength?.value || "0",
+      portraitGroundSize: portraitGroundSize?.value || "100",
+      portraitGroundBlur: portraitGroundBlur?.value || "0",
+      portraitGroundOffsetX: portraitGroundOffsetX?.value || "0",
+      portraitGroundOffsetY: portraitGroundOffsetY?.value || "0"
+    },
+    traits: selectedTraits,
+    customTrait: {
+      enabled: !!customTraitEnabled?.checked,
+      name: customTraitName?.value || "",
+      description: customTraitDesc?.value || "",
+      icon: customTraitIcon
+    },
+    stats: {
+      health: healthInput?.value || "",
+      armor: armorInput?.value || "",
+      damage: damageInput?.value || "",
+      move: moveInput?.value || ""
+    },
+    melee: {
+      enabled: !!meleeEnabled?.checked,
+      type: meleeTypeSelect?.value || "",
+      hits: meleeHitsInput?.value || "1"
+    },
+    ranged: {
+      enabled: !!rangeEnabled?.checked,
+      type: rangeTypeSelect?.value || "",
+      hits: rangeHitsInput?.value || "1",
+      pattern: rangePatternSelect?.value || "range2"
+    },
+    crit: {
+      enabled: !!critEnabled?.checked,
+      value: critValueInput?.value || "",
+      chance: critChanceInput?.value || ""
+    },
+    block: {
+      enabled: !!blockEnabled?.checked,
+      value: blockValueInput?.value || "",
+      chance: blockChanceInput?.value || ""
+    },
+    abilities: {
+      activeIcon: activeSrc,
+      passiveIcon: passiveSrc,
+      activeTitle: activeTooltipTitleInput?.value || "",
+      passiveTitle: passiveTooltipTitleInput?.value || "",
+      activeDesc: activeTooltipInput?.innerHTML || "",
+      passiveDesc: passiveTooltipInput?.innerHTML || "",
+      activePosition: {
+        x: activeAbilityOffsetX?.value || "0",
+        y: activeAbilityOffsetY?.value || "0",
+        zoom: activeAbilityZoom?.value || "100"
+      },
+      passivePosition: {
+        x: passiveAbilityOffsetX?.value || "0",
+        y: passiveAbilityOffsetY?.value || "0",
+        zoom: passiveAbilityZoom?.value || "100"
+      }
+    }
+  };
+
+  return {
+    generatedAt: new Date().toISOString(),
+    source: window.location.href,
+    preset
+  };
+}
+
+function exportPresetJson() {
+  const data = collectCurrentPresetData();
+  const pretty = JSON.stringify(data, null, 2);
+  const safeName = (data.preset?.name || "character")
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, "_")
+    .replace(/^_+|_+$/g, "");
+  const blob = new Blob([pretty], { type: "application/json" });
+  const url = URL.createObjectURL(blob);
+  const link = document.createElement("a");
+  link.href = url;
+  link.download = `${safeName || "character"}_preset.json`;
+  link.click();
+  URL.revokeObjectURL(url);
 }
 
 function renderPresetList() {
@@ -1274,7 +1388,7 @@ function applyBackgroundPreset(key) {
   const preset = bgPresets.find(item => item.key === key);
   if (!preset || !topPanel) return;
   currentBgKey = key;
-  topPanel.style.backgroundImage = `url(${preset.src})`;
+  topPanel.style.backgroundImage = `url(${resolveAssetSrc(preset.src)})`;
   topPanel.style.backgroundSize = "cover";
   topPanel.style.backgroundPosition = "center";
   bgPresetList?.querySelectorAll(".bg-option").forEach(option => {
@@ -1330,7 +1444,7 @@ function setAbilityIcon(icon, src, offsetX, offsetY, zoom) {
     if (placeholder) placeholder.style.display = "";
     return;
   }
-  icon.src = src;
+  icon.src = resolveAssetSrc(src);
   icon.style.display = "block";
   const placeholder = icon.parentElement?.querySelector(".ability-placeholder");
   if (placeholder) placeholder.style.display = "none";
@@ -1361,7 +1475,7 @@ function renderAbilityIconLibrary(grid, searchInput, iconTarget, offsetX, offset
     button.dataset.src = src;
     button.title = label;
     const img = document.createElement("img");
-    img.src = src;
+    img.src = resolveAssetSrc(src);
     img.alt = label;
     button.appendChild(img);
     button.addEventListener("click", () => setAbilityIcon(iconTarget, src, offsetX, offsetY, zoom));
@@ -2264,39 +2378,48 @@ async function exportPhoneHtml() {
 }
 
 exportHtmlButton?.addEventListener("click", exportPhoneHtml);
+exportPresetButton?.addEventListener("click", exportPresetJson);
 
 function fitPhoneInPreview() {
   if (!phoneRoot || !previewWrap || !phoneShell) return;
   window.requestAnimationFrame(() => {
-    if (mobileWizardQuery.matches) {
-      phoneShell.style.transform = "";
-      phoneShell.style.transformOrigin = "";
-      if (phoneLock) {
-        phoneLock.style.width = "100%";
-        phoneLock.style.height = "auto";
-      }
-      phoneShell.style.width = "100%";
-      phoneShell.style.height = "auto";
-      if (phoneRoot) {
-        phoneRoot.style.width = "100%";
-        phoneRoot.style.height = "auto";
-      }
-      return;
-    }
-    const baseWidth = phoneRoot.offsetWidth || 1;
-    const baseHeight = phoneRoot.offsetHeight || 1;
+    const baseWidth = Number(phoneRoot.dataset.phoneWidth) || phoneRoot.offsetWidth || 1;
+    const baseHeight = Number(phoneRoot.dataset.phoneHeight) || phoneRoot.offsetHeight || 1;
+
+    phoneRoot.style.width = `${baseWidth}px`;
+    phoneRoot.style.height = `${baseHeight}px`;
+    phoneShell.style.width = `${baseWidth}px`;
+    phoneShell.style.height = `${baseHeight}px`;
+
+    const computedPreview = window.getComputedStyle(previewWrap);
+    const paddingX =
+      parseFloat(computedPreview.paddingLeft) + parseFloat(computedPreview.paddingRight);
+    const paddingY =
+      parseFloat(computedPreview.paddingTop) + parseFloat(computedPreview.paddingBottom);
+    const viewportWidth =
+      window.visualViewport?.width ||
+      window.innerWidth ||
+      document.documentElement.clientWidth ||
+      baseWidth;
     const viewportHeight =
       window.visualViewport?.height ||
       window.innerHeight ||
       document.documentElement.clientHeight ||
       baseHeight;
-    const containerHeight = previewWrap.getBoundingClientRect().height || viewportHeight;
-    let scale = Math.min(containerHeight, viewportHeight) / baseHeight;
+    const containerWidth = Math.max(0, viewportWidth - paddingX);
+    const containerHeight = Math.max(0, viewportHeight - paddingY);
+    let scale = containerHeight / baseHeight;
     phoneShell.style.transformOrigin = "top left";
     phoneShell.style.transform = `scale(${scale.toFixed(4)})`;
     if (phoneLock) {
       phoneLock.style.width = `${baseWidth * scale}px`;
       phoneLock.style.height = `${baseHeight * scale}px`;
+    }
+    if (wizard) {
+      wizard.style.width = "";
+      wizard.style.maxWidth = "";
+      wizard.style.minWidth = "";
+      wizard.style.margin = "";
     }
   });
 }
@@ -2306,10 +2429,8 @@ window.addEventListener("orientationchange", fitPhoneInPreview);
 window.visualViewport?.addEventListener("resize", fitPhoneInPreview);
 fitPhoneInPreview();
 
-if (previewWrap && "ResizeObserver" in window) {
-  const previewObserver = new ResizeObserver(() => fitPhoneInPreview());
-  previewObserver.observe(previewWrap);
-}
+// Avoid ResizeObserver feedback loops that can cause scale jitter.
+
 
 function getSelectedIcon(selectEl) {
   const option = selectEl?.selectedOptions?.[0];
