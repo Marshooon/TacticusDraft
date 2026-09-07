@@ -12,7 +12,7 @@
       <h1>Tacticus Character Wizard</h1>
 
       <div class="wizard-tabs">
-        <button class="wizard-tab active is-required" data-tab="assets" id="assetsTab">Assets</button>
+        <button class="wizard-tab active" data-tab="assets" id="assetsTab">Assets</button>
         <button class="wizard-tab" data-tab="identity">Identity</button>
         
         <button class="wizard-tab" data-tab="abilities">Abilities</button>
@@ -22,13 +22,6 @@
       </div>
 
       <div class="wizard-panel active" data-tab="assets">
-        <div class="field">
-          <label>Assets Folder</label>
-          <button class="pill-btn" id="assetsFolderButton" type="button">Select assets folder</button>
-          <input id="assetsFolderInput" type="file" webkitdirectory multiple hidden />
-          <p class="field-note">Required for export!</p>
-        </div>
-
         <div class="field">
           <label>Premade Characters</label>
           <div class="preset-list" id="presetList"></div>
@@ -296,6 +289,45 @@
         </div>
 
         <div class="field">
+          <label>Equipment Slots</label>
+          <div class="stat-input-grid">
+            <div class="field">
+              <label for="equipmentSlot1Select">Slot 1</label>
+              <select id="equipmentSlot1Select" class="equipment-slot-select">
+                <option value="">Empty</option>
+                <option value="Crit Item" data-icon="Crit_Item_Icon.png">Crit Item</option>
+                <option value="Crit Booster" data-icon="Crit_Booster_Icon (1).png">Crit Booster</option>
+                <option value="Block Item" data-icon="Block_Item_Icon (1).png">Block Item</option>
+                <option value="Block Booster" data-icon="Block_Booster_Icon (1).png">Block Booster</option>
+                <option value="Defensive Item" data-icon="Defensive_Item_Icon (1).png">Defensive Item</option>
+              </select>
+            </div>
+            <div class="field">
+              <label for="equipmentSlot2Select">Slot 2</label>
+              <select id="equipmentSlot2Select" class="equipment-slot-select">
+                <option value="">Empty</option>
+                <option value="Crit Item" data-icon="Crit_Item_Icon.png">Crit Item</option>
+                <option value="Crit Booster" data-icon="Crit_Booster_Icon (1).png">Crit Booster</option>
+                <option value="Block Item" data-icon="Block_Item_Icon (1).png">Block Item</option>
+                <option value="Block Booster" data-icon="Block_Booster_Icon (1).png">Block Booster</option>
+                <option value="Defensive Item" data-icon="Defensive_Item_Icon (1).png">Defensive Item</option>
+              </select>
+            </div>
+            <div class="field">
+              <label for="equipmentSlot3Select">Slot 3</label>
+              <select id="equipmentSlot3Select" class="equipment-slot-select">
+                <option value="">Empty</option>
+                <option value="Crit Item" data-icon="Crit_Item_Icon.png">Crit Item</option>
+                <option value="Crit Booster" data-icon="Crit_Booster_Icon (1).png">Crit Booster</option>
+                <option value="Block Item" data-icon="Block_Item_Icon (1).png">Block Item</option>
+                <option value="Block Booster" data-icon="Block_Booster_Icon (1).png">Block Booster</option>
+                <option value="Defensive Item" data-icon="Defensive_Item_Icon (1).png">Defensive Item</option>
+              </select>
+            </div>
+          </div>
+        </div>
+
+        <div class="field">
           <label class="inline-label">
             <input type="checkbox" id="meleeEnabled" checked />
             Melee Attack
@@ -424,6 +456,12 @@
       <div class="wizard-panel" data-tab="ui-test" data-role="ui-test-panel">
         <p class="field-note">Add more UI tests as you build out the wizard.</p>
         <div class="field">
+          <label>Local Assets Folder</label>
+          <button class="pill-btn" id="assetsFolderButton" type="button">Select assets folder</button>
+          <input id="assetsFolderInput" type="file" webkitdirectory multiple hidden />
+          <p class="field-note">Local file fallback only. GitHub Pages should load built-in assets directly.</p>
+        </div>
+        <div class="field">
           <label for="shapeGlowStrength">Shape Glow Strength</label>
           <input id="shapeGlowStrength" type="range" min="0" max="40" value="2" />
         </div>
@@ -504,6 +542,11 @@
 
             <div class="bottom-panel-columns">
               <div class="bottom-panel-left">
+                <div class="hex-slot-row" aria-label="Equipment slots">
+                  <div class="hex-slot"><div class="hex-slot-inner"></div><img id="equipmentSlot1Icon" class="hex-slot-icon" alt="" /></div>
+                  <div class="hex-slot"><div class="hex-slot-inner"></div><img id="equipmentSlot2Icon" class="hex-slot-icon" alt="" /></div>
+                  <div class="hex-slot"><div class="hex-slot-inner"></div><img id="equipmentSlot3Icon" class="hex-slot-icon" alt="" /></div>
+                </div>
                 <div class="unlock-panel">
                   <div class="unlock-title">Unlock</div>
                   <div class="unlock-body" id="unlockRequirementsPreview">Unlock requirements</div>
