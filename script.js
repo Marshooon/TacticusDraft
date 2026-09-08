@@ -2279,7 +2279,14 @@ function drawPhoneFrameForSheet(ctx, state, images, x, y, width, height) {
   ctx.restore();
 }
 async function canvasToBlob(canvas, type, quality) {
-  return new Promise(resolve => canvas.toBlob(resolve, type, quality));
+  return new Promise(resolve => {
+    try {
+      canvas.toBlob(resolve, type, quality);
+    } catch (error) {
+      console.warn("Canvas export failed for", type, error);
+      resolve(null);
+    }
+  });
 }
 
 function downloadBlob(blob, filename) {
@@ -2291,6 +2298,29 @@ function downloadBlob(blob, filename) {
   URL.revokeObjectURL(url);
 }
 
+async function capturePhonePreviewCanvas() {
+  if (!window.html2canvas || !phoneRoot) {
+    return null;
+  }
+
+  try {
+    return await window.html2canvas(phoneRoot, {
+      backgroundColor: null,
+      useCORS: true,
+      allowTaint: false,
+      scale: 2,
+      logging: false,
+      imageTimeout: 15000,
+      scrollX: 0,
+      scrollY: 0,
+      windowWidth: document.documentElement.clientWidth,
+      windowHeight: document.documentElement.clientHeight
+    });
+  } catch (error) {
+    console.warn("Phone DOM capture failed; falling back to canvas renderer.", error);
+    return null;
+  }
+}
 async function renderImageSheetCanvas(renderScale = 1) {
   const config = IMAGE_SHEET_EXPORT_CONFIG;
   const state = getSheetState();
@@ -2349,7 +2379,14 @@ async function renderImageSheetCanvas(renderScale = 1) {
   y = drawSheetSectionTitle(ctx, "Abilities", 64, y + 8);
   y = drawSheetInfoCard(ctx, 64, y, 820, 130, state.activeAbility.name || "Active Ability", state.activeAbility.description, activeAbility);
   drawSheetInfoCard(ctx, 64, y, 820, 130, state.passiveAbility.name || "Passive Ability", state.passiveAbility.description, passiveAbility);
-  drawPhoneFrameForSheet(ctx, state, { background, portrait, activeAbility, passiveAbility, traits, equipment, statHealth: statHealthIcon, statArmor: statArmorIcon, statDamage: statDamageIcon, statMove: statMoveIcon }, 1308, 24, 500, 1000);
+  const phoneBox = { x: 1308, y: 24, width: 500, height: 1000 };
+  const capturedPhone = await capturePhonePreviewCanvas();
+
+  if (capturedPhone) {
+    drawContainImage(ctx, capturedPhone, phoneBox.x, phoneBox.y, phoneBox.width, phoneBox.height);
+  } else {
+    drawPhoneFrameForSheet(ctx, state, { background, portrait, activeAbility, passiveAbility, traits, equipment, statHealth: statHealthIcon, statArmor: statArmorIcon, statDamage: statDamageIcon, statMove: statMoveIcon }, phoneBox.x, phoneBox.y, phoneBox.width, phoneBox.height);
+  }
   return canvas;
 }
 
