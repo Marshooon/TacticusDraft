@@ -2153,7 +2153,7 @@ function drawPhoneFrameForSheet(ctx, state, images, x, y, width, height) {
   roundRectPath(ctx, x + 8, y + 8, width - 16, height - 16, 14);
   ctx.clip();
 
-  const topHeight = height * 0.58;
+  const topHeight = height * 0.57;
   const bottomY = y + topHeight - 4;
   const bottomHeight = height - topHeight;
   const topGradient = ctx.createLinearGradient(0, y, 0, y + topHeight);
@@ -2188,26 +2188,26 @@ function drawPhoneFrameForSheet(ctx, state, images, x, y, width, height) {
     ctx.stroke();
   }
 
-  const circleY = bottomY + 45;
-  drawCircleImage(ctx, images.activeAbility, x + 62, circleY, 40, rarityGradient);
-  drawCircleImage(ctx, images.passiveAbility, x + width - 62, circleY, 40, rarityGradient);
+  const circleY = bottomY + 52;
+  drawCircleImage(ctx, images.activeAbility, x + 68, circleY, 46, rarityGradient);
+  drawCircleImage(ctx, images.passiveAbility, x + width - 68, circleY, 46, rarityGradient);
 
-  const cardW = width * 0.56;
+  const cardW = width * 0.58;
   const cardX = x + (width - cardW) / 2;
   const cardY = bottomY + 14;
-  drawRoundRect(ctx, cardX, cardY, cardW, 62, 0, "rgba(33, 73, 133, 0.92)", "rgba(232, 238, 255, 0.9)", 3);
+  drawRoundRect(ctx, cardX, cardY, cardW, 70, 0, "rgba(33, 73, 133, 0.92)", "rgba(232, 238, 255, 0.9)", 3);
   ctx.fillStyle = "#f8f9ff";
-  ctx.font = "700 25px Montserrat, sans-serif";
+  ctx.font = "700 30px Montserrat, sans-serif";
   ctx.textAlign = "center";
-  ctx.fillText(state.name || "NAME", x + width / 2, cardY + 10);
+  ctx.fillText(state.name || "NAME", x + width / 2, cardY + 9);
   ctx.fillStyle = "#cbd5f5";
-  ctx.font = "400 15px Montserrat, sans-serif";
-  ctx.fillText(state.title || "Title", x + width / 2, cardY + 40);
+  ctx.font = "400 17px Montserrat, sans-serif";
+  ctx.fillText(state.title || "Title", x + width / 2, cardY + 45);
 
   const panelX = x + 22;
-  const panelY = bottomY + 88;
+  const panelY = bottomY + 96;
   const panelW = width - 44;
-  const panelH = bottomHeight - 100;
+  const panelH = bottomHeight - 108;
   bottomPanelFramePath(ctx, panelX, panelY, panelW, panelH);
   ctx.fillStyle = "rgba(5, 8, 13, 0.62)";
   ctx.fill();
@@ -2215,15 +2215,15 @@ function drawPhoneFrameForSheet(ctx, state, images, x, y, width, height) {
   ctx.strokeStyle = rarityGradient;
   ctx.stroke();
 
-  const xpY = panelY + 86;
+  const xpY = panelY + 96;
   ctx.save();
   ctx.beginPath();
   ctx.moveTo(panelX + 20, xpY);
   ctx.lineTo(panelX + panelW - 20, xpY);
-  ctx.lineTo(panelX + panelW - 8, xpY + 9);
-  ctx.lineTo(panelX + panelW - 20, xpY + 18);
-  ctx.lineTo(panelX + 20, xpY + 18);
-  ctx.lineTo(panelX + 8, xpY + 9);
+  ctx.lineTo(panelX + panelW - 10, xpY + 10);
+  ctx.lineTo(panelX + panelW - 22, xpY + 20);
+  ctx.lineTo(panelX + 22, xpY + 20);
+  ctx.lineTo(panelX + 10, xpY + 10);
   ctx.closePath();
   ctx.fillStyle = "#45d6e8";
   ctx.fill();
@@ -2232,12 +2232,12 @@ function drawPhoneFrameForSheet(ctx, state, images, x, y, width, height) {
   ctx.stroke();
   ctx.restore();
   ctx.fillStyle = "#071018";
-  ctx.font = "600 10px Montserrat, sans-serif";
+  ctx.font = "600 11px Montserrat, sans-serif";
   ctx.textAlign = "center";
-  ctx.fillText("Maximum for Current Character Rarity", x + width / 2, xpY + 4);
+  ctx.fillText("Maximum for Current Character Rarity", x + width / 2, xpY + 5);
 
   const leftX = panelX + 24;
-  const leftY = xpY + 42;
+  const leftY = xpY + 48;
   images.equipment.slice(0, 3).forEach((icon, index) => drawSheetHexSlot(ctx, leftX + index * 72, leftY, 58, 66, icon, rarityGradient));
   drawRoundRect(ctx, leftX, leftY + 82, 220, 76, 0, "rgba(13, 20, 34, 0.82)", "rgba(92, 108, 145, 0.75)", 1);
   ctx.fillStyle = "#aeb8d8";
@@ -2245,13 +2245,13 @@ function drawPhoneFrameForSheet(ctx, state, images, x, y, width, height) {
   ctx.textAlign = "left";
   ctx.fillText("UNLOCK", leftX + 12, leftY + 96);
   ctx.fillStyle = "#f8f9ff";
-  ctx.font = "400 15px Montserrat, sans-serif";
+  ctx.font = "400 17px Montserrat, sans-serif";
   wrapCanvasText(ctx, unlockRequirementsPreview?.textContent || "Unlock requirements", leftX + 12, leftY + 122, 190, 20);
 
-  const statX = panelX + panelW * 0.5;
-  const statY = xpY + 36;
-  const cellW = panelW * 0.23;
-  const cellH = 38;
+  const statX = panelX + panelW * 0.47;
+  const statY = xpY + 42;
+  const cellW = panelW * 0.255;
+  const cellH = 42;
   const statData = [
     [images.statHealth, statHealth?.textContent || ""],
     [images.statArmor, statArmor?.textContent || ""],
@@ -2259,19 +2259,19 @@ function drawPhoneFrameForSheet(ctx, state, images, x, y, width, height) {
     [images.statMove, statMove?.textContent || ""]
   ];
   statData.forEach((stat, index) => {
-    const sx = statX + (index % 2) * (cellW + 14);
-    const sy = statY + Math.floor(index / 2) * (cellH + 12);
+    const sx = statX + (index % 2) * (cellW + 10);
+    const sy = statY + Math.floor(index / 2) * (cellH + 10);
     drawSheetIconTextCell(ctx, sx, sy, cellW, cellH, stat[0], stat[1]);
   });
 
   [meleeAttackRow, rangeAttackRow, critRow, blockRow].filter(row => row && !row.classList.contains("is-hidden")).slice(0, 4).forEach((row, index) => {
-    const sy = statY + 104 + index * 42;
+    const sy = statY + 112 + index * 44;
     const label = row.textContent.trim().replace(/\s+/g, " ").slice(0, 26);
-    drawRoundRect(ctx, statX, sy, cellW * 2 + 14, 34, 0, "rgba(12, 18, 30, 0.78)", "rgba(92, 108, 145, 0.75)", 1);
+    drawRoundRect(ctx, statX, sy, cellW * 2 + 10, 38, 0, "rgba(12, 18, 30, 0.78)", "rgba(92, 108, 145, 0.75)", 1);
     ctx.fillStyle = "#f8f9ff";
-    ctx.font = "600 14px Montserrat, sans-serif";
+    ctx.font = "600 16px Montserrat, sans-serif";
     ctx.textAlign = "left";
-    ctx.fillText(label, statX + 10, sy + 8);
+    ctx.fillText(label, statX + 10, sy + 10);
   });
 
   state.traits.slice(0, 6).forEach((trait, index) => drawCircleImage(ctx, images.traits[index], x + width - 48, y + 42 + index * 46, 18, "#b89b72"));
@@ -2348,7 +2348,7 @@ async function renderImageSheetCanvas(renderScale = 1) {
   y = drawSheetSectionTitle(ctx, "Abilities", 64, y + 8);
   y = drawSheetInfoCard(ctx, 64, y, 820, 130, state.activeAbility.name || "Active Ability", state.activeAbility.description, activeAbility);
   drawSheetInfoCard(ctx, 64, y, 820, 130, state.passiveAbility.name || "Passive Ability", state.passiveAbility.description, passiveAbility);
-  drawPhoneFrameForSheet(ctx, state, { background, portrait, activeAbility, passiveAbility, traits, equipment, statHealth: statHealthIcon, statArmor: statArmorIcon, statDamage: statDamageIcon, statMove: statMoveIcon }, 1280, 40, 474, 948);
+  drawPhoneFrameForSheet(ctx, state, { background, portrait, activeAbility, passiveAbility, traits, equipment, statHealth: statHealthIcon, statArmor: statArmorIcon, statDamage: statDamageIcon, statMove: statMoveIcon }, 1292, 18, 520, 1040);
   return canvas;
 }
 
