@@ -2099,12 +2099,60 @@ function drawSheetTraitList(ctx, x, y, width, traits, customTrait, traitImages) 
   return y;
 }
 
+function drawSheetIconTextCell(ctx, x, y, width, height, icon, text, options = {}) {
+  drawRoundRect(ctx, x, y, width, height, 0, options.fill || "rgba(12, 18, 30, 0.78)", options.stroke || "rgba(92, 108, 145, 0.75)", options.lineWidth || 1);
+  if (icon) drawContainImage(ctx, icon, x + 8, y + 7, height - 14, height - 14);
+  ctx.fillStyle = options.color || "#f8f9ff";
+  ctx.font = options.font || "600 16px Montserrat, sans-serif";
+  ctx.textAlign = "left";
+  ctx.textBaseline = "middle";
+  ctx.fillText(String(text || ""), x + height + 6, y + height / 2 + 1);
+}
+
+function drawSheetHexSlot(ctx, x, y, width, height, icon, strokeStyle) {
+  ctx.save();
+  ctx.beginPath();
+  ctx.moveTo(x + width * 0.5, y + height * 0.02);
+  ctx.lineTo(x + width * 0.96, y + height * 0.27);
+  ctx.lineTo(x + width * 0.96, y + height * 0.73);
+  ctx.lineTo(x + width * 0.5, y + height * 0.98);
+  ctx.lineTo(x + width * 0.04, y + height * 0.73);
+  ctx.lineTo(x + width * 0.04, y + height * 0.27);
+  ctx.closePath();
+  ctx.fillStyle = "rgba(9, 15, 26, 0.76)";
+  ctx.fill();
+  ctx.lineWidth = 3;
+  ctx.strokeStyle = strokeStyle;
+  ctx.stroke();
+  ctx.clip();
+  if (icon) drawContainImage(ctx, icon, x + width * 0.24, y + height * 0.24, width * 0.52, height * 0.52);
+  ctx.restore();
+}
+
+function bottomPanelFramePath(ctx, x, y, width, height) {
+  const topY = y + 26;
+  const shoulderY = y + 74;
+  const sideInset = 8;
+  const neckLeft = x + width * 0.28;
+  const neckRight = x + width * 0.72;
+  ctx.beginPath();
+  ctx.moveTo(x + sideInset, shoulderY);
+  ctx.lineTo(x + width * 0.14, shoulderY);
+  ctx.quadraticCurveTo(x + width * 0.23, shoulderY, neckLeft, topY);
+  ctx.lineTo(neckRight, topY);
+  ctx.quadraticCurveTo(x + width * 0.77, shoulderY, x + width * 0.86, shoulderY);
+  ctx.lineTo(x + width - sideInset, shoulderY);
+  ctx.lineTo(x + width - sideInset, y + height - 6);
+  ctx.lineTo(x + sideInset, y + height - 6);
+  ctx.closePath();
+}
 function drawPhoneFrameForSheet(ctx, state, images, x, y, width, height) {
   const rarityGradient = createSheetLinearGradient(ctx, x, y, x + width, y + height, getSheetGradientStops(state.rarity));
   drawRoundRect(ctx, x, y, width, height, 18, "#05080d", "#000", 4);
   ctx.save();
   roundRectPath(ctx, x + 8, y + 8, width - 16, height - 16, 14);
   ctx.clip();
+
   const topHeight = height * 0.58;
   const bottomY = y + topHeight - 4;
   const bottomHeight = height - topHeight;
@@ -2114,6 +2162,7 @@ function drawPhoneFrameForSheet(ctx, state, images, x, y, width, height) {
   ctx.fillStyle = topGradient;
   ctx.fillRect(x + 8, y + 8, width - 16, topHeight);
   if (images.background) drawCoverImage(ctx, images.background, x + 8, y + 8, width - 16, topHeight);
+
   if (images.portrait) drawContainImage(ctx, images.portrait, x + width * 0.11, y + topHeight * 0.06, width * 0.78, topHeight * 0.86);
   else {
     ctx.fillStyle = "rgba(248,249,255,0.75)";
@@ -2121,29 +2170,32 @@ function drawPhoneFrameForSheet(ctx, state, images, x, y, width, height) {
     ctx.textAlign = "center";
     ctx.fillText("PORTRAIT", x + width / 2, y + topHeight * 0.48);
   }
+
   ctx.fillStyle = "#060a11";
   ctx.fillRect(x + 8, bottomY, width - 16, bottomHeight);
   const scanner = ctx.createLinearGradient(x, bottomY, x + width, bottomY + bottomHeight);
-  scanner.addColorStop(0, "rgba(63, 232, 255, 0.18)");
-  scanner.addColorStop(0.45, "rgba(14, 48, 76, 0.24)");
-  scanner.addColorStop(1, "rgba(255, 228, 156, 0.13)");
+  scanner.addColorStop(0, "rgba(48, 214, 238, 0.16)");
+  scanner.addColorStop(0.45, "rgba(9, 30, 48, 0.5)");
+  scanner.addColorStop(1, "rgba(255, 228, 156, 0.11)");
   ctx.fillStyle = scanner;
   ctx.fillRect(x + 8, bottomY, width - 16, bottomHeight);
-  ctx.strokeStyle = "rgba(96, 224, 255, 0.12)";
+  ctx.strokeStyle = "rgba(96, 224, 255, 0.16)";
   ctx.lineWidth = 1;
-  for (let lineY = bottomY + 20; lineY < y + height - 20; lineY += 18) {
+  for (let lineY = bottomY + 18; lineY < y + height - 20; lineY += 14) {
     ctx.beginPath();
     ctx.moveTo(x + 28, lineY);
     ctx.lineTo(x + width - 28, lineY);
     ctx.stroke();
   }
+
   const circleY = bottomY + 45;
   drawCircleImage(ctx, images.activeAbility, x + 62, circleY, 40, rarityGradient);
   drawCircleImage(ctx, images.passiveAbility, x + width - 62, circleY, 40, rarityGradient);
+
   const cardW = width * 0.56;
   const cardX = x + (width - cardW) / 2;
   const cardY = bottomY + 14;
-  drawRoundRect(ctx, cardX, cardY, cardW, 62, 0, "rgba(33, 73, 133, 0.9)", rarityGradient, 4);
+  drawRoundRect(ctx, cardX, cardY, cardW, 62, 0, "rgba(33, 73, 133, 0.92)", "rgba(232, 238, 255, 0.9)", 3);
   ctx.fillStyle = "#f8f9ff";
   ctx.font = "700 25px Montserrat, sans-serif";
   ctx.textAlign = "center";
@@ -2151,40 +2203,80 @@ function drawPhoneFrameForSheet(ctx, state, images, x, y, width, height) {
   ctx.fillStyle = "#cbd5f5";
   ctx.font = "400 15px Montserrat, sans-serif";
   ctx.fillText(state.title || "Title", x + width / 2, cardY + 40);
-  const panelX = x + 26;
-  const panelY = bottomY + 100;
-  const panelW = width - 52;
-  const panelH = bottomHeight - 118;
-  drawRoundRect(ctx, panelX, panelY, panelW, panelH, 4, "rgba(5, 8, 13, 0.66)", rarityGradient, 4);
-  drawRoundRect(ctx, panelX + 12, panelY + 36, panelW - 24, 18, 9, "#45d6e8", null);
+
+  const panelX = x + 22;
+  const panelY = bottomY + 88;
+  const panelW = width - 44;
+  const panelH = bottomHeight - 100;
+  bottomPanelFramePath(ctx, panelX, panelY, panelW, panelH);
+  ctx.fillStyle = "rgba(5, 8, 13, 0.62)";
+  ctx.fill();
+  ctx.lineWidth = 4;
+  ctx.strokeStyle = rarityGradient;
+  ctx.stroke();
+
+  const xpY = panelY + 86;
+  ctx.save();
+  ctx.beginPath();
+  ctx.moveTo(panelX + 20, xpY);
+  ctx.lineTo(panelX + panelW - 20, xpY);
+  ctx.lineTo(panelX + panelW - 8, xpY + 9);
+  ctx.lineTo(panelX + panelW - 20, xpY + 18);
+  ctx.lineTo(panelX + 20, xpY + 18);
+  ctx.lineTo(panelX + 8, xpY + 9);
+  ctx.closePath();
+  ctx.fillStyle = "#45d6e8";
+  ctx.fill();
+  ctx.lineWidth = 2;
+  ctx.strokeStyle = "#b89b72";
+  ctx.stroke();
+  ctx.restore();
   ctx.fillStyle = "#071018";
-  ctx.font = "600 11px Montserrat, sans-serif";
-  ctx.fillText("Maximum for Current Character Rarity", x + width / 2, panelY + 39);
-  const statX = panelX + panelW * 0.48;
-  const statY = panelY + 74;
+  ctx.font = "600 10px Montserrat, sans-serif";
+  ctx.textAlign = "center";
+  ctx.fillText("Maximum for Current Character Rarity", x + width / 2, xpY + 4);
+
+  const leftX = panelX + 24;
+  const leftY = xpY + 42;
+  images.equipment.slice(0, 3).forEach((icon, index) => drawSheetHexSlot(ctx, leftX + index * 72, leftY, 58, 66, icon, rarityGradient));
+  drawRoundRect(ctx, leftX, leftY + 82, 220, 76, 0, "rgba(13, 20, 34, 0.82)", "rgba(92, 108, 145, 0.75)", 1);
+  ctx.fillStyle = "#aeb8d8";
+  ctx.font = "700 13px Montserrat, sans-serif";
+  ctx.textAlign = "left";
+  ctx.fillText("UNLOCK", leftX + 12, leftY + 96);
+  ctx.fillStyle = "#f8f9ff";
+  ctx.font = "400 15px Montserrat, sans-serif";
+  wrapCanvasText(ctx, unlockRequirementsPreview?.textContent || "Unlock requirements", leftX + 12, leftY + 122, 190, 20);
+
+  const statX = panelX + panelW * 0.5;
+  const statY = xpY + 36;
   const cellW = panelW * 0.23;
   const cellH = 38;
-  [["??", statHealth?.textContent || ""], ["??", statArmor?.textContent || ""], ["??", statDamage?.textContent || ""], ["?", statMove?.textContent || ""]].forEach((stat, index) => {
+  const statData = [
+    [images.statHealth, statHealth?.textContent || ""],
+    [images.statArmor, statArmor?.textContent || ""],
+    [images.statDamage, statDamage?.textContent || ""],
+    [images.statMove, statMove?.textContent || ""]
+  ];
+  statData.forEach((stat, index) => {
     const sx = statX + (index % 2) * (cellW + 14);
     const sy = statY + Math.floor(index / 2) * (cellH + 12);
-    drawRoundRect(ctx, sx, sy, cellW, cellH, 0, "rgba(16, 22, 34, 0.75)", "rgba(95, 109, 145, 0.8)", 1);
-    ctx.fillStyle = "#f8f9ff";
-    ctx.font = "600 17px Montserrat, sans-serif";
-    ctx.textAlign = "left";
-    ctx.fillText(stat[0] + " " + stat[1], sx + 10, sy + 9);
+    drawSheetIconTextCell(ctx, sx, sy, cellW, cellH, stat[0], stat[1]);
   });
+
   [meleeAttackRow, rangeAttackRow, critRow, blockRow].filter(row => row && !row.classList.contains("is-hidden")).slice(0, 4).forEach((row, index) => {
-    const sy = statY + 100 + index * 42;
-    drawRoundRect(ctx, statX, sy, cellW * 2 + 14, 34, 0, "rgba(16, 22, 34, 0.75)", "rgba(95, 109, 145, 0.8)", 1);
+    const sy = statY + 104 + index * 42;
+    const label = row.textContent.trim().replace(/\s+/g, " ").slice(0, 26);
+    drawRoundRect(ctx, statX, sy, cellW * 2 + 14, 34, 0, "rgba(12, 18, 30, 0.78)", "rgba(92, 108, 145, 0.75)", 1);
     ctx.fillStyle = "#f8f9ff";
-    ctx.font = "600 15px Montserrat, sans-serif";
+    ctx.font = "600 14px Montserrat, sans-serif";
     ctx.textAlign = "left";
-    ctx.fillText(row.textContent.trim().replace(/\s+/g, " ").slice(0, 26), statX + 10, sy + 8);
+    ctx.fillText(label, statX + 10, sy + 8);
   });
+
   state.traits.slice(0, 6).forEach((trait, index) => drawCircleImage(ctx, images.traits[index], x + width - 48, y + 42 + index * 46, 18, "#b89b72"));
   ctx.restore();
 }
-
 async function canvasToBlob(canvas, type, quality) {
   return new Promise(resolve => canvas.toBlob(resolve, type, quality));
 }
@@ -2203,13 +2295,29 @@ async function renderImageSheetCanvas(renderScale = 1) {
   const state = getSheetState();
   const traitImageSources = state.traits.map(trait => trait.icon);
   if (state.customTrait.enabled) traitImageSources.push(state.customTrait.icon);
-  const [background, portrait, activeAbility, passiveAbility, ...traits] = await Promise.all([
+  const equipmentSources = equipmentSlotIcons.map(icon => icon?.getAttribute("src") || icon?.src || "");
+  const statSources = [
+    "assets/statIcons/Health_Icon.png",
+    "assets/statIcons/Armor_Icon.png",
+    "assets/statIcons/Damage_Icon.png",
+    "assets/statIcons/Move_Icon.png"
+  ];
+  const loadedImages = await Promise.all([
     loadSheetImage(state.background),
     loadSheetImage(state.portrait),
     loadSheetImage(state.activeAbility.icon),
     loadSheetImage(state.passiveAbility.icon),
-    ...traitImageSources.map(loadSheetImage)
+    ...traitImageSources.map(loadSheetImage),
+    ...equipmentSources.map(loadSheetImage),
+    ...statSources.map(loadSheetImage)
   ]);
+  const background = loadedImages[0];
+  const portrait = loadedImages[1];
+  const activeAbility = loadedImages[2];
+  const passiveAbility = loadedImages[3];
+  const traits = loadedImages.slice(4, 4 + traitImageSources.length);
+  const equipment = loadedImages.slice(4 + traitImageSources.length, 4 + traitImageSources.length + equipmentSources.length);
+  const [statHealthIcon, statArmorIcon, statDamageIcon, statMoveIcon] = loadedImages.slice(4 + traitImageSources.length + equipmentSources.length);
   const canvas = document.createElement("canvas");
   canvas.width = Math.round(config.width * renderScale);
   canvas.height = Math.round(config.height * renderScale);
@@ -2240,7 +2348,7 @@ async function renderImageSheetCanvas(renderScale = 1) {
   y = drawSheetSectionTitle(ctx, "Abilities", 64, y + 8);
   y = drawSheetInfoCard(ctx, 64, y, 820, 130, state.activeAbility.name || "Active Ability", state.activeAbility.description, activeAbility);
   drawSheetInfoCard(ctx, 64, y, 820, 130, state.passiveAbility.name || "Passive Ability", state.passiveAbility.description, passiveAbility);
-  drawPhoneFrameForSheet(ctx, state, { background, portrait, activeAbility, passiveAbility, traits }, 1280, 40, 474, 948);
+  drawPhoneFrameForSheet(ctx, state, { background, portrait, activeAbility, passiveAbility, traits, equipment, statHealth: statHealthIcon, statArmor: statArmorIcon, statDamage: statDamageIcon, statMove: statMoveIcon }, 1280, 40, 474, 948);
   return canvas;
 }
 
