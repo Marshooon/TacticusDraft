@@ -1914,25 +1914,34 @@ function drawPlaceholder(ctx, x, y, width, height, label = "?") {
   ctx.fillText(label, x + width / 2, y + height / 2);
 }
 
+function getDrawableSize(image) {
+  return {
+    width: image?.naturalWidth || image?.videoWidth || image?.width || 0,
+    height: image?.naturalHeight || image?.videoHeight || image?.height || 0
+  };
+}
+
 function drawCoverImage(ctx, image, x, y, width, height) {
-  if (!image) {
+  const sourceSize = getDrawableSize(image);
+  if (!image || !sourceSize.width || !sourceSize.height) {
     drawPlaceholder(ctx, x, y, width, height, "image");
     return;
   }
-  const scale = Math.max(width / image.naturalWidth, height / image.naturalHeight);
-  const drawWidth = image.naturalWidth * scale;
-  const drawHeight = image.naturalHeight * scale;
+  const scale = Math.max(width / sourceSize.width, height / sourceSize.height);
+  const drawWidth = sourceSize.width * scale;
+  const drawHeight = sourceSize.height * scale;
   ctx.drawImage(image, x + (width - drawWidth) / 2, y + (height - drawHeight) / 2, drawWidth, drawHeight);
 }
 
 function drawContainImage(ctx, image, x, y, width, height) {
-  if (!image) {
+  const sourceSize = getDrawableSize(image);
+  if (!image || !sourceSize.width || !sourceSize.height) {
     drawPlaceholder(ctx, x, y, width, height, "image");
     return;
   }
-  const scale = Math.min(width / image.naturalWidth, height / image.naturalHeight);
-  const drawWidth = image.naturalWidth * scale;
-  const drawHeight = image.naturalHeight * scale;
+  const scale = Math.min(width / sourceSize.width, height / sourceSize.height);
+  const drawWidth = sourceSize.width * scale;
+  const drawHeight = sourceSize.height * scale;
   ctx.drawImage(image, x + (width - drawWidth) / 2, y + (height - drawHeight) / 2, drawWidth, drawHeight);
 }
 
@@ -2321,6 +2330,27 @@ async function capturePhonePreviewCanvas() {
     return null;
   }
 }
+function canvasHasVisiblePixels(canvas) {
+  if (!canvas?.width || !canvas?.height) return false;
+
+  try {
+    const context = canvas.getContext("2d", { willReadFrequently: true });
+    const sampleWidth = Math.min(canvas.width, 96);
+    const sampleHeight = Math.min(canvas.height, 192);
+    const startX = Math.max(0, Math.floor((canvas.width - sampleWidth) / 2));
+    const startY = Math.max(0, Math.floor((canvas.height - sampleHeight) / 2));
+    const pixels = context.getImageData(startX, startY, sampleWidth, sampleHeight).data;
+
+    for (let index = 3; index < pixels.length; index += 4) {
+      if (pixels[index] > 8) return true;
+    }
+  } catch (error) {
+    console.warn("Could not inspect captured phone canvas; using it anyway.", error);
+    return true;
+  }
+
+  return false;
+}
 async function renderImageSheetCanvas(renderScale = 1) {
   const config = IMAGE_SHEET_EXPORT_CONFIG;
   const state = getSheetState();
@@ -2382,9 +2412,10 @@ async function renderImageSheetCanvas(renderScale = 1) {
   const phoneBox = { x: 1308, y: 24, width: 500, height: 1000 };
   const capturedPhone = await capturePhonePreviewCanvas();
 
-  if (capturedPhone) {
+  if (capturedPhone && canvasHasVisiblePixels(capturedPhone)) {
     drawContainImage(ctx, capturedPhone, phoneBox.x, phoneBox.y, phoneBox.width, phoneBox.height);
   } else {
+    console.warn("Phone DOM capture was empty; falling back to manual sheet renderer.");
     drawPhoneFrameForSheet(ctx, state, { background, portrait, activeAbility, passiveAbility, traits, equipment, statHealth: statHealthIcon, statArmor: statArmorIcon, statDamage: statDamageIcon, statMove: statMoveIcon }, phoneBox.x, phoneBox.y, phoneBox.width, phoneBox.height);
   }
   return canvas;
