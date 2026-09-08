@@ -2314,8 +2314,10 @@ async function capturePhonePreviewCanvas() {
 
   const baseWidth = Number(phoneRoot.dataset.phoneWidth) || 474;
   const baseHeight = Number(phoneRoot.dataset.phoneHeight) || 948;
+  const captureSource = phoneShell || phoneRoot;
   const stage = document.createElement("div");
-  const clonedPhone = phoneRoot.cloneNode(true);
+  const clonedShell = captureSource.cloneNode(true);
+  const clonedPhone = clonedShell.id === "phoneRoot" ? clonedShell : clonedShell.querySelector("#phoneRoot");
 
   stage.style.position = "fixed";
   stage.style.left = "0";
@@ -2326,18 +2328,31 @@ async function capturePhonePreviewCanvas() {
   stage.style.zIndex = "2147483647";
   stage.style.transform = "translateX(-10000px)";
   stage.style.background = "transparent";
+  stage.style.overflow = "visible";
 
-  clonedPhone.style.width = `${baseWidth}px`;
-  clonedPhone.style.height = `${baseHeight}px`;
-  clonedPhone.style.transform = "none";
-  clonedPhone.style.transformOrigin = "top left";
+  clonedShell.style.width = `${baseWidth}px`;
+  clonedShell.style.height = `${baseHeight}px`;
+  clonedShell.style.transform = "none";
+  clonedShell.style.transformOrigin = "top left";
 
-  stage.appendChild(clonedPhone);
+  if (clonedPhone) {
+    clonedPhone.style.width = `${baseWidth}px`;
+    clonedPhone.style.height = `${baseHeight}px`;
+    clonedPhone.style.transform = "none";
+    clonedPhone.style.transformOrigin = "top left";
+  }
+
+  clonedShell.querySelectorAll(".is-visible, .is-pinned").forEach(element => {
+    element.classList.remove("is-visible", "is-pinned");
+    element.setAttribute("aria-hidden", "true");
+  });
+
+  stage.appendChild(clonedShell);
   document.body.appendChild(stage);
 
   try {
     await Promise.all(
-      Array.from(clonedPhone.querySelectorAll("img"))
+      Array.from(clonedShell.querySelectorAll("img"))
         .filter(image => !image.complete)
         .map(image => new Promise(resolve => {
           image.addEventListener("load", resolve, { once: true });
@@ -2345,7 +2360,7 @@ async function capturePhonePreviewCanvas() {
         }))
     );
 
-    return await window.html2canvas(clonedPhone, {
+    return await window.html2canvas(clonedShell, {
       backgroundColor: null,
       useCORS: true,
       allowTaint: false,
