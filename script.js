@@ -732,10 +732,7 @@ function positionCharacterTooltip() {
   const tooltipWidth = characterTooltip.offsetWidth;
   const tooltipHeight = characterTooltip.offsetHeight;
   let left = localX - tooltipWidth / 2;
-  let top = localTop - tooltipHeight - 10;
-  if (top < 8) {
-    top = localBottom + 10;
-  }
+  let top = Math.max(8, localTop - tooltipHeight - 10);
   const minLeft = 8;
   const maxLeft = baseWidth - tooltipWidth - 8;
   const minTop = 8;
@@ -2822,6 +2819,18 @@ async function exportPhoneHtml() {
       color: #f8f9ff;
       font-family: "Montserrat", sans-serif;
     }
+
+    #exportPhoneRoot .bottom-panel .ability-circle {
+      border: var(--ability-circle-border, 4px) solid transparent;
+      background:
+        radial-gradient(circle at 30% 20%, rgba(255, 255, 255, 0.08), rgba(5, 7, 11, 0.9)) padding-box,
+        var(--rarity-ring) border-box;
+      background-clip: padding-box, border-box;
+      background-origin: padding-box, border-box;
+      box-shadow:
+        0 0 20px var(--rarity-glow),
+        inset 0 0 8px rgba(0, 0, 0, 0.6);
+    }
     .stack-trait-tooltip {
       position: absolute;
       max-width: 260px;
@@ -3096,10 +3105,7 @@ async function exportPhoneHtml() {
           const tooltipWidth = characterTooltip.offsetWidth;
           const tooltipHeight = characterTooltip.offsetHeight;
           let left = localX - tooltipWidth / 2;
-          let top = localTop - tooltipHeight - 10;
-          if (top < 8) {
-            top = localBottom + 10;
-          }
+          let top = Math.max(8, localTop - tooltipHeight - 10);
           const minLeft = 8;
           const maxLeft = baseWidth - tooltipWidth - 8;
           const minTop = 8;
