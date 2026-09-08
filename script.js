@@ -2312,22 +2312,58 @@ async function capturePhonePreviewCanvas() {
     return null;
   }
 
+  const baseWidth = Number(phoneRoot.dataset.phoneWidth) || 474;
+  const baseHeight = Number(phoneRoot.dataset.phoneHeight) || 948;
+  const stage = document.createElement("div");
+  const clonedPhone = phoneRoot.cloneNode(true);
+
+  stage.style.position = "fixed";
+  stage.style.left = "0";
+  stage.style.top = "0";
+  stage.style.width = `${baseWidth}px`;
+  stage.style.height = `${baseHeight}px`;
+  stage.style.pointerEvents = "none";
+  stage.style.zIndex = "2147483647";
+  stage.style.transform = "translateX(-10000px)";
+  stage.style.background = "transparent";
+
+  clonedPhone.style.width = `${baseWidth}px`;
+  clonedPhone.style.height = `${baseHeight}px`;
+  clonedPhone.style.transform = "none";
+  clonedPhone.style.transformOrigin = "top left";
+
+  stage.appendChild(clonedPhone);
+  document.body.appendChild(stage);
+
   try {
-    return await window.html2canvas(phoneRoot, {
+    await Promise.all(
+      Array.from(clonedPhone.querySelectorAll("img"))
+        .filter(image => !image.complete)
+        .map(image => new Promise(resolve => {
+          image.addEventListener("load", resolve, { once: true });
+          image.addEventListener("error", resolve, { once: true });
+        }))
+    );
+
+    return await window.html2canvas(clonedPhone, {
       backgroundColor: null,
       useCORS: true,
       allowTaint: false,
       scale: 2,
       logging: false,
       imageTimeout: 15000,
+      width: baseWidth,
+      height: baseHeight,
+      windowWidth: baseWidth,
+      windowHeight: baseHeight,
       scrollX: 0,
-      scrollY: 0,
-      windowWidth: document.documentElement.clientWidth,
-      windowHeight: document.documentElement.clientHeight
+      scrollY: 0
     });
   } catch (error) {
     console.warn("Phone DOM capture failed; falling back to canvas renderer.", error);
     return null;
+  } finally {
+    stage.remove();
   }
 }
 function canvasHasVisiblePixels(canvas) {
