@@ -45,6 +45,22 @@
         </div>
 
         <div class="field">
+          <label>Rarity</label>
+          <div class="choice-row" id="rarityChoices">
+            <button class="pill-btn" data-rarity="common">Common</button>
+            <button class="pill-btn" data-rarity="uncommon">Uncommon</button>
+            <button class="pill-btn" data-rarity="rare">Rare</button>
+            <button class="pill-btn" data-rarity="epic">Epic</button>
+            <button class="pill-btn active" data-rarity="legendary">Legendary</button>
+          </div>
+        </div>
+
+        <div class="field">
+          <label for="unlockRequirementsInput">Unlock Requirements</label>
+          <textarea id="unlockRequirementsInput" placeholder="Unlock requirements"></textarea>
+        </div>
+
+        <div class="field section-divider">
           <label>Background</label>
           <div class="trait-list bg-list" id="bgPresetList"></div>
         </div>
@@ -120,22 +136,6 @@
             <input id="portraitGroundOffsetY" type="range" min="-80" max="80" value="18" />
           </div>
         </details>
-
-        <div class="field">
-          <label>Rarity</label>
-          <div class="choice-row" id="rarityChoices">
-            <button class="pill-btn" data-rarity="common">Common</button>
-            <button class="pill-btn" data-rarity="uncommon">Uncommon</button>
-            <button class="pill-btn" data-rarity="rare">Rare</button>
-            <button class="pill-btn" data-rarity="epic">Epic</button>
-            <button class="pill-btn active" data-rarity="legendary">Legendary</button>
-          </div>
-        </div>
-
-        <div class="field">
-          <label for="unlockRequirementsInput">Unlock Requirements</label>
-          <textarea id="unlockRequirementsInput" placeholder="Unlock requirements"></textarea>
-        </div>
       </div>
 
       <div class="wizard-panel" data-tab="abilities">
@@ -266,7 +266,7 @@
       </div>
 
       <div class="wizard-panel" data-tab="stats">
-        <div class="field">
+        <div class="field stats-section">
           <label>Core Stats</label>
           <div class="stat-input-grid">
             <div class="field">
@@ -288,9 +288,9 @@
           </div>
         </div>
 
-        <div class="field">
+        <div class="field stats-section section-divider">
           <label>Equipment Slots</label>
-          <div class="stat-input-grid">
+          <div class="equipment-input-row">
             <div class="field">
               <label for="equipmentSlot1Select">Slot 1</label>
               <select id="equipmentSlot1Select" class="equipment-slot-select">
@@ -327,7 +327,7 @@
           </div>
         </div>
 
-        <div class="field">
+        <div class="field stats-section section-divider">
           <label class="inline-label">
             <input type="checkbox" id="meleeEnabled" checked />
             Melee Attack
@@ -365,7 +365,7 @@
           </div>
         </div>
 
-        <div class="field">
+        <div class="field stats-section section-divider">
           <label class="inline-label">
             <input type="checkbox" id="rangeEnabled" checked />
             Ranged Attack
@@ -410,7 +410,7 @@
           </div>
         </div>
 
-        <div class="field">
+        <div class="field stats-section section-divider">
           <label class="inline-label">
             <input type="checkbox" id="critEnabled" checked />
             Crit Stats
@@ -427,7 +427,7 @@
           </div>
         </div>
 
-        <div class="field">
+        <div class="field stats-section">
           <label class="inline-label">
             <input type="checkbox" id="blockEnabled" checked />
             Block Stats
@@ -449,6 +449,7 @@
         <div class="field">
           <label>Export</label>
           <button class="pill-btn" id="exportHtmlButton" type="button">Export HTML</button>
+          <button class="pill-btn" id="exportImageButton" type="button">Export Image Sheet</button>
           <button class="pill-btn" id="exportPresetButton" type="button">Export Preset JSON</button>
         </div>
       </div>
@@ -510,6 +511,7 @@
 
           <section class="bottom-panel">
             <div class="bottom-panel-top">
+            <div class="star-row" id="rarityStarRow" aria-label="Rarity stars"></div>
             <div class="ability-circle ability-left" data-tooltip-id="activeAbilityTooltip">
               <img id="activeAbilityIcon" class="ability-icon" alt="Active ability" />
               <span class="ability-placeholder">Active</span>
@@ -584,7 +586,7 @@
                       <span class="attack-label" id="meleeTypeLabel">Bio</span>
                     </div>
                     <div class="attack-hits">
-                      <img class="attack-icon attack-hits-icon" src="assets/statIcons/Damage_Icon.png" alt="Hits" />
+                      <img class="attack-icon attack-hits-icon" src="assets/statIcons/hits.png" alt="Hits" />
                       <span id="meleeHits">1</span>
                     </div>
                   </div>
@@ -600,7 +602,7 @@
                       <span class="attack-label" id="rangeTypeLabel">Pulse</span>
                     </div>
                     <div class="attack-hits">
-                      <img class="attack-icon attack-hits-icon" src="assets/statIcons/Damage_Icon.png" alt="Hits" />
+                      <img class="attack-icon attack-hits-icon" src="assets/statIcons/hits.png" alt="Hits" />
                       <span id="rangeHits">1</span>
                     </div>
                   </div>
@@ -641,6 +643,14 @@
                   <stop offset="85%" stop-color="var(--rarity-stop-4)" />
                   <stop offset="100%" stop-color="var(--rarity-stop-5)" />
                 </linearGradient>
+                <linearGradient id="bottomPanelFill" x1="0" y1="0" x2="0" y2="120" gradientUnits="userSpaceOnUse">
+                  <stop offset="0%" stop-color="#111a27" stop-opacity="0.92" />
+                  <stop offset="45%" stop-color="#070d16" stop-opacity="0.96" />
+                  <stop offset="100%" stop-color="#040810" stop-opacity="0.98" />
+                </linearGradient>
+                <pattern id="bottomPanelTexture" width="12" height="12" patternUnits="userSpaceOnUse">
+                  <path d="M0 11.5 H12 M1 12 L12 1" stroke="#47e4ff" stroke-opacity="0.09" stroke-width="0.35" />
+                </pattern>
                 <linearGradient id="rarityStrokeAnimated" x1="0" y1="0" x2="100" y2="0" gradientUnits="userSpaceOnUse">
                   <stop offset="0%" stop-color="var(--rarity-stop-1)" />
                   <stop offset="30%" stop-color="var(--rarity-stop-2)" />
@@ -660,6 +670,8 @@
               <!-- Draw the top line -->
               <!-- Arc down into the right shoulder (rounded 90) -->
               <!-- Run to the right side, then down to bottom and close -->
+              <path class="frame-fill" d="M-0.9 118.9 L-0.9 23 L10.6 23 A8 8 0 0 0 18.6 15 L18.6 4 L81.4 4 L81.4 15 A8 8 0 0 0 89.4 23 L100.9 23 L100.9 118.9 Z" />
+              <path class="frame-texture" d="M-0.9 118.9 L-0.9 23 L10.6 23 A8 8 0 0 0 18.6 15 L18.6 4 L81.4 4 L81.4 15 A8 8 0 0 0 89.4 23 L100.9 23 L100.9 118.9 Z" />
               <path class="frame-blur" d="M-0.9 118.9 L-0.9 23 L10.6 23 A8 8 0 0 0 18.6 15 L18.6 4 L81.4 4 L81.4 15 A8 8 0 0 0 89.4 23 L100.9 23 L100.9 118.9 Z" />
               <path class="frame-path" d="M-0.9 118.9 L-0.9 23 L10.6 23 A8 8 0 0 0 18.6 15 L18.6 4 L81.4 4 L81.4 15 A8 8 0 0 0 89.4 23 L100.9 23 L100.9 118.9 Z" />
             </svg>
