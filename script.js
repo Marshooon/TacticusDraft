@@ -2670,7 +2670,13 @@ async function exportPhoneHtml() {
     });
   };
 
-  const cssText = "";
+  const cssText = Array.from(document.styleSheets).flatMap((sheet) => {
+    try {
+      return Array.from(sheet.cssRules || []).map(rule => rule.cssText);
+    } catch (err) {
+      return [];
+    }
+  }).join("\n");
 
   const clone = phoneRoot.cloneNode(true);
   clone.setAttribute("id", "exportPhoneRoot");
@@ -2713,15 +2719,8 @@ async function exportPhoneHtml() {
     targetNode.appendChild(pseudoEl);
   };
 
-  inlineComputedStyles(phoneRoot, clone);
-  const sourceNodes = [phoneRoot, ...phoneRoot.querySelectorAll("*")];
-  const targetNodes = [clone, ...clone.querySelectorAll("*")];
-  sourceNodes.forEach((sourceNode, index) => {
-    const targetNode = targetNodes[index];
-    if (!targetNode) return;
-    addPseudoClone(sourceNode, targetNode, "::before");
-    addPseudoClone(sourceNode, targetNode, "::after");
-  });
+  // Keep the clone class-based. The full stylesheet is embedded once below,
+  // so pseudo-elements and normal CSS can render naturally without massive inline styles.
 
   const collectCssVars = () => {
     const vars = new Map();
@@ -2795,6 +2794,7 @@ async function exportPhoneHtml() {
   }
 
   const exportStyles = `
+    ${cssText}
     body {
       margin: 0;
       min-height: 100vh;
