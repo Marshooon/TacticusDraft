@@ -2525,6 +2525,13 @@ async function exportPhoneHtml() {
   // Tooltips are exported with their stylesheet + hover logic (no inline styles).
 
   const assetCache = new Map();
+  const hostedAssetBase = (() => {
+    if (/^https?:$/i.test(window.location.protocol)) {
+      return new URL("./", window.location.href).href;
+    }
+    return "https://shooon.github.io/TacticusDraft/";
+  })();
+
   const normalizeAssetPath = (assetPath) => {
     const resolvedUrl = new URL(assetPath, window.location.href).href;
     const raw = assetPath.replace(/^[.\/]+/, "");
@@ -2613,9 +2620,19 @@ async function exportPhoneHtml() {
     }
   };
 
-  await primeDefaultPortraitCache();
-  await primeDefaultBackgroundCache();
-  await primeImageCache();
+
+  const toHostedAssetUrl = (assetPath) => {
+    if (!assetPath || assetPath.startsWith("data:") || assetPath.startsWith("blob:")) return assetPath;
+    const { normalized } = normalizeAssetPath(assetPath);
+    if (!normalized || !normalized.toLowerCase().startsWith("assets/")) return assetPath;
+    return new URL(normalized, hostedAssetBase).href;
+  };
+
+  const toExportAssetSrc = async (assetPath) => {
+    if (!assetPath || assetPath.startsWith("data:")) return assetPath;
+    if (assetPath.startsWith("blob:")) return await toDataUrl(assetPath);
+    return toHostedAssetUrl(assetPath);
+  };
 
   const toDataUrl = async (assetPath) => {
     if (!assetPath || assetPath.startsWith("data:")) return assetPath;
@@ -2766,7 +2783,7 @@ async function exportPhoneHtml() {
       }
     });
   };
-  copyCssVars(document.documentElement, clone);
+  copyCssVars(phoneRoot, clone);
 
   // Keep tooltip nodes and let exportStyles drive their appearance.
 
@@ -2774,7 +2791,7 @@ async function exportPhoneHtml() {
   for (const img of imgNodes) {
     const src = img.getAttribute("src");
     if (!src || src.startsWith("data:")) continue;
-    img.setAttribute("src", await toDataUrl(src));
+    img.setAttribute("src", await toExportAssetSrc(src));
   }
 
   const styledNodes = clone.querySelectorAll("[style]");
@@ -2787,8 +2804,8 @@ async function exportPhoneHtml() {
       const full = match[0];
       const path = match[2];
       if (!path || path.startsWith("data:") || path.startsWith("#")) continue;
-      const dataUrl = await toDataUrl(path);
-      nextStyle = nextStyle.replace(full, `url("${dataUrl}")`);
+      const exportUrl = await toExportAssetSrc(path);
+      nextStyle = nextStyle.replace(full, `url("${exportUrl}")`);
     }
     if (nextStyle !== style) node.setAttribute("style", nextStyle);
   }
@@ -3113,6 +3130,7 @@ async function exportPhoneHtml() {
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <base href="${hostedAssetBase}">
     <title>Tacticus Export</title>
     <style>${exportStyles}</style>
   </head>
