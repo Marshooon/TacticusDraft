@@ -616,7 +616,7 @@ body {
   transform: translateY(6px);
   pointer-events: none;
   transition: opacity 0.12s ease, transform 0.12s ease;
-  z-index: 6;
+  z-index: 30;
 }
 
 .character-tooltip.show {
@@ -1000,7 +1000,7 @@ body {
   display: flex;
   align-items: center;
   justify-content: center;
-  z-index: 6;
+  z-index: 30;
   pointer-events: none;
 }
 

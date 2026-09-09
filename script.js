@@ -716,25 +716,40 @@ function updateCharacterTooltipContent() {
   }
 }
 
+function getOffsetWithin(element, ancestor) {
+  let left = 0;
+  let top = 0;
+  let current = element;
+  while (current && current !== ancestor) {
+    left += current.offsetLeft || 0;
+    top += current.offsetTop || 0;
+    current = current.offsetParent;
+  }
+  return { left, top };
+}
+
 function positionCharacterTooltip() {
-  if (!identityCard || !characterTooltip) return;
-  const host = identityCard.closest(".bottom-panel-top") || identityCard.parentElement;
-  if (!host) return;
+  if (!identityCard || !characterTooltip || !phoneRoot) return;
+  const host = phoneRoot;
   if (characterTooltip.parentElement !== host) {
     host.appendChild(characterTooltip);
   }
 
   const wasShown = characterTooltip.classList.contains("show");
   const previousVisibility = characterTooltip.style.visibility;
+  const previousDisplay = characterTooltip.style.display;
+  if (previousDisplay === "none") characterTooltip.style.display = "block";
   characterTooltip.style.visibility = "hidden";
   characterTooltip.classList.add("show");
   const tooltipWidth = characterTooltip.offsetWidth;
   const tooltipHeight = characterTooltip.offsetHeight;
   if (!wasShown) characterTooltip.classList.remove("show");
   characterTooltip.style.visibility = previousVisibility;
+  characterTooltip.style.display = previousDisplay;
 
-  const left = identityCard.offsetLeft + identityCard.offsetWidth / 2 - tooltipWidth / 2;
-  const top = identityCard.offsetTop - tooltipHeight - 10;
+  const identityOffset = getOffsetWithin(identityCard, host);
+  const left = identityOffset.left + identityCard.offsetWidth / 2 - tooltipWidth / 2;
+  const top = identityOffset.top - tooltipHeight - 10;
   const minLeft = 8;
   const maxLeft = Math.max(minLeft, host.clientWidth - tooltipWidth - 8);
   const minTop = 8;
@@ -3099,26 +3114,42 @@ async function exportPhoneHtml() {
         });
       });
 
+      const getOffsetWithin = (element, ancestor) => {
+        let left = 0;
+        let top = 0;
+        let current = element;
+        while (current && current !== ancestor) {
+          left += current.offsetLeft || 0;
+          top += current.offsetTop || 0;
+          current = current.offsetParent;
+        }
+        return { left, top };
+      };
+
       const identityCard = phoneRoot.querySelector(".identity-card");
       const characterTooltip = phoneRoot.querySelector("#characterTooltip");
       if (identityCard && characterTooltip) {
         const positionCharacterTooltip = () => {
-          const host = identityCard.closest(".bottom-panel-top") || identityCard.parentElement || phoneRoot;
+          const host = phoneRoot;
           if (characterTooltip.parentElement !== host) {
             host.appendChild(characterTooltip);
           }
 
           const wasShown = characterTooltip.classList.contains("show");
           const previousVisibility = characterTooltip.style.visibility;
+          const previousDisplay = characterTooltip.style.display;
+          if (previousDisplay === "none") characterTooltip.style.display = "block";
           characterTooltip.style.visibility = "hidden";
           characterTooltip.classList.add("show");
           const tooltipWidth = characterTooltip.offsetWidth;
           const tooltipHeight = characterTooltip.offsetHeight;
           if (!wasShown) characterTooltip.classList.remove("show");
           characterTooltip.style.visibility = previousVisibility;
+          characterTooltip.style.display = previousDisplay;
 
-          const left = identityCard.offsetLeft + identityCard.offsetWidth / 2 - tooltipWidth / 2;
-          const top = identityCard.offsetTop - tooltipHeight - 10;
+          const identityOffset = getOffsetWithin(identityCard, host);
+          const left = identityOffset.left + identityCard.offsetWidth / 2 - tooltipWidth / 2;
+          const top = identityOffset.top - tooltipHeight - 10;
           const minLeft = 8;
           const maxLeft = Math.max(minLeft, host.clientWidth - tooltipWidth - 8);
           const minTop = 8;
