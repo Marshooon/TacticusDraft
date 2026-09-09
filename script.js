@@ -2833,15 +2833,46 @@ async function exportPhoneHtml() {
 
   const exportStyles = `
     ${cssText}
+    html,
     body {
       margin: 0;
-      min-height: 100vh;
-      display: flex;
-      align-items: center;
-      justify-content: center;
+      min-width: 100%;
+      min-height: 100%;
       background: radial-gradient(circle at top, #1b2132 0, #0b0e15 65%);
       color: #f8f9ff;
       font-family: "Montserrat", sans-serif;
+    }
+
+    body {
+      --export-fit-width: min(100vw, calc(100vh * 0.5));
+      min-height: 100vh;
+      display: grid;
+      place-items: center;
+      overflow: auto;
+    }
+
+    @supports (height: 100dvh) {
+      body {
+        --export-fit-width: min(100vw, calc(100dvh * 0.5));
+        min-height: 100dvh;
+      }
+    }
+
+    .export-stage {
+      width: var(--export-fit-width);
+      height: calc(var(--export-fit-width) * 2);
+      display: flex;
+      align-items: flex-start;
+      justify-content: flex-start;
+      overflow: visible;
+    }
+
+    .export-stage > #exportPhoneRoot {
+      width: 474px;
+      height: 948px;
+      flex: 0 0 auto;
+      transform-origin: top left;
+      transform: scale(calc(var(--export-fit-width) / 474));
     }
 
     #exportPhoneRoot .bottom-panel .ability-circle {
@@ -3183,7 +3214,9 @@ async function exportPhoneHtml() {
     <style>${exportStyles}</style>
   </head>
   <body>
-    ${clone.outerHTML}
+    <div class="export-stage">
+      ${clone.outerHTML}
+    </div>
     ${exportScript ? `<script>${exportScript}<\/script>` : ""}
   </body>
 </html>`;
