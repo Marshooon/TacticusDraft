@@ -2844,7 +2844,7 @@ async function exportPhoneHtml() {
     }
 
     body {
-      --export-fit-width: min(calc(100vw - 24px), calc((100vh - 24px) * 0.5));
+      --export-fit-width: calc(100vw - 24px);
       min-height: 100vh;
       display: grid;
       place-items: center;
@@ -2855,7 +2855,7 @@ async function exportPhoneHtml() {
 
     @supports (height: 100dvh) {
       body {
-        --export-fit-width: min(calc(100vw - 24px), calc((100dvh - 24px) * 0.5));
+        --export-fit-width: calc(100vw - 24px);
         min-height: 100dvh;
       }
     }
