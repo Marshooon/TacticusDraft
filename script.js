@@ -2337,8 +2337,7 @@ async function capturePhonePreviewCanvas() {
   stage.style.width = `${baseWidth}px`;
   stage.style.height = `${baseHeight}px`;
   stage.style.pointerEvents = "none";
-  stage.style.zIndex = "2147483647";
-  stage.style.transform = "translateX(-10000px)";
+  stage.style.zIndex = "-1";
   stage.style.background = "transparent";
   stage.style.overflow = "visible";
 
@@ -2476,6 +2475,7 @@ async function renderImageSheetCanvas(renderScale = 1) {
   const capturedPhone = await capturePhonePreviewCanvas();
 
   if (capturedPhone && canvasHasVisiblePixels(capturedPhone)) {
+    console.info("Image sheet export used DOM phone capture.");
     drawContainImage(ctx, capturedPhone, phoneBox.x, phoneBox.y, phoneBox.width, phoneBox.height);
   } else {
     console.warn("Phone DOM capture was empty; falling back to manual sheet renderer.");
