@@ -729,10 +729,16 @@ function positionCharacterTooltip() {
   const localX = (rect.left - phoneRect.left) / scale + rect.width / (2 * scale);
   const localTop = (rect.top - phoneRect.top) / scale;
   const localBottom = (rect.bottom - phoneRect.top) / scale;
+  const wasShown = characterTooltip.classList.contains("show");
+  const previousVisibility = characterTooltip.style.visibility;
+  characterTooltip.style.visibility = "hidden";
+  characterTooltip.classList.add("show");
   const tooltipWidth = characterTooltip.offsetWidth;
   const tooltipHeight = characterTooltip.offsetHeight;
   let left = localX - tooltipWidth / 2;
   let top = Math.max(8, localTop - tooltipHeight - 10);
+  if (!wasShown) characterTooltip.classList.remove("show");
+  characterTooltip.style.visibility = previousVisibility;
   const minLeft = 8;
   const maxLeft = baseWidth - tooltipWidth - 8;
   const minTop = 8;
@@ -2782,6 +2788,15 @@ async function exportPhoneHtml() {
   };
   copyCssVars(phoneRoot, clone);
 
+  clone.querySelectorAll(".ability-tooltip, .stack-trait-tooltip, .character-tooltip").forEach(tooltip => {
+    tooltip.classList.remove("show", "is-visible", "is-pinned");
+    tooltip.removeAttribute("data-pinned");
+    tooltip.style.removeProperty("left");
+    tooltip.style.removeProperty("top");
+    tooltip.style.removeProperty("transform");
+    tooltip.setAttribute("aria-hidden", "true");
+  });
+
   // Keep tooltip nodes and let exportStyles drive their appearance.
 
   const imgNodes = clone.querySelectorAll("img[src]");
@@ -3102,10 +3117,16 @@ async function exportPhoneHtml() {
           const localX = (rect.left - phoneRect.left) / scale + rect.width / (2 * scale);
           const localTop = (rect.top - phoneRect.top) / scale;
           const localBottom = (rect.bottom - phoneRect.top) / scale;
+          const wasShown = characterTooltip.classList.contains("show");
+          const previousVisibility = characterTooltip.style.visibility;
+          characterTooltip.style.visibility = "hidden";
+          characterTooltip.classList.add("show");
           const tooltipWidth = characterTooltip.offsetWidth;
           const tooltipHeight = characterTooltip.offsetHeight;
           let left = localX - tooltipWidth / 2;
           let top = Math.max(8, localTop - tooltipHeight - 10);
+          if (!wasShown) characterTooltip.classList.remove("show");
+          characterTooltip.style.visibility = previousVisibility;
           const minLeft = 8;
           const maxLeft = baseWidth - tooltipWidth - 8;
           const minTop = 8;
