@@ -717,36 +717,30 @@ function updateCharacterTooltipContent() {
 }
 
 function positionCharacterTooltip() {
-  if (!identityCard || !characterTooltip || !phoneRoot) return;
-  if (characterTooltip.parentElement !== phoneRoot) {
-    phoneRoot.appendChild(characterTooltip);
+  if (!identityCard || !characterTooltip) return;
+  const host = identityCard.closest(".bottom-panel-top") || identityCard.parentElement;
+  if (!host) return;
+  if (characterTooltip.parentElement !== host) {
+    host.appendChild(characterTooltip);
   }
-  const rect = identityCard.getBoundingClientRect();
-  const phoneRect = phoneRoot.getBoundingClientRect();
-  const baseWidth = phoneRoot.offsetWidth || 1;
-  const baseHeight = phoneRoot.offsetHeight || 1;
-  const scale = phoneRect.height / baseHeight;
-  const localX = (rect.left - phoneRect.left) / scale + rect.width / (2 * scale);
-  const localTop = (rect.top - phoneRect.top) / scale;
-  const localBottom = (rect.bottom - phoneRect.top) / scale;
+
   const wasShown = characterTooltip.classList.contains("show");
   const previousVisibility = characterTooltip.style.visibility;
   characterTooltip.style.visibility = "hidden";
   characterTooltip.classList.add("show");
   const tooltipWidth = characterTooltip.offsetWidth;
   const tooltipHeight = characterTooltip.offsetHeight;
-  let left = localX - tooltipWidth / 2;
-  let top = Math.max(8, localTop - tooltipHeight - 10);
   if (!wasShown) characterTooltip.classList.remove("show");
   characterTooltip.style.visibility = previousVisibility;
+
+  const left = identityCard.offsetLeft + identityCard.offsetWidth / 2 - tooltipWidth / 2;
+  const top = identityCard.offsetTop - tooltipHeight - 10;
   const minLeft = 8;
-  const maxLeft = baseWidth - tooltipWidth - 8;
+  const maxLeft = Math.max(minLeft, host.clientWidth - tooltipWidth - 8);
   const minTop = 8;
-  const maxTop = baseHeight - tooltipHeight - 8;
-  left = Math.min(Math.max(left, minLeft), maxLeft);
-  top = Math.min(Math.max(top, minTop), maxTop);
-  characterTooltip.style.left = `${left}px`;
-  characterTooltip.style.top = `${top}px`;
+  const maxTop = Math.max(minTop, host.clientHeight - tooltipHeight - 8);
+  characterTooltip.style.left = `${Math.min(Math.max(left, minLeft), maxLeft)}px`;
+  characterTooltip.style.top = `${Math.min(Math.max(top, minTop), maxTop)}px`;
 }
 
 descriptionInput?.addEventListener("input", updateCharacterTooltipContent);
@@ -3109,32 +3103,28 @@ async function exportPhoneHtml() {
       const characterTooltip = phoneRoot.querySelector("#characterTooltip");
       if (identityCard && characterTooltip) {
         const positionCharacterTooltip = () => {
-          const rect = identityCard.getBoundingClientRect();
-          const phoneRect = phoneRoot.getBoundingClientRect();
-          const baseWidth = phoneRoot.offsetWidth || 1;
-          const baseHeight = phoneRoot.offsetHeight || 1;
-          const scale = phoneRect.height / baseHeight;
-          const localX = (rect.left - phoneRect.left) / scale + rect.width / (2 * scale);
-          const localTop = (rect.top - phoneRect.top) / scale;
-          const localBottom = (rect.bottom - phoneRect.top) / scale;
+          const host = identityCard.closest(".bottom-panel-top") || identityCard.parentElement || phoneRoot;
+          if (characterTooltip.parentElement !== host) {
+            host.appendChild(characterTooltip);
+          }
+
           const wasShown = characterTooltip.classList.contains("show");
           const previousVisibility = characterTooltip.style.visibility;
           characterTooltip.style.visibility = "hidden";
           characterTooltip.classList.add("show");
           const tooltipWidth = characterTooltip.offsetWidth;
           const tooltipHeight = characterTooltip.offsetHeight;
-          let left = localX - tooltipWidth / 2;
-          let top = Math.max(8, localTop - tooltipHeight - 10);
           if (!wasShown) characterTooltip.classList.remove("show");
           characterTooltip.style.visibility = previousVisibility;
+
+          const left = identityCard.offsetLeft + identityCard.offsetWidth / 2 - tooltipWidth / 2;
+          const top = identityCard.offsetTop - tooltipHeight - 10;
           const minLeft = 8;
-          const maxLeft = baseWidth - tooltipWidth - 8;
+          const maxLeft = Math.max(minLeft, host.clientWidth - tooltipWidth - 8);
           const minTop = 8;
-          const maxTop = baseHeight - tooltipHeight - 8;
-          left = Math.min(Math.max(left, minLeft), maxLeft);
-          top = Math.min(Math.max(top, minTop), maxTop);
-          characterTooltip.style.left = left + "px";
-          characterTooltip.style.top = top + "px";
+          const maxTop = Math.max(minTop, host.clientHeight - tooltipHeight - 8);
+          characterTooltip.style.left = Math.min(Math.max(left, minLeft), maxLeft) + "px";
+          characterTooltip.style.top = Math.min(Math.max(top, minTop), maxTop) + "px";
         };
         identityCard.addEventListener("mouseenter", () => {
           positionCharacterTooltip();
