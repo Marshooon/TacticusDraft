@@ -2844,16 +2844,18 @@ async function exportPhoneHtml() {
     }
 
     body {
-      --export-fit-width: min(100vw, calc(100vh * 0.5));
+      --export-fit-width: min(calc(100vw - 24px), calc((100vh - 24px) * 0.5));
       min-height: 100vh;
       display: grid;
       place-items: center;
+      padding: 12px;
+      box-sizing: border-box;
       overflow: auto;
     }
 
     @supports (height: 100dvh) {
       body {
-        --export-fit-width: min(100vw, calc(100dvh * 0.5));
+        --export-fit-width: min(calc(100vw - 24px), calc((100dvh - 24px) * 0.5));
         min-height: 100dvh;
       }
     }
