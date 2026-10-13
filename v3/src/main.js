@@ -2,13 +2,15 @@ import { assets } from "./assets.js";
 import { setupEditor } from "./editor.js";
 import { exportReleaseSheet } from "./exporter.js";
 import { renderCharacterScreen } from "./renderer.js";
-import { state } from "./state.js";
+import { applyPreset, presets, state } from "./state.js";
 
 const appShell = document.querySelector(".app-shell");
 const gameScreen = document.getElementById("gameScreen");
 const editorScreen = document.getElementById("editorScreen");
 const swipeHint = document.getElementById("swipeHint");
 const exportButton = document.getElementById("exportSheetButton");
+const exportPresetButton = document.getElementById("exportPresetButton");
+const importPresetInput = document.getElementById("importPresetInput");
 const HUD_BASE_WIDTH = 474;
 const HUD_BASE_HEIGHT = 430;
 let touchStartX = 0;
@@ -143,7 +145,71 @@ function ensureInitialOptions() {
 }
 
 ensureInitialOptions();
-setupEditor(state, render);
+const syncEditor = setupEditor(state, render);
+document.querySelectorAll("[data-preset]").forEach((button) => {
+  button.addEventListener("click", () => {
+    const preset = presets.find((item) => item.key === button.dataset.preset);
+    if (!preset) return;
+    applyPreset(state, preset);
+    syncEditor();
+    render();
+    setMode("card");
+  });
+});
+
+exportPresetButton?.addEventListener("click", () => {
+  const payload = JSON.stringify({ generatedAt: new Date().toISOString(), preset: state }, null, 2);
+  const blob = new Blob([payload], { type: "application/json" });
+  const link = document.createElement("a");
+  link.href = URL.createObjectURL(blob);
+  link.download = `${state.identity.name.toLowerCase().replace(/[^a-z0-9]+/g, "_") || "character"}_preset.json`;
+  link.click();
+  URL.revokeObjectURL(link.href);
+});
+
+importPresetInput?.addEventListener("change", async () => {
+  const [file] = importPresetInput.files || [];
+  if (!file) return;
+  const data = JSON.parse(await file.text());
+  const imported = data.preset || data;
+  const character = imported.identity ? imported : legacyPresetToCharacter(imported);
+  applyPreset(state, { character });
+  syncEditor();
+  render();
+  setMode("card");
+  importPresetInput.value = "";
+});
+
+function legacyPresetToCharacter(preset) {
+  const assetPath = (value) => String(value || "").replace(/^\.\.\/assets\//, "").replace(/^assets\//, "");
+  const base = structuredClone(presets[0].character);
+  base.identity = {
+    name: preset.name || "Character", title: preset.title || "", description: preset.description || "",
+    unlock: preset.unlockRequirements || "", rarity: preset.rarity || "common",
+    allegianceId: preset.bgKey === "world_eaters" ? "world_eaters" : "imperium"
+  };
+  base.scene.backgroundId = preset.bgKey || base.scene.backgroundId;
+  base.scene.portraitId = /Lotarra\.png$/i.test(preset.portrait || "") ? "lotarra" : base.scene.portraitId;
+  base.scene.portraitSrc = String(preset.portrait || "").startsWith("data:") ? preset.portrait : "";
+  base.scene.portrait = {
+    zoom: Number(preset.portraitPosition?.zoom || 100),
+    focalX: 50 + Number(preset.portraitPosition?.x || 0) / 2,
+    focalY: 50 + Number(preset.portraitPosition?.y || 0) / 2
+  };
+  const light = preset.lighting || {};
+  base.scene.lighting = {
+    tintEnabled: light.portraitTintEnabled ?? true, tintColor: light.portraitTintColor || "#000000", tintStrength: Number(light.portraitTintStrength || 0),
+    lightEnabled: light.portraitLightEnabled ?? true, lightColor: light.portraitLightColor || "#ffffff", lightStrength: Number(light.portraitLightStrength || 0), lightAngle: Number(light.portraitLightAngle || 0),
+    shadowEnabled: light.portraitShadowEnabled ?? true, shadowColor: light.portraitShadowColor || "#000000", shadowStrength: Number(light.portraitShadowStrength || 0), shadowAngle: Number(light.portraitShadowAngle || 0)
+  };
+  base.stats = { ...base.stats, ...(preset.stats || {}) };
+  base.attacks = { melee: preset.melee || base.attacks.melee, ranged: preset.ranged || base.attacks.ranged };
+  base.crit = preset.crit || base.crit;
+  base.block = preset.block || base.block;
+  base.abilities.active = { iconId: "", src: assetPath(preset.abilities?.activeIcon), name: preset.abilities?.activeTitle || "", description: preset.abilities?.activeDesc || "", position: preset.abilities?.activePosition || { x: 0, y: 0, zoom: 100 } };
+  base.abilities.passive = { iconId: "", src: assetPath(preset.abilities?.passiveIcon), name: preset.abilities?.passiveTitle || "", description: preset.abilities?.passiveDesc || "", position: preset.abilities?.passivePosition || { x: 0, y: 0, zoom: 100 } };
+  return base;
+}
 setupBackNavigationGuard();
 render();
 updateSwipeHint();

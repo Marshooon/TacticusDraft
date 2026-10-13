@@ -15,6 +15,14 @@
 
     <section class="editor-screen" id="editorScreen" aria-label="Character editor" hidden>
       <div class="editor-scroll">
+        <section class="editor-panel" data-editor-panel="presets">
+          <h1>Presets</h1>
+          <button class="preset-card" type="button" data-preset="marec">Marec<span>Legendary - Lions Adamant</span></button>
+          <button class="preset-card" type="button" data-preset="lotarra_sarrin">Lotarra Sarrin<span>Epic - World Eaters</span></button>
+          <label>Import Preset JSON<input id="importPresetInput" type="file" accept="application/json,.json" /></label>
+          <button class="primary-button" id="exportPresetButton" type="button">Export Current Preset</button>
+        </section>
+
         <section class="editor-panel active" data-editor-panel="identity">
           <h1>Identity</h1>
           <label>Name<input data-bind="identity.name" type="text" /></label>
@@ -48,6 +56,19 @@
           <label>Portrait Zoom<input data-bind="scene.portrait.zoom" type="range" min="70" max="150" /></label>
           <label>Portrait X<input data-bind="scene.portrait.focalX" type="range" min="0" max="100" /></label>
           <label>Portrait Y<input data-bind="scene.portrait.focalY" type="range" min="0" max="100" /></label>
+          <details open>
+            <summary>Portrait Lighting</summary>
+            <div class="editor-grid lighting-controls">
+              <label><span><input data-bind="scene.lighting.tintEnabled" type="checkbox" /> Tint</span><input data-bind="scene.lighting.tintColor" type="color" /></label>
+              <label>Tint Strength<input data-bind="scene.lighting.tintStrength" type="range" min="0" max="50" /></label>
+              <label><span><input data-bind="scene.lighting.lightEnabled" type="checkbox" /> Light</span><input data-bind="scene.lighting.lightColor" type="color" /></label>
+              <label>Light Strength<input data-bind="scene.lighting.lightStrength" type="range" min="0" max="60" /></label>
+              <label>Light Angle<input data-bind="scene.lighting.lightAngle" type="range" min="0" max="360" /></label>
+              <label><span><input data-bind="scene.lighting.shadowEnabled" type="checkbox" /> Shadow</span><input data-bind="scene.lighting.shadowColor" type="color" /></label>
+              <label>Shadow Strength<input data-bind="scene.lighting.shadowStrength" type="range" min="0" max="60" /></label>
+              <label>Shadow Angle<input data-bind="scene.lighting.shadowAngle" type="range" min="0" max="360" /></label>
+            </div>
+          </details>
         </section>
 
         <section class="editor-panel" data-editor-panel="abilities">
@@ -55,9 +76,19 @@
           <label>Active Name<input data-bind="abilities.active.name" type="text" /></label>
           <label>Upload Active Icon<input data-upload="abilities.active.src" type="file" accept="image/*" /></label>
           <label>Active Description<textarea data-bind="abilities.active.description" rows="5"></textarea></label>
+          <div class="editor-grid">
+            <label>Active X<input data-bind="abilities.active.position.x" type="range" min="-20" max="20" /></label>
+            <label>Active Y<input data-bind="abilities.active.position.y" type="range" min="-20" max="20" /></label>
+            <label>Active Zoom<input data-bind="abilities.active.position.zoom" type="range" min="80" max="280" /></label>
+          </div>
           <label>Passive Name<input data-bind="abilities.passive.name" type="text" /></label>
           <label>Upload Passive Icon<input data-upload="abilities.passive.src" type="file" accept="image/*" /></label>
           <label>Passive Description<textarea data-bind="abilities.passive.description" rows="5"></textarea></label>
+          <div class="editor-grid">
+            <label>Passive X<input data-bind="abilities.passive.position.x" type="range" min="-20" max="20" /></label>
+            <label>Passive Y<input data-bind="abilities.passive.position.y" type="range" min="-20" max="20" /></label>
+            <label>Passive Zoom<input data-bind="abilities.passive.position.zoom" type="range" min="80" max="280" /></label>
+          </div>
         </section>
 
         <section class="editor-panel" data-editor-panel="traits">
@@ -100,6 +131,7 @@
       </div>
 
       <nav class="editor-nav" aria-label="Editor sections">
+        <button data-editor-target="presets">Presets</button>
         <button class="active" data-editor-target="identity">Identity</button>
         <button data-editor-target="assets">Assets</button>
         <button data-editor-target="abilities">Abilities</button>

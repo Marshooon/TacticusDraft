@@ -2,10 +2,12 @@ export const ASSET_BASE = "../assets/";
 
 export const assets = {
   backgrounds: [
-    { id: "lions_adamant", label: "Lions Adamant", src: "backgrounds/Background_Lions_Adamant.jpg" }
+    { id: "lions_adamant", label: "Lions Adamant", src: "backgrounds/Background_Lions_Adamant.jpg" },
+    { id: "world_eaters", label: "World Eaters", src: "backgrounds/Background_World_Eaters.jpg" }
   ],
   portraits: [
-    { id: "marec", label: "Marec", src: "portraits/marec2.png" }
+    { id: "marec", label: "Marec", src: "portraits/marec2.png" },
+    { id: "lotarra", label: "Lotarra Sarrin", src: "portraits/Lotarra.png" }
   ],
   allegiances: [
     { id: "imperium", label: "Imperium", src: "factionIcons/Ultramarines_Icon.png" },
@@ -13,11 +15,13 @@ export const assets = {
     { id: "dark_angels", label: "Dark Angels", src: "factionIcons/Dark_Angels_Icon.png" },
     { id: "space_wolves", label: "Space Wolves", src: "factionIcons/Space_Wolves_Icon.png" },
     { id: "adeptus_custodes", label: "Adeptus Custodes", src: "factionIcons/Adeptus_Custodes_Icon.png" },
-    { id: "astra_militarum", label: "Astra Militarum", src: "factionIcons/Astra_Militarum_Icon.png" }
+    { id: "astra_militarum", label: "Astra Militarum", src: "factionIcons/Astra_Militarum_Icon.png" },
+    { id: "world_eaters", label: "World Eaters", src: "factionIcons/World_Eaters_Icon.png" }
   ],
   abilities: [
     { id: "marec_active", label: "From Oblivion...", src: "abilityIcons/MarecActive.png" },
-    { id: "marec_passive", label: "...To Oblivion", src: "abilityIcons/MarecPassive.png" }
+    { id: "marec_passive", label: "...To Oblivion", src: "abilityIcons/MarecPassive.png" },
+    { id: "lotarra_active", label: "Lotarra Active", src: "abilityIcons/Ahriman_Ability_1_Icon.png" }
   ],
   traits: [
     { id: "healer", label: "Healer", src: "traitIcons/Healer_Icon.png", description: "As its action, this unit heals a friendly unit. The health restored equals the healer's damage multiplied by the highest number of hits from any of its weapons." },
@@ -37,8 +41,10 @@ export const assets = {
     block: "statIcons/Block_Icon.png"
   },
   damageIcons: {
+    Bio: "damageIcons/Bio_Icon.png",
     Power: "damageIcons/Power_Icon.png",
-    Melta: "damageIcons/Melta_Icon.png"
+    Melta: "damageIcons/Melta_Icon.png",
+    Pulse: "damageIcons/Pulse_Icon.png"
   },
   equipment: [
     { id: "crit", label: "Crit Item", src: "equipmentIcons/Crit_Item_Icon.png" },

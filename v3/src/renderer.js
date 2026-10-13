@@ -21,6 +21,9 @@ export function renderCharacterScreen(root, character) {
     <section class="scene-layer">
       <img class="scene-bg" src="${assetUrl(backgroundSrc)}" alt="" />
       <img class="portrait" src="${assetUrl(portraitSrc)}" alt="${escapeHtml(character.identity.name)}" />
+      <div class="portrait-tint"></div>
+      <div class="portrait-light"></div>
+      <div class="portrait-shadow"></div>
       <div class="scene-vignette"></div>
     </section>
     <div class="portrait-rail left">
@@ -33,15 +36,22 @@ export function renderCharacterScreen(root, character) {
       <div class="hud-inner rarity-${rarityKey}">
         ${renderHudFrame()}
         <div class="rank-row">${renderStars(rarity)}</div>
-        <div class="ability-button active"><img class="ability-icon" src="${assetUrl(activeSrc)}" alt="${escapeHtml(character.abilities.active.name)}" /></div>
-        <div class="ability-button passive"><img class="ability-icon" src="${assetUrl(passiveSrc)}" alt="${escapeHtml(character.abilities.passive.name)}" /></div>
+        <div class="ability-button active" tabindex="0">
+          ${activeSrc ? `<img class="ability-icon" src="${assetUrl(activeSrc)}" alt="${escapeHtml(character.abilities.active.name)}" />` : ""}
+          ${renderTooltip(character.abilities.active.name, character.abilities.active.description)}
+        </div>
+        <div class="ability-button passive" tabindex="0">
+          ${passiveSrc ? `<img class="ability-icon" src="${assetUrl(passiveSrc)}" alt="${escapeHtml(character.abilities.passive.name)}" />` : ""}
+          ${renderTooltip(character.abilities.passive.name, character.abilities.passive.description)}
+        </div>
         <div class="hud-sparks" aria-hidden="true">
           <span></span><span></span><span></span><span></span><span></span><span></span>
         </div>
-        <div class="identity-band">
+        <div class="identity-band" tabindex="0">
           <div class="char-name">${escapeHtml(character.identity.name)}</div>
           <div class="char-title">${escapeHtml(character.identity.title)}</div>
         </div>
+        ${renderTooltip(character.identity.name, character.identity.description, "character-detail")}
         <div class="xp-bar">
           ${renderXpBar()}
           <div class="xp-text">${escapeHtml(character.progress.xpText)}</div>
@@ -75,6 +85,24 @@ export function renderCharacterScreen(root, character) {
   root.style.setProperty("--portrait-zoom", character.scene.portrait.zoom / 100);
   root.style.setProperty("--portrait-x", `${character.scene.portrait.focalX}%`);
   root.style.setProperty("--portrait-y", `${character.scene.portrait.focalY}%`);
+  const lighting = character.scene.lighting || {};
+  root.style.setProperty("--tint-color", lighting.tintEnabled === false ? "transparent" : lighting.tintColor || "transparent");
+  root.style.setProperty("--tint-strength", `${Number(lighting.tintStrength || 0) / 100}`);
+  root.style.setProperty("--light-color", lighting.lightEnabled === false ? "transparent" : lighting.lightColor || "transparent");
+  root.style.setProperty("--light-strength", `${Number(lighting.lightStrength || 0) / 100}`);
+  root.style.setProperty("--light-angle", `${lighting.lightAngle || 0}deg`);
+  root.style.setProperty("--shadow-color", lighting.shadowEnabled === false ? "transparent" : lighting.shadowColor || "transparent");
+  root.style.setProperty("--shadow-strength", `${Number(lighting.shadowStrength || 0) / 100}`);
+  root.style.setProperty("--shadow-angle", `${lighting.shadowAngle || 0}deg`);
+  const activePosition = character.abilities.active.position || { x: 0, y: 0, zoom: 100 };
+  const passivePosition = character.abilities.passive.position || { x: 0, y: 0, zoom: 100 };
+  root.style.setProperty("--active-icon-transform", `translate(${activePosition.x}px, ${activePosition.y}px) scale(${activePosition.zoom / 100})`);
+  root.style.setProperty("--passive-icon-transform", `translate(${passivePosition.x}px, ${passivePosition.y}px) scale(${passivePosition.zoom / 100})`);
+}
+
+function renderTooltip(title, body, extraClass = "") {
+  if (!title && !body) return "";
+  return `<div class="detail-tooltip ${extraClass}" role="tooltip"><strong>${escapeHtml(title)}</strong><span>${escapeHtml(body)}</span></div>`;
 }
 
 function renderHudFrame() {

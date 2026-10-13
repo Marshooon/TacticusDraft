@@ -16,6 +16,13 @@ export const defaultCharacter = {
       zoom: 104,
       focalX: 50,
       focalY: 45
+    },
+    lighting: {
+      tintEnabled: true, tintColor: "#ca611c", tintStrength: 37,
+      lightEnabled: true, lightColor: "#f18c09", lightStrength: 30, lightAngle: 141,
+      shadowEnabled: true, shadowColor: "#000000", shadowStrength: 36, shadowAngle: 312,
+      groundEnabled: true, groundColor: "#000000", groundStrength: 104,
+      groundSize: 102, groundBlur: 23, groundOffsetX: 0, groundOffsetY: 18
     }
   },
   abilities: {
@@ -23,13 +30,15 @@ export const defaultCharacter = {
       iconId: "marec_active",
       src: "",
       name: "From Oblivion...",
-      description: "Marec gains +10% Crit Damage and +10% Crit Chance. After taking damage equal to 30% of their HP from one attack, this ability may be used again."
+      description: "Marec gains +10% Crit Damage and +10% Crit Chance. After taking damage equal to 30% of their HP from one attack, this ability may be used again.",
+      position: { x: 0, y: 2, zoom: 117 }
     },
     passive: {
       iconId: "marec_passive",
       src: "",
       name: "...To Oblivion",
-      description: "Whenever Marec scores a Critical Hit, adjacent friendly Characters are healed for 2000 Health."
+      description: "Whenever Marec scores a Critical Hit, adjacent friendly Characters are healed for 2000 Health.",
+      position: { x: 0, y: 1, zoom: 109 }
     }
   },
   traits: ["healer", "gravis", "resilient"],
@@ -63,6 +72,59 @@ export const defaultCharacter = {
 };
 
 export const state = structuredClone(defaultCharacter);
+
+export const presets = [
+  { key: "marec", label: "Marec", subtitle: "Legendary - Lions Adamant", character: defaultCharacter },
+  {
+    key: "lotarra_sarrin",
+    label: "Lotarra Sarrin",
+    subtitle: "Epic - World Eaters",
+    character: {
+      identity: {
+        name: "Lotarra Sarrin",
+        title: "The Mistress",
+        description: "When the influence of Khorne began to consume the World Eaters, Angron, and even the Conqueror itself, Lotara was one of the very last members who refused to succumb to it. Eventually though it claimed her as well, and the insane machine spirit of the flagship merged with her, becoming the psychotic revenant known as The Mistress. This fusion in a sense shattered Lotara's very soul, and remnants of her mortal life still haunt the halls of the ship, while the wicked wraith that sits upon the ship's throne barks orders and madness, still believing the Heresy to be in full swing despite it being 10,000 years later.",
+        unlock: "asdfv",
+        rarity: "epic",
+        allegianceId: "world_eaters"
+      },
+      scene: {
+        backgroundId: "world_eaters",
+        backgroundSrc: "",
+        portraitId: "lotarra",
+        portraitSrc: "",
+        portrait: { zoom: 105, focalX: 48, focalY: 52 },
+        lighting: {
+          tintEnabled: true, tintColor: "#ff0000", tintStrength: 9,
+          lightEnabled: true, lightColor: "#d32203", lightStrength: 31, lightAngle: 141,
+          shadowEnabled: true, shadowColor: "#803900", shadowStrength: 36, shadowAngle: 306,
+          groundEnabled: true, groundColor: "#000000", groundStrength: 104,
+          groundSize: 124, groundBlur: 17, groundOffsetX: 0, groundOffsetY: 44
+        }
+      },
+      abilities: {
+        active: { iconId: "lotarra_active", src: "", name: "asdf", description: "asdfas", position: { x: 0, y: 0, zoom: 100 } },
+        passive: { iconId: "", src: "", name: "", description: "", position: { x: 0, y: 0, zoom: 100 } }
+      },
+      traits: [],
+      stats: { health: 3325, armor: 874, damage: 2293, move: 3 },
+      attacks: {
+        melee: { type: "Bio", hits: 1 },
+        ranged: { type: "Pulse", hits: 1, range: 2 }
+      },
+      crit: { value: "+1121", chance: "40%" },
+      block: { value: "+874", chance: "20%" },
+      equipment: [{ id: "" }, { id: "" }, { id: "" }],
+      progress: { level: 40, xpText: "Maximum for Current Character Rarity" }
+    }
+  }
+];
+
+export function applyPreset(target, preset) {
+  const next = structuredClone(preset.character);
+  for (const key of Object.keys(target)) delete target[key];
+  Object.assign(target, next);
+}
 
 export function getPath(target, path) {
   return path.split(".").reduce((value, part) => value?.[part], target);

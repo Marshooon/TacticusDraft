@@ -8,7 +8,9 @@ export function setupEditor(character, onChange) {
 
   document.querySelectorAll("[data-bind]").forEach((control) => {
     control.addEventListener("input", () => {
-      const value = control.type === "number" || control.type === "range"
+      const value = control.type === "checkbox"
+        ? control.checked
+        : control.type === "number" || control.type === "range"
         ? Number(control.value)
         : control.value;
       setPath(character, control.dataset.bind, value);
@@ -32,6 +34,8 @@ export function setupEditor(character, onChange) {
       document.querySelectorAll("[data-editor-panel]").forEach((panel) => panel.classList.toggle("active", panel.dataset.editorPanel === target));
     });
   });
+
+  return () => syncControls(character);
 }
 
 function fileToDataUrl(file) {
@@ -77,7 +81,8 @@ function fillTraitEditor(character, onChange) {
 function syncControls(character) {
   document.querySelectorAll("[data-bind]").forEach((control) => {
     const value = getPath(character, control.dataset.bind);
-    if (control.value !== String(value ?? "")) control.value = value ?? "";
+    if (control.type === "checkbox") control.checked = Boolean(value);
+    else if (control.value !== String(value ?? "")) control.value = value ?? "";
   });
 
   document.querySelectorAll("[data-trait-id]").forEach((checkbox) => {
