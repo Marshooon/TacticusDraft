@@ -73,6 +73,8 @@
 
         <section class="editor-panel" data-editor-panel="abilities">
           <h1>Abilities</h1>
+          <label>Find Active Badge<input id="activeAbilitySearch" type="search" placeholder="Search 138 badges" /></label>
+          <div class="asset-library" id="activeAbilityLibrary"></div>
           <label>Active Name<input data-bind="abilities.active.name" type="text" /></label>
           <label>Upload Active Icon<input data-upload="abilities.active.src" type="file" accept="image/*" /></label>
           <label>Active Description<textarea data-bind="abilities.active.description" rows="5"></textarea></label>
@@ -81,6 +83,8 @@
             <label>Active Y<input data-bind="abilities.active.position.y" type="range" min="-20" max="20" /></label>
             <label>Active Zoom<input data-bind="abilities.active.position.zoom" type="range" min="80" max="280" /></label>
           </div>
+          <label>Find Passive Badge<input id="passiveAbilitySearch" type="search" placeholder="Search 138 badges" /></label>
+          <div class="asset-library" id="passiveAbilityLibrary"></div>
           <label>Passive Name<input data-bind="abilities.passive.name" type="text" /></label>
           <label>Upload Passive Icon<input data-upload="abilities.passive.src" type="file" accept="image/*" /></label>
           <label>Passive Description<textarea data-bind="abilities.passive.description" rows="5"></textarea></label>
@@ -93,6 +97,7 @@
 
         <section class="editor-panel" data-editor-panel="traits">
           <h1>Traits</h1>
+          <label>Find Trait<input id="traitSearch" type="search" placeholder="Search 49 traits" /></label>
           <div class="trait-editor" id="traitEditor"></div>
         </section>
 

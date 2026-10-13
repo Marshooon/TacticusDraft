@@ -30,7 +30,7 @@ export function renderCharacterScreen(root, character) {
       ${allegiance ? `<span class="allegiance-dot"><img src="${assetUrl(allegiance.src)}" alt="${escapeHtml(allegiance.label)}" /></span>` : ""}
     </div>
     <div class="portrait-rail right">
-      ${selectedTraits.map((trait) => `<span class="trait-dot"><img src="${assetUrl(trait.src)}" alt="${escapeHtml(trait.label)}" /></span>`).join("")}
+      ${selectedTraits.map((trait) => `<span class="trait-dot" tabindex="0"><img src="${assetUrl(trait.src)}" alt="${escapeHtml(trait.label)}" />${renderTooltip(trait.label, trait.description)}</span>`).join("")}
     </div>
     <section class="hud">
       <div class="hud-inner rarity-${rarityKey}">

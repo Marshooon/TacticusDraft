@@ -1,3 +1,5 @@
+import { abilityCatalog, traitCatalog } from "./catalogs.js";
+
 export const ASSET_BASE = "../assets/";
 
 export const assets = {
@@ -21,13 +23,10 @@ export const assets = {
   abilities: [
     { id: "marec_active", label: "From Oblivion...", src: "abilityIcons/MarecActive.png" },
     { id: "marec_passive", label: "...To Oblivion", src: "abilityIcons/MarecPassive.png" },
-    { id: "lotarra_active", label: "Lotarra Active", src: "abilityIcons/Ahriman_Ability_1_Icon.png" }
+    { id: "lotarra_active", label: "Lotarra Active", src: "abilityIcons/Ahriman_Ability_1_Icon.png" },
+    ...abilityCatalog
   ],
-  traits: [
-    { id: "healer", label: "Healer", src: "traitIcons/Healer_Icon.png", description: "As its action, this unit heals a friendly unit. The health restored equals the healer's damage multiplied by the highest number of hits from any of its weapons." },
-    { id: "gravis", label: "Mk X Gravis", src: "traitIcons/Mk_X_Gravis_Icon.png", description: "Incoming damage must pass through armour twice. This does not apply to critical hits." },
-    { id: "resilient", label: "Resilient", src: "traitIcons/Resilient_Icon.png", description: "If this unit would be defeated and is above one health, its health is reduced to one instead, unless it is overkilled." }
-  ],
+  traits: traitCatalog,
   statIcons: {
     health: "statIcons/Health_Icon.png",
     armor: "statIcons/Armor_Icon.png",

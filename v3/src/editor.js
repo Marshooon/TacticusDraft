@@ -4,6 +4,7 @@ import { getPath, setPath } from "./state.js";
 export function setupEditor(character, onChange) {
   fillAssetSelects(character);
   fillTraitEditor(character, onChange);
+  fillAbilityLibraries(character, onChange);
   syncControls(character);
 
   document.querySelectorAll("[data-bind]").forEach((control) => {
@@ -75,6 +76,38 @@ function fillTraitEditor(character, onChange) {
       syncControls(character);
       onChange();
     });
+  });
+
+  const search = document.getElementById("traitSearch");
+  search?.addEventListener("input", () => filterLibrary(host, search.value, ".trait-pick"));
+}
+
+function fillAbilityLibraries(character, onChange) {
+  for (const kind of ["active", "passive"]) {
+    const host = document.getElementById(`${kind}AbilityLibrary`);
+    const search = document.getElementById(`${kind}AbilitySearch`);
+    if (!host) continue;
+    host.innerHTML = assets.abilities.map((ability) => `
+      <button class="asset-pick" type="button" data-ability-id="${ability.id}" title="${ability.label}">
+        <img src="../assets/${ability.src}" alt="" />
+        <span>${ability.label}</span>
+      </button>
+    `).join("");
+    host.addEventListener("click", (event) => {
+      const button = event.target.closest("[data-ability-id]");
+      if (!button) return;
+      character.abilities[kind].iconId = button.dataset.abilityId;
+      character.abilities[kind].src = "";
+      onChange();
+    });
+    search?.addEventListener("input", () => filterLibrary(host, search.value, ".asset-pick"));
+  }
+}
+
+function filterLibrary(host, query, selector) {
+  const needle = query.trim().toLowerCase();
+  host.querySelectorAll(selector).forEach((item) => {
+    item.hidden = Boolean(needle) && !item.textContent.toLowerCase().includes(needle);
   });
 }
 

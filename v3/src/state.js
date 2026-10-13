@@ -41,7 +41,7 @@ export const defaultCharacter = {
       position: { x: 0, y: 1, zoom: 109 }
     }
   },
-  traits: ["healer", "gravis", "resilient"],
+  traits: ["trait_healer_icon", "trait_mk_x_gravis_icon", "trait_resilient_icon"],
   stats: {
     health: 9400,
     armor: 2200,
