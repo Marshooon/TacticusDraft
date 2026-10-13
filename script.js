@@ -762,24 +762,33 @@ descriptionInput?.addEventListener("input", updateCharacterTooltipContent);
 nameInput?.addEventListener("input", updateCharacterTooltipContent);
 updateCharacterTooltipContent();
 
-identityCard?.addEventListener("mouseenter", () => {
-  updateCharacterTooltipContent();
-  if (!characterTooltip || characterTooltip.style.display === "none") return;
-  positionCharacterTooltip();
-  characterTooltip.classList.add("show");
-  characterTooltip.setAttribute("aria-hidden", "false");
-});
+function setupCharacterBioTooltip() {
+  if (!phoneRoot || !characterTooltip) return;
 
-identityCard?.addEventListener("mousemove", () => {
-  if (!characterTooltip || characterTooltip.style.display === "none") return;
-  positionCharacterTooltip();
-});
+  phoneRoot.addEventListener("mouseover", (event) => {
+    const card = event.target.closest?.(".identity-card");
+    if (!card || !phoneRoot.contains(card) || card.contains(event.relatedTarget)) return;
+    updateCharacterTooltipContent();
+    if (characterTooltip.style.display === "none") return;
+    positionCharacterTooltip();
+    characterTooltip.classList.add("show");
+    characterTooltip.setAttribute("aria-hidden", "false");
+  });
 
-identityCard?.addEventListener("mouseleave", () => {
-  if (!characterTooltip) return;
-  characterTooltip.classList.remove("show");
-  characterTooltip.setAttribute("aria-hidden", "true");
-});
+  phoneRoot.addEventListener("mousemove", (event) => {
+    if (!event.target.closest?.(".identity-card") || characterTooltip.style.display === "none") return;
+    positionCharacterTooltip();
+  });
+
+  phoneRoot.addEventListener("mouseout", (event) => {
+    const card = event.target.closest?.(".identity-card");
+    if (!card || card.contains(event.relatedTarget)) return;
+    characterTooltip.classList.remove("show");
+    characterTooltip.setAttribute("aria-hidden", "true");
+  });
+}
+
+setupCharacterBioTooltip();
 
 function positionTraitTooltip(event) {
   if (!traitTooltip || !wizard) return;
@@ -1957,6 +1966,15 @@ function drawContainImage(ctx, image, x, y, width, height) {
   ctx.drawImage(image, x + (width - drawWidth) / 2, y + (height - drawHeight) / 2, drawWidth, drawHeight);
 }
 
+function drawFittedCenterText(ctx, text, x, y, maxWidth, maxSize, minSize, weight, family) {
+  let size = maxSize;
+  do {
+    ctx.font = `${weight} ${size}px ${family}`;
+    if (ctx.measureText(text).width <= maxWidth || size <= minSize) break;
+    size -= 1;
+  } while (size > minSize);
+  ctx.fillText(text, x, y);
+}
 function drawCircleImage(ctx, image, cx, cy, radius, strokeStyle) {
   ctx.save();
   ctx.beginPath();
@@ -1968,7 +1986,7 @@ function drawCircleImage(ctx, image, cx, cy, radius, strokeStyle) {
     ctx.fillRect(cx - radius, cy - radius, radius * 2, radius * 2);
   }
   ctx.restore();
-  ctx.lineWidth = 5;
+  ctx.lineWidth = 2;
   ctx.strokeStyle = strokeStyle;
   ctx.beginPath();
   ctx.arc(cx, cy, radius, 0, Math.PI * 2);
@@ -2153,7 +2171,7 @@ function drawSheetHexSlot(ctx, x, y, width, height, icon, strokeStyle) {
 function bottomPanelFramePath(ctx, x, y, width, height) {
   const topY = y + 18;
   const shoulderY = y + 64;
-  const sideInset = 8;
+  const sideInset = 22;
   const neckLeft = x + width * 0.28;
   const neckRight = x + width * 0.72;
   ctx.beginPath();
@@ -2213,17 +2231,22 @@ function drawPhoneFrameForSheet(ctx, state, images, x, y, width, height) {
   drawCircleImage(ctx, images.activeAbility, x + 64, circleY, 43, rarityGradient);
   drawCircleImage(ctx, images.passiveAbility, x + width - 64, circleY, 43, rarityGradient);
 
-  const cardW = width * 0.58;
+  const abilityRadius = 43;
+  const cardMaxW = width * 0.58;
+  const cardW = Math.min(width * 0.58, cardMaxW);
   const cardX = x + (width - cardW) / 2;
   const cardY = bottomY + 14;
   drawRoundRect(ctx, cardX, cardY, cardW, 70, 0, "rgba(33, 73, 133, 0.92)", "rgba(232, 238, 255, 0.9)", 3);
-  ctx.fillStyle = "#f8f9ff";
-  ctx.font = "700 30px Montserrat, sans-serif";
+  ctx.save();
+  ctx.beginPath();
+  ctx.rect(cardX, cardY, cardW, 70);
+  ctx.clip();
   ctx.textAlign = "center";
-  ctx.fillText(state.name || "NAME", x + width / 2, cardY + 9);
+  ctx.fillStyle = "#f8f9ff";
+  drawFittedCenterText(ctx, state.name || "NAME", x + width / 2, cardY + 9, cardW - 16, 30, 18, "700", "Montserrat, sans-serif");
   ctx.fillStyle = "#cbd5f5";
-  ctx.font = "400 17px Montserrat, sans-serif";
-  ctx.fillText(state.title || "Title", x + width / 2, cardY + 45);
+  drawFittedCenterText(ctx, state.title || "Title", x + width / 2, cardY + 45, cardW - 16, 17, 12, "400", "Montserrat, sans-serif");
+  ctx.restore();
 
   const panelX = x + 22;
   const panelY = bottomY + 58;
@@ -2328,8 +2351,11 @@ async function capturePhonePreviewCanvas() {
   const baseHeight = Number(phoneRoot.dataset.phoneHeight) || 948;
   const captureSource = phoneShell || phoneRoot;
   const stage = document.createElement("div");
+  stage.className = "sheet-capture-stage";
   const clonedShell = captureSource.cloneNode(true);
+  clonedShell.classList.add("is-sheet-capture");
   const clonedPhone = clonedShell.id === "phoneRoot" ? clonedShell : clonedShell.querySelector("#phoneRoot");
+  if (clonedPhone) clonedPhone.classList.add("is-sheet-capture-phone");
 
   stage.style.position = "fixed";
   stage.style.left = "0";
@@ -2878,7 +2904,7 @@ async function exportPhoneHtml() {
     }
 
     #exportPhoneRoot .bottom-panel .ability-circle {
-      border: var(--ability-circle-border, 4px) solid transparent;
+      border: var(--ability-circle-border, 1px) solid transparent;
       background:
         radial-gradient(circle at 30% 20%, rgba(255, 255, 255, 0.08), rgba(5, 7, 11, 0.9)) padding-box,
         var(--rarity-ring) border-box;

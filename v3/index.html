@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <title>Tacticus Draft v3</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700;800;900&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <main class="app-shell" data-mode="card">
+    <section class="game-screen" id="gameScreen" aria-label="Character card preview"></section>
+
+    <section class="editor-screen" id="editorScreen" aria-label="Character editor" hidden>
+      <div class="editor-scroll">
+        <section class="editor-panel active" data-editor-panel="identity">
+          <h1>Identity</h1>
+          <label>Name<input data-bind="identity.name" type="text" /></label>
+          <label>Title<input data-bind="identity.title" type="text" /></label>
+          <label>Description<textarea data-bind="identity.description" rows="5"></textarea></label>
+          <label>Unlock<textarea data-bind="identity.unlock" rows="3"></textarea></label>
+          <label>Rarity
+            <select data-bind="identity.rarity">
+              <option value="common">Common</option>
+              <option value="uncommon">Uncommon</option>
+              <option value="rare">Rare</option>
+              <option value="epic">Epic</option>
+              <option value="legendary">Legendary</option>
+            </select>
+          </label>
+          <label>Allegiance
+            <select data-bind="identity.allegianceId" data-asset-select="allegiances"></select>
+          </label>
+        </section>
+
+        <section class="editor-panel" data-editor-panel="assets">
+          <h1>Assets</h1>
+          <label>Background
+            <select data-bind="scene.backgroundId" data-asset-select="backgrounds"></select>
+          </label>
+          <label>Upload Background<input data-upload="scene.backgroundSrc" type="file" accept="image/*" /></label>
+          <label>Portrait
+            <select data-bind="scene.portraitId" data-asset-select="portraits"></select>
+          </label>
+          <label>Upload Portrait<input data-upload="scene.portraitSrc" type="file" accept="image/*" /></label>
+          <label>Portrait Zoom<input data-bind="scene.portrait.zoom" type="range" min="70" max="150" /></label>
+          <label>Portrait X<input data-bind="scene.portrait.focalX" type="range" min="0" max="100" /></label>
+          <label>Portrait Y<input data-bind="scene.portrait.focalY" type="range" min="0" max="100" /></label>
+        </section>
+
+        <section class="editor-panel" data-editor-panel="abilities">
+          <h1>Abilities</h1>
+          <label>Active Name<input data-bind="abilities.active.name" type="text" /></label>
+          <label>Upload Active Icon<input data-upload="abilities.active.src" type="file" accept="image/*" /></label>
+          <label>Active Description<textarea data-bind="abilities.active.description" rows="5"></textarea></label>
+          <label>Passive Name<input data-bind="abilities.passive.name" type="text" /></label>
+          <label>Upload Passive Icon<input data-upload="abilities.passive.src" type="file" accept="image/*" /></label>
+          <label>Passive Description<textarea data-bind="abilities.passive.description" rows="5"></textarea></label>
+        </section>
+
+        <section class="editor-panel" data-editor-panel="traits">
+          <h1>Traits</h1>
+          <div class="trait-editor" id="traitEditor"></div>
+        </section>
+
+        <section class="editor-panel" data-editor-panel="stats">
+          <h1>Stats</h1>
+          <div class="editor-grid">
+            <label>Health<input data-bind="stats.health" type="number" /></label>
+            <label>Armor<input data-bind="stats.armor" type="number" /></label>
+            <label>Damage<input data-bind="stats.damage" type="number" /></label>
+            <label>Move<input data-bind="stats.move" type="number" /></label>
+          </div>
+          <div class="editor-grid">
+            <label>Melee<input data-bind="attacks.melee.type" type="text" /></label>
+            <label>Hits<input data-bind="attacks.melee.hits" type="number" /></label>
+            <label>Ranged<input data-bind="attacks.ranged.type" type="text" /></label>
+            <label>Hits<input data-bind="attacks.ranged.hits" type="number" /></label>
+            <label>Crit<input data-bind="crit.value" type="text" /></label>
+            <label>Crit %<input data-bind="crit.chance" type="text" /></label>
+            <label>Block<input data-bind="block.value" type="text" /></label>
+            <label>Block %<input data-bind="block.chance" type="text" /></label>
+          </div>
+        </section>
+
+        <section class="editor-panel" data-editor-panel="equipment">
+          <h1>Equipment</h1>
+          <label>Slot 1<select data-bind="equipment.0.id" data-asset-select="equipment"></select></label>
+          <label>Slot 2<select data-bind="equipment.1.id" data-asset-select="equipment"></select></label>
+          <label>Slot 3<select data-bind="equipment.2.id" data-asset-select="equipment"></select></label>
+        </section>
+
+        <section class="editor-panel" data-editor-panel="export">
+          <h1>Export</h1>
+          <button class="primary-button" id="exportSheetButton" type="button">Export Release Sheet</button>
+          <p class="editor-note">Creates a 1920x1080 image and keeps it under Discord's 20MB target.</p>
+        </section>
+      </div>
+
+      <nav class="editor-nav" aria-label="Editor sections">
+        <button class="active" data-editor-target="identity">Identity</button>
+        <button data-editor-target="assets">Assets</button>
+        <button data-editor-target="abilities">Abilities</button>
+        <button data-editor-target="traits">Traits</button>
+        <button data-editor-target="stats">Stats</button>
+        <button data-editor-target="equipment">Equip</button>
+        <button data-editor-target="export">Export</button>
+      </nav>
+    </section>
+
+    <button class="swipe-hint" id="swipeHint" type="button" aria-label="Dismiss swipe hint">
+      <span class="swipe-copy">Swipe to edit</span>
+    </button>
+  </main>
+
+  <script type="module" src="src/main.js"></script>
+</body>
+</html>

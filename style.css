@@ -8,7 +8,7 @@
   --text-muted: #9aa4c3;
   --border-soft: #2f3650;
   --identity-card-bg: #214985;
-  --identity-card-width: 63%;
+  --identity-card-width: 58%;
   --identity-card-texture-opacity: 0.32;
   --identity-card-glint-opacity: 0.72;
   --bottom-panel-texture-opacity: 0.42;
@@ -32,7 +32,7 @@
   --bottom-panel-height: 45.5%;
   --identity-card-offset: -1.2%;
   --ability-circle-size: clamp(66px, 17%, 92px);
-  --ability-circle-border: 4px;
+  --ability-circle-border: 1px;
   --ability-circle-offset-x: -0.5%;
   --ability-circle-offset-y: 0.2%;
   --hex-slot-width: 66px;
@@ -1512,8 +1512,8 @@ body {
 
 .bottom-panel-shape {
   position: absolute;
-  left: 4px;
-  right: 4px;
+  left: 16px;
+  right: 16px;
   top: calc(100% - var(--bottom-panel-height));
   height: var(--bottom-panel-height);
   background: transparent;
@@ -1525,8 +1525,8 @@ body {
 
 .bottom-panel-glow {
   position: absolute;
-  left: 4px;
-  right: 4px;
+  left: 16px;
+  right: 16px;
   top: calc(100% - var(--bottom-panel-height));
   height: var(--bottom-panel-height);
   pointer-events: none;
@@ -1611,14 +1611,14 @@ body {
   position: relative;
   background: var(--identity-card-bg);
   /* border-radius: 14px; */
-  padding: 1px 0px;
+  padding: 1px 8px;
   text-align: center;
   margin: -11px auto;
   /* max-width: 70%; */
   top: var(--identity-card-offset);
   width: var(--identity-card-width);
   min-width: 0;
-  max-width: 100%;
+  max-width: 58%;
   isolation: isolate;
   overflow: hidden;
   box-shadow:
@@ -1681,4 +1681,77 @@ body {
   overflow: hidden;
   text-overflow: ellipsis;
   margin-bottom: 6px;
+}
+
+/* Image sheet capture compatibility: html2canvas is weaker with masks, clip-paths, and replaced-element aspect ratios. */
+.sheet-capture-stage,
+.sheet-capture-stage * {
+  animation: none;
+  transition: none;
+}
+
+.sheet-capture-stage .portrait-tint,
+.sheet-capture-stage .portrait-light,
+.sheet-capture-stage .portrait-shadow {
+  display: none;
+}
+
+.sheet-capture-stage .portrait-image,
+.sheet-capture-stage .rarity-star,
+.sheet-capture-stage .hex-slot-icon,
+.sheet-capture-stage .ability-icon,
+.sheet-capture-stage .trait-icon,
+.sheet-capture-stage .stat-cell img,
+.sheet-capture-stage .attack-icon,
+.sheet-capture-stage .damage-type-icon,
+.sheet-capture-stage .hit-icon {
+  max-width: none;
+  max-height: none;
+  object-fit: contain;
+}
+
+.sheet-capture-stage .portrait-frame {
+  overflow: hidden;
+}
+
+.sheet-capture-stage .portrait-image {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+.sheet-capture-stage .rarity-star {
+  width: var(--rarity-star-size);
+  height: var(--rarity-star-size);
+  min-width: var(--rarity-star-size);
+  min-height: var(--rarity-star-size);
+  aspect-ratio: 1 / 1;
+  object-fit: contain;
+  flex: 0 0 var(--rarity-star-size);
+}
+
+.sheet-capture-stage .hex-slot {
+  width: var(--hex-slot-width);
+  height: var(--hex-slot-height);
+  min-width: var(--hex-slot-width);
+  min-height: var(--hex-slot-height);
+}
+
+.sheet-capture-stage .hex-slot,
+.sheet-capture-stage .hex-slot::before,
+.sheet-capture-stage .hex-slot-inner {
+  -webkit-clip-path: polygon(50% 0, 93% 25%, 93% 75%, 50% 100%, 7% 75%, 7% 25%);
+  clip-path: polygon(50% 0, 93% 25%, 93% 75%, 50% 100%, 7% 75%, 7% 25%);
+}
+
+.sheet-capture-stage .xp-bar.legacy {
+  overflow: hidden;
+  -webkit-clip-path: polygon(10px 0, calc(100% - 11px) 0, calc(100% - 1px) 50%, calc(100% - 11px) 100%, 10px 100%, 1px 50%);
+  clip-path: polygon(10px 0, calc(100% - 11px) 0, calc(100% - 1px) 50%, calc(100% - 11px) 100%, 10px 100%, 1px 50%);
+}
+
+.sheet-capture-stage .xp-bar.legacy::before,
+.sheet-capture-stage .xp-bar.legacy .xp-fill {
+  -webkit-clip-path: polygon(8px 0, calc(100% - 9px) 0, calc(100% - 1px) 50%, calc(100% - 9px) 100%, 8px 100%, 1px 50%);
+  clip-path: polygon(8px 0, calc(100% - 9px) 0, calc(100% - 1px) 50%, calc(100% - 9px) 100%, 8px 100%, 1px 50%);
 }
