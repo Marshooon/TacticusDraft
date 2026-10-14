@@ -42,6 +42,13 @@ export const defaultCharacter = {
     }
   },
   traits: ["trait_healer_icon", "trait_mk_x_gravis_icon", "trait_resilient_icon"],
+  customTrait: {
+    enabled: false,
+    name: "",
+    description: "",
+    iconId: "trait_healer_icon",
+    src: ""
+  },
   stats: {
     health: 9400,
     armor: 2200,
@@ -63,7 +70,7 @@ export const defaultCharacter = {
   equipment: [
     { id: "crit" },
     { id: "block" },
-    { id: "booster" }
+    { id: "crit_booster" }
   ],
   progress: {
     level: 40,
@@ -107,6 +114,7 @@ export const presets = [
         passive: { iconId: "", src: "", name: "", description: "", position: { x: 0, y: 0, zoom: 100 } }
       },
       traits: [],
+      customTrait: { enabled: false, name: "", description: "", iconId: "trait_healer_icon", src: "" },
       stats: { health: 3325, armor: 874, damage: 2293, move: 3 },
       attacks: {
         melee: { type: "Bio", hits: 1 },
@@ -122,6 +130,10 @@ export const presets = [
 
 export function applyPreset(target, preset) {
   const next = structuredClone(preset.character);
+  next.customTrait ||= structuredClone(defaultCharacter.customTrait);
+  next.equipment?.forEach((slot) => {
+    if (slot.id === "booster") slot.id = "crit_booster";
+  });
   for (const key of Object.keys(target)) delete target[key];
   Object.assign(target, next);
 }

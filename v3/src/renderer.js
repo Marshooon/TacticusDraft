@@ -10,6 +10,15 @@ export function renderCharacterScreen(root, character) {
   const activeSrc = character.abilities.active.src || active?.src;
   const passiveSrc = character.abilities.passive.src || passive?.src;
   const selectedTraits = character.traits.map((id) => byId("traits", id)).filter(Boolean);
+  const customTraitIcon = byId("traits", character.customTrait?.iconId);
+  const customTrait = character.customTrait?.enabled ? {
+    label: character.customTrait.name || "Custom Trait",
+    description: character.customTrait.description || "",
+    src: character.customTrait.src || customTraitIcon?.src || ""
+  } : null;
+  const displayedTraits = customTrait
+    ? [...selectedTraits.slice(0, 5), customTrait]
+    : selectedTraits.slice(0, 6);
   const rarity = assets.rankIcons[character.identity.rarity] || assets.rankIcons.legendary;
   const allegiance = byId("allegiances", character.identity.allegianceId);
   const rarityKey = character.identity.rarity || "legendary";
@@ -30,7 +39,7 @@ export function renderCharacterScreen(root, character) {
       ${allegiance ? `<span class="allegiance-dot"><img src="${assetUrl(allegiance.src)}" alt="${escapeHtml(allegiance.label)}" /></span>` : ""}
     </div>
     <div class="portrait-rail right">
-      ${selectedTraits.map((trait) => `<span class="trait-dot" tabindex="0"><img src="${assetUrl(trait.src)}" alt="${escapeHtml(trait.label)}" />${renderTooltip(trait.label, trait.description)}</span>`).join("")}
+      ${displayedTraits.map((trait) => `<span class="trait-dot" tabindex="0">${trait.src ? `<img src="${assetUrl(trait.src)}" alt="${escapeHtml(trait.label)}" />` : ""}${renderTooltip(trait.label, trait.description)}</span>`).join("")}
     </div>
     <section class="hud">
       <div class="hud-inner rarity-${rarityKey}">

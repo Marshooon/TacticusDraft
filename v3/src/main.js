@@ -145,7 +145,16 @@ function ensureInitialOptions() {
 }
 
 ensureInitialOptions();
-const syncEditor = setupEditor(state, render);
+const syncEditor = setupEditor(state, render, {
+  onStart: () => {
+    appShell.classList.add("slider-preview-active");
+    setMode("card");
+  },
+  onEnd: () => {
+    appShell.classList.remove("slider-preview-active");
+    setMode("editor");
+  }
+});
 document.querySelectorAll("[data-preset]").forEach((button) => {
   button.addEventListener("click", () => {
     const preset = presets.find((item) => item.key === button.dataset.preset);

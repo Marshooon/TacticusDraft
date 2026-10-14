@@ -1,7 +1,7 @@
 import { assets } from "./assets.js";
 import { getPath, setPath } from "./state.js";
 
-export function setupEditor(character, onChange) {
+export function setupEditor(character, onChange, previewHandlers = {}) {
   fillAssetSelects(character);
   fillTraitEditor(character, onChange);
   fillAbilityLibraries(character, onChange);
@@ -18,6 +18,8 @@ export function setupEditor(character, onChange) {
       onChange();
     });
   });
+
+  setupSliderPreview(document.querySelectorAll('input[type="range"][data-bind]'), previewHandlers);
 
   document.querySelectorAll("[data-upload]").forEach((input) => {
     input.addEventListener("change", async () => {
@@ -37,6 +39,45 @@ export function setupEditor(character, onChange) {
   });
 
   return () => syncControls(character);
+}
+
+function setupSliderPreview(sliders, handlers) {
+  sliders.forEach((slider) => {
+    slider.addEventListener("pointerdown", (event) => {
+      if (event.pointerType === "mouse" && event.button !== 0) return;
+      event.preventDefault();
+
+      const pointerId = event.pointerId;
+      const startX = event.clientX;
+      const startValue = Number(slider.value);
+      const min = Number(slider.min || 0);
+      const max = Number(slider.max || 100);
+      const step = Number(slider.step || 1);
+      const dragWidth = Math.max(180, window.innerWidth * 0.8);
+
+      handlers.onStart?.(slider);
+
+      const move = (moveEvent) => {
+        if (moveEvent.pointerId !== pointerId) return;
+        const raw = startValue + ((moveEvent.clientX - startX) / dragWidth) * (max - min);
+        const stepped = Math.round(raw / step) * step;
+        slider.value = Math.min(max, Math.max(min, stepped));
+        slider.dispatchEvent(new Event("input", { bubbles: true }));
+      };
+
+      const finish = (upEvent) => {
+        if (upEvent.pointerId !== pointerId) return;
+        window.removeEventListener("pointermove", move);
+        window.removeEventListener("pointerup", finish);
+        window.removeEventListener("pointercancel", finish);
+        handlers.onEnd?.(slider);
+      };
+
+      window.addEventListener("pointermove", move);
+      window.addEventListener("pointerup", finish);
+      window.addEventListener("pointercancel", finish);
+    });
+  });
 }
 
 function fileToDataUrl(file) {

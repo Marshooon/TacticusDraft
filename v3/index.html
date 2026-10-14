@@ -7,7 +7,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700;800;900&display=swap" rel="stylesheet" />
-  <link rel="stylesheet" href="styles.css?v=20261013-3" />
+  <link rel="stylesheet" href="styles.css?v=20261013-5" />
 </head>
 <body>
   <main class="app-shell" data-mode="card">
@@ -99,6 +99,14 @@
           <h1>Traits</h1>
           <label>Find Trait<input id="traitSearch" type="search" placeholder="Search 49 traits" /></label>
           <div class="trait-editor" id="traitEditor"></div>
+          <details class="custom-trait-editor" open>
+            <summary>Custom Trait</summary>
+            <label class="check-label"><input data-bind="customTrait.enabled" type="checkbox" /> Enable Custom Trait</label>
+            <label>Name<input data-bind="customTrait.name" type="text" placeholder="Custom trait name" /></label>
+            <label>Description<textarea data-bind="customTrait.description" rows="4" placeholder="Custom trait description"></textarea></label>
+            <label>Use Existing Icon<select data-bind="customTrait.iconId" data-asset-select="traits"></select></label>
+            <label>Upload Custom Icon<input data-upload="customTrait.src" type="file" accept="image/*" /></label>
+          </details>
         </section>
 
         <section class="editor-panel" data-editor-panel="stats">
@@ -152,6 +160,6 @@
     </button>
   </main>
 
-  <script type="module" src="src/main.js"></script>
+  <script type="module" src="src/main.js?v=20261013-6"></script>
 </body>
 </html>
