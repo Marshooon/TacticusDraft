@@ -19,6 +19,7 @@ let pointerStartX = 0;
 let pointerStartY = 0;
 let hintStage = "card";
 let historyGuardReady = false;
+let sliderInteractionActive = false;
 
 function updateViewportMetrics() {
   const width = window.innerWidth || HUD_BASE_WIDTH;
@@ -65,12 +66,14 @@ function updateSwipeHint() {
 }
 
 function handleTouchStart(event) {
+  if (sliderInteractionActive || event.target.closest?.('input[type="range"]')) return;
   const touch = event.changedTouches[0];
   touchStartX = touch.clientX;
   touchStartY = touch.clientY;
 }
 
 function handleTouchEnd(event) {
+  if (sliderInteractionActive || event.target.closest?.('input[type="range"]')) return;
   const touch = event.changedTouches[0];
   const deltaX = touch.clientX - touchStartX;
   const deltaY = touch.clientY - touchStartY;
@@ -88,12 +91,14 @@ function handleTouchEnd(event) {
 }
 
 function handlePointerDown(event) {
+  if (sliderInteractionActive || event.target.closest?.('input[type="range"]')) return;
   if (event.pointerType === "touch") return;
   pointerStartX = event.clientX;
   pointerStartY = event.clientY;
 }
 
 function handlePointerUp(event) {
+  if (sliderInteractionActive || event.target.closest?.('input[type="range"]')) return;
   if (event.pointerType === "touch") return;
   const deltaX = event.clientX - pointerStartX;
   const deltaY = event.clientY - pointerStartY;
@@ -149,12 +154,16 @@ function ensureInitialOptions() {
 ensureInitialOptions();
 const syncEditor = setupEditor(state, render, {
   onStart: () => {
+    sliderInteractionActive = true;
     appShell.classList.add("slider-preview-active");
     setMode("card");
   },
   onEnd: () => {
-    appShell.classList.remove("slider-preview-active");
     setMode("editor");
+    requestAnimationFrame(() => {
+      sliderInteractionActive = false;
+      appShell.classList.remove("slider-preview-active");
+    });
   }
 });
 document.querySelectorAll("[data-preset]").forEach((button) => {
