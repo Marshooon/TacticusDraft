@@ -211,8 +211,8 @@ async function drawHudCanvas(ctx, character, x, y, w, h, activeSrc, passiveSrc) 
 
   const star = assets.rankIcons[character.identity.rarity];
   if (star) {
-    const offsets = star.count === 1 ? [0] : star.count === 2 ? [-12, 12] : star.count === 3 ? [-24, 0, 24] : [-36, -12, 12, 36];
-    for (const offset of offsets) await drawImageSafe(ctx, assetUrl(star.src), x + w / 2 - 20 + offset, y + 22, 40, 40, true);
+    const offsets = star.count === 1 ? [0] : star.count === 2 ? [-14, 14] : star.count === 3 ? [-28, 0, 28] : [-42, -14, 14, 42];
+    for (const offset of offsets) await drawImageSafe(ctx, assetUrl(star.src), x + w / 2 - 24 + offset, y + 18, 48, 48, true);
   }
 
   pointedBar(ctx, x + 32, y + 154, w - 64, 24, character.progress.xpText);

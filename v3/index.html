@@ -7,7 +7,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700;800;900&display=swap" rel="stylesheet" />
-  <link rel="stylesheet" href="styles.css?v=20261013-11" />
+  <link rel="stylesheet" href="styles.css?v=20261013-16" />
 </head>
 <body>
   <main class="app-shell" data-mode="card">
@@ -117,11 +117,15 @@
             <label>Damage<input data-bind="stats.damage" type="number" /></label>
             <label>Move<input data-bind="stats.move" type="number" /></label>
           </div>
+          <h2>Attacks</h2>
           <div class="editor-grid">
-            <label>Melee<input data-bind="attacks.melee.type" type="text" /></label>
-            <label>Hits<input data-bind="attacks.melee.hits" type="number" /></label>
-            <label>Ranged<input data-bind="attacks.ranged.type" type="text" /></label>
-            <label>Hits<input data-bind="attacks.ranged.hits" type="number" /></label>
+            <label>Melee Damage Type<select data-bind="attacks.melee.type" data-damage-type-select></select></label>
+            <label>Melee Hits<input data-bind="attacks.melee.hits" type="number" min="1" /></label>
+            <label>Ranged Damage Type<select data-bind="attacks.ranged.type" data-damage-type-select></select></label>
+            <label>Ranged Hits<input data-bind="attacks.ranged.hits" type="number" min="1" /></label>
+          </div>
+          <h2>Critical &amp; Block</h2>
+          <div class="editor-grid">
             <label>Crit<input data-bind="crit.value" type="text" /></label>
             <label>Crit %<input data-bind="crit.chance" type="text" /></label>
             <label>Block<input data-bind="block.value" type="text" /></label>
@@ -160,6 +164,6 @@
     </button>
   </main>
 
-  <script type="module" src="src/main.js?v=20261013-15"></script>
+  <script type="module" src="src/main.js?v=20261013-17"></script>
 </body>
 </html>

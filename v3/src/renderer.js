@@ -157,9 +157,9 @@ function renderStars(rarity) {
 
 function starOffsets(count) {
   if (count === 1) return [{ x: 0, y: 0 }];
-  if (count === 2) return [{ x: -12, y: 0 }, { x: 12, y: 0 }];
-  if (count === 3) return [{ x: -24, y: 0 }, { x: 0, y: 0 }, { x: 24, y: 0 }];
-  return [{ x: -36, y: 0 }, { x: -12, y: 0 }, { x: 12, y: 0 }, { x: 36, y: 0 }];
+  if (count === 2) return [{ x: -14, y: 0 }, { x: 14, y: 0 }];
+  if (count === 3) return [{ x: -28, y: 0 }, { x: 0, y: 0 }, { x: 28, y: 0 }];
+  return [{ x: -42, y: 0 }, { x: -14, y: 0 }, { x: 14, y: 0 }, { x: 42, y: 0 }];
 }
 
 function renderEquipment(id) {

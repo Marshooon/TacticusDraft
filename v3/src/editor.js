@@ -3,6 +3,7 @@ import { getPath, setPath } from "./state.js";
 
 export function setupEditor(character, onChange, previewHandlers = {}) {
   fillAssetSelects(character);
+  fillDamageTypeSelects();
   fillTraitEditor(character, onChange);
   fillAbilityLibraries(character, onChange);
   syncControls(character);
@@ -39,6 +40,13 @@ export function setupEditor(character, onChange, previewHandlers = {}) {
   });
 
   return () => syncControls(character);
+}
+
+function fillDamageTypeSelects() {
+  const damageTypes = Object.keys(assets.damageIcons);
+  document.querySelectorAll("[data-damage-type-select]").forEach((select) => {
+    select.innerHTML = damageTypes.map((type) => `<option value="${type}">${type}</option>`).join("");
+  });
 }
 
 function setupSliderPreview(sliders, handlers) {

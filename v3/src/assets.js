@@ -74,9 +74,25 @@ export const assets = {
   },
   damageIcons: {
     Bio: "damageIcons/Bio_Icon.png",
+    Blast: "damageIcons/Blast_Icon.png",
+    Chain: "damageIcons/Chain_Icon.png",
+    Direct: "damageIcons/Direct_Icon.png",
+    Energy: "damageIcons/Energy_Icon.png",
+    Eviscerating: "damageIcons/Eviscerating_Icon.png",
+    Flame: "damageIcons/Flame_Icon.png",
+    "Heavy Round": "damageIcons/Heavy_Round_Icon.png",
+    Las: "damageIcons/Las_Icon.png",
     Power: "damageIcons/Power_Icon.png",
     Melta: "damageIcons/Melta_Icon.png",
-    Pulse: "damageIcons/Pulse_Icon.png"
+    Molecular: "damageIcons/Molecular_Icon.png",
+    Particle: "damageIcons/Particle_Icon.png",
+    Physical: "damageIcons/Physical_Icon.png",
+    Piercing: "damageIcons/Piercing_Icon.png",
+    Plasma: "damageIcons/Plasma_Icon.png",
+    Projectile: "damageIcons/Projectile_Icon.png",
+    Psychic: "damageIcons/Psychic_Icon.png",
+    Pulse: "damageIcons/Pulse_Icon.png",
+    Toxic: "damageIcons/Toxic_Icon.png"
   },
   equipment: [
     { id: "crit", label: "Crit Item", src: "equipmentIcons/Crit_Item_Icon.png" },
