@@ -45,7 +45,7 @@ export function setupEditor(character, onChange, previewHandlers = {}) {
 function fillDamageTypeSelects() {
   const damageTypes = Object.keys(assets.damageIcons);
   document.querySelectorAll("[data-damage-type-select]").forEach((select) => {
-    select.innerHTML = damageTypes.map((type) => `<option value="${type}">${type}</option>`).join("");
+    select.innerHTML = `<option value="">None</option>${damageTypes.map((type) => `<option value="${type}">${type}</option>`).join("")}`;
   });
 }
 
@@ -108,12 +108,31 @@ function fillTraitEditor(character, onChange) {
   const host = document.getElementById("traitEditor");
   if (!host) return;
   host.innerHTML = assets.traits.map((trait) => `
-    <label class="trait-pick">
+    <div class="trait-pick" tabindex="0" data-trait-body="${trait.id}" aria-expanded="false">
       <img src="../assets/${trait.src}" alt="" />
-      <span>${trait.label}</span>
-      <input type="checkbox" data-trait-id="${trait.id}" />
-    </label>
+      <span class="trait-copy"><strong>${escapeHtml(trait.label)}</strong><span class="trait-description">${escapeHtml(trait.description)}</span></span>
+      <input type="checkbox" data-trait-id="${trait.id}" aria-label="Add ${escapeHtml(trait.label)}" />
+    </div>
   `).join("");
+
+  const toggleDescription = (item) => {
+    const expanded = !item.classList.contains("expanded");
+    item.classList.toggle("expanded", expanded);
+    item.setAttribute("aria-expanded", String(expanded));
+  };
+
+  host.querySelectorAll("[data-trait-body]").forEach((item) => {
+    item.addEventListener("click", (event) => {
+      if (event.target.closest('input[type="checkbox"]')) return;
+      toggleDescription(item);
+    });
+    item.addEventListener("keydown", (event) => {
+      if (event.key !== "Enter" && event.key !== " ") return;
+      if (event.target.matches('input[type="checkbox"]')) return;
+      event.preventDefault();
+      toggleDescription(item);
+    });
+  });
 
   host.querySelectorAll("[data-trait-id]").forEach((checkbox) => {
     checkbox.checked = character.traits.includes(checkbox.dataset.traitId);
@@ -129,6 +148,14 @@ function fillTraitEditor(character, onChange) {
 
   const search = document.getElementById("traitSearch");
   search?.addEventListener("input", () => filterLibrary(host, search.value, ".trait-pick"));
+}
+
+function escapeHtml(value) {
+  return String(value ?? "")
+    .replaceAll("&", "&amp;")
+    .replaceAll("<", "&lt;")
+    .replaceAll(">", "&gt;")
+    .replaceAll('"', "&quot;");
 }
 
 function fillAbilityLibraries(character, onChange) {

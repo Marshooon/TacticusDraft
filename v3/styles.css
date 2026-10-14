@@ -686,6 +686,10 @@ textarea {
   font-size: 17px;
 }
 
+.attack-row-empty {
+  visibility: hidden;
+}
+
 .stat-cell img,
 .attack-row img,
 .crit-row img {
@@ -793,6 +797,28 @@ textarea {
   gap: 7px;
 }
 
+.lighting-controls .lighting-color,
+.lighting-controls .lighting-wide {
+  grid-column: 1 / -1;
+}
+
+.lighting-controls .lighting-color {
+  margin-top: 4px;
+  padding-top: 12px;
+  border-top: 1px solid rgba(120, 151, 196, 0.24);
+}
+
+.lighting-controls .lighting-color:first-child {
+  margin-top: 0;
+  padding-top: 0;
+  border-top: 0;
+}
+
+.lighting-controls input[type="color"] {
+  height: 42px;
+  padding: 4px;
+}
+
 .editor-grid {
   display: grid;
   grid-template-columns: 1fr 1fr;
@@ -845,11 +871,41 @@ textarea {
 
 .trait-pick {
   grid-template-columns: 34px 1fr auto;
-  align-items: center;
+  align-items: start;
   padding: 9px;
   border: 1px solid rgba(120,151,196,0.35);
   border-radius: 8px;
   background: rgba(2, 8, 16, 0.5);
+}
+
+.trait-copy {
+  display: grid;
+  align-self: center;
+  gap: 7px;
+}
+
+.trait-copy strong {
+  color: var(--muted);
+  font-size: 13px;
+}
+
+.trait-description {
+  display: none;
+  color: #dce8fa;
+  font-size: 12px;
+  font-weight: 400;
+  line-height: 1.4;
+}
+
+.trait-pick.expanded .trait-description {
+  display: block;
+}
+
+.trait-pick input[type="checkbox"] {
+  width: 24px;
+  height: 24px;
+  margin: 3px 0 0;
+  accent-color: #53efff;
 }
 
 .trait-pick img {

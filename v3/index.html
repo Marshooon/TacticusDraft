@@ -7,7 +7,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700;800;900&display=swap" rel="stylesheet" />
-  <link rel="stylesheet" href="styles.css?v=20261013-22" />
+  <link rel="stylesheet" href="styles.css?v=20261013-26" />
 </head>
 <body>
   <main class="app-shell" data-mode="card">
@@ -59,12 +59,12 @@
           <details open>
             <summary>Portrait Lighting</summary>
             <div class="editor-grid lighting-controls">
-              <label><span><input data-bind="scene.lighting.tintEnabled" type="checkbox" /> Tint</span><input data-bind="scene.lighting.tintColor" type="color" /></label>
-              <label>Tint Strength<input data-bind="scene.lighting.tintStrength" type="range" min="0" max="50" /></label>
-              <label><span><input data-bind="scene.lighting.lightEnabled" type="checkbox" /> Light</span><input data-bind="scene.lighting.lightColor" type="color" /></label>
+              <label class="lighting-color"><span><input data-bind="scene.lighting.tintEnabled" type="checkbox" /> Tint</span><input data-bind="scene.lighting.tintColor" type="color" /></label>
+              <label class="lighting-wide">Tint Strength<input data-bind="scene.lighting.tintStrength" type="range" min="0" max="50" /></label>
+              <label class="lighting-color"><span><input data-bind="scene.lighting.lightEnabled" type="checkbox" /> Light</span><input data-bind="scene.lighting.lightColor" type="color" /></label>
               <label>Light Strength<input data-bind="scene.lighting.lightStrength" type="range" min="0" max="60" /></label>
               <label>Light Angle<input data-bind="scene.lighting.lightAngle" type="range" min="0" max="360" /></label>
-              <label><span><input data-bind="scene.lighting.shadowEnabled" type="checkbox" /> Shadow</span><input data-bind="scene.lighting.shadowColor" type="color" /></label>
+              <label class="lighting-color"><span><input data-bind="scene.lighting.shadowEnabled" type="checkbox" /> Shadow</span><input data-bind="scene.lighting.shadowColor" type="color" /></label>
               <label>Shadow Strength<input data-bind="scene.lighting.shadowStrength" type="range" min="0" max="60" /></label>
               <label>Shadow Angle<input data-bind="scene.lighting.shadowAngle" type="range" min="0" max="360" /></label>
             </div>
@@ -164,6 +164,6 @@
     </button>
   </main>
 
-  <script type="module" src="src/main.js?v=20261013-23"></script>
+  <script type="module" src="src/main.js?v=20261013-26"></script>
 </body>
 </html>

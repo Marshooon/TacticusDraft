@@ -6,7 +6,7 @@ export const exportConfig = {
   renderScale: 2,
   maxBytes: 20 * 1024 * 1024,
   preferredFormat: "image/png",
-  fallbackFormat: "image/jpeg",
+  fallbackFormat: "image/png",
   qualitySteps: [0.92, 0.86, 0.8, 0.72],
   reducedScale: 0.86
 };
@@ -41,7 +41,12 @@ async function compressedBlob(canvas) {
     blob = await canvasToBlob(canvas, exportConfig.fallbackFormat, quality);
     if (blob.size <= exportConfig.maxBytes) break;
   }
-  return { blob, extension: exportConfig.fallbackFormat === "image/webp" ? "webp" : "jpg" };
+  const extension = exportConfig.fallbackFormat === "image/webp"
+    ? "webp"
+    : exportConfig.fallbackFormat === "image/png"
+      ? "png"
+      : "jpg";
+  return { blob, extension };
 }
 
 function scaleCanvas(source, scale) {
@@ -255,8 +260,8 @@ async function drawHudCanvas(ctx, character, x, y, w, h, activeSrc, passiveSrc) 
   ctx.font = "18px Trebuchet MS, Arial";
   drawWrappedLines(ctx, unlockLines, x + 45, y + 305, 15, "13px Roboto, Arial", "#fff");
 
-  await attackCell(ctx, x + 242, y + 272, "melee", character.attacks.melee.type, character.attacks.melee.hits, 198);
-  await attackCell(ctx, x + 242, y + 311, "ranged", character.attacks.ranged.type, character.attacks.ranged.hits, 198);
+  if (character.attacks.melee.type) await attackCell(ctx, x + 242, y + 272, "melee", character.attacks.melee.type, character.attacks.melee.hits, 198);
+  if (character.attacks.ranged.type) await attackCell(ctx, x + 242, y + 311, "ranged", character.attacks.ranged.type, character.attacks.ranged.hits, 198);
   await critCell(ctx, x + 242, y + 352, assets.statIcons.crit, character.crit.value, character.crit.chance, 198);
   await critCell(ctx, x + 242, y + 391, assets.statIcons.block, character.block.value, character.block.chance, 198);
 }

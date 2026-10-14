@@ -180,6 +180,7 @@ function renderStat(key, value) {
 }
 
 function renderAttack(kind, attack) {
+  if (!attack.type) return `<div class="attack-row attack-row-empty" aria-hidden="true"></div>`;
   const pattern = kind === "melee" ? assets.statIcons.melee : assets.statIcons.ranged2;
   const damageIcon = assets.damageIcons[attack.type];
   return `
