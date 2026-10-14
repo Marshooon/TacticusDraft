@@ -439,7 +439,7 @@ textarea {
   position: absolute;
   inset: 0;
   z-index: 3;
-  overflow: hidden;
+  overflow: visible;
   border-radius: 50%;
 }
 
