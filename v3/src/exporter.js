@@ -1,4 +1,5 @@
 import { assetUrl, assets, byId } from "./assets.js";
+import { renderCharacterScreen } from "./renderer.js?v=20261013-10";
 
 export const exportConfig = {
   width: 1920,
@@ -54,64 +55,130 @@ function scaleCanvas(source, scale) {
 }
 
 async function drawSheet(ctx, character, width, height) {
-  ctx.fillStyle = "#0b1220";
+  ctx.fillStyle = "#101722";
   ctx.fillRect(0, 0, width, height);
-  const bgGrad = ctx.createRadialGradient(width * 0.72, 80, 0, width * 0.72, 80, 980);
-  bgGrad.addColorStop(0, "rgba(87, 144, 208, .16)");
-  bgGrad.addColorStop(0.45, "rgba(21, 32, 52, .28)");
-  bgGrad.addColorStop(1, "rgba(3, 7, 12, 0)");
-  ctx.fillStyle = bgGrad;
-  ctx.fillRect(0, 0, width, height);
-
   await drawTextBlock(ctx, character);
-  await drawPhoneLikeCard(ctx, character, 1300, 28, 500, 1018);
+  const cardCanvas = await captureLiveCard(character);
+  if (cardCanvas) {
+    const cardHeight = 1016;
+    const cardWidth = Math.round(cardHeight * 0.5);
+    const cardX = width - cardWidth - 54;
+    const cardY = Math.round((height - cardHeight) / 2);
+    roundRect(ctx, cardX - 8, cardY - 8, cardWidth + 16, cardHeight + 16, 18, "#05070c", "rgba(255,255,255,.14)");
+    ctx.drawImage(cardCanvas, cardX, cardY, cardWidth, cardHeight);
+  } else {
+    await drawPhoneLikeCard(ctx, character, 1366, 31, 500, 1018);
+  }
 }
 
 async function drawTextBlock(ctx, character) {
+  const x = 76;
+  const maxWidth = 1080;
   ctx.fillStyle = "#f4f8ff";
-  ctx.font = "900 54px Trebuchet MS, Arial";
-  ctx.fillText(character.identity.name.toUpperCase(), 64, 82);
+  ctx.font = "900 54px Roboto, Arial";
+  ctx.fillText(character.identity.name.toUpperCase(), x, 82);
   ctx.fillStyle = "#c8d4f2";
-  ctx.font = "28px Trebuchet MS, Arial";
-  ctx.fillText(character.identity.title, 64, 125);
+  ctx.font = "28px Roboto, Arial";
+  ctx.fillText(character.identity.title, x, 125);
 
-  sectionTitle(ctx, "Description", 64, 184);
-  wrapText(ctx, character.identity.description, 64, 224, 820, 31, "24px Trebuchet MS, Arial", "#eef4ff");
+  let y = 184;
+  sectionTitle(ctx, "Description", x, y);
+  y = wrapText(ctx, character.identity.description, x, y + 40, maxWidth, 31, "24px Roboto, Arial", "#eef4ff") + 34;
 
-  sectionTitle(ctx, "Traits", 64, 342);
-  let y = 382;
-  for (const traitId of character.traits) {
-    const trait = byId("traits", traitId);
-    if (!trait) continue;
-    await drawImageSafe(ctx, assetUrl(trait.src), 64, y - 25, 36, 36);
-    ctx.fillStyle = "#f4f8ff";
-    ctx.font = "700 21px Trebuchet MS, Arial";
-    ctx.fillText(trait.label, 114, y);
-    y += 48;
+  const traits = character.traits.map((id) => byId("traits", id)).filter(Boolean);
+  if (character.customTrait?.enabled) {
+    const icon = byId("traits", character.customTrait.iconId);
+    traits.unshift({ label: character.customTrait.name || "Custom Trait", src: character.customTrait.src || icon?.src || "" });
+  }
+  if (traits.length) {
+    sectionTitle(ctx, "Traits", x, y);
+    y += 40;
+    for (const trait of traits.slice(0, 6)) {
+      if (trait.src) await drawImageSafe(ctx, assetUrl(trait.src), x, y - 25, 36, 36, true);
+      ctx.fillStyle = "#f4f8ff";
+      ctx.font = "700 21px Roboto, Arial";
+      ctx.fillText(trait.label, x + 50, y);
+      y += 45;
+    }
+    y += 20;
   }
 
-  sectionTitle(ctx, "Abilities", 64, 565);
-  y = 610;
-  y = await abilityCard(ctx, character.abilities.active, y);
-  await abilityCard(ctx, character.abilities.passive, y + 22);
+  const abilities = [character.abilities.active, character.abilities.passive]
+    .filter((ability) => ability?.name || ability?.description || ability?.src || ability?.iconId);
+  if (abilities.length) {
+    sectionTitle(ctx, "Abilities", x, y);
+    y += 42;
+    for (const ability of abilities) y = await abilityCard(ctx, ability, y, x, maxWidth) + 18;
+  }
 }
 
 function sectionTitle(ctx, text, x, y) {
   ctx.fillStyle = "#ffd56d";
-  ctx.font = "900 30px Trebuchet MS, Arial";
+  ctx.font = "900 30px Roboto, Arial";
   ctx.fillText(text, x, y);
 }
 
-async function abilityCard(ctx, ability, y) {
-  roundRect(ctx, 64, y, 850, 130, 12, "rgba(3, 9, 18, .55)", "rgba(214, 163, 74, .78)");
+async function abilityCard(ctx, ability, y, x = 64, width = 850) {
+  const descriptionLines = wrappedLines(ctx, ability.description, width - 154, "21px Roboto, Arial");
+  const cardHeight = Math.max(112, 74 + descriptionLines.length * 26);
+  roundRect(ctx, x, y, width, cardHeight, 12, "rgba(3, 9, 18, .38)", "rgba(214, 163, 74, .78)");
   const icon = byId("abilities", ability.iconId);
   const iconSrc = ability.src || icon?.src;
-  if (iconSrc) await circleImage(ctx, assetUrl(iconSrc), 80, y + 21, 72);
+  if (iconSrc) await circleImage(ctx, assetUrl(iconSrc), x + 16, y + 20, 72);
   ctx.fillStyle = "#f4f8ff";
-  ctx.font = "800 25px Trebuchet MS, Arial";
-  ctx.fillText(ability.name, 172, y + 43);
-  wrapText(ctx, ability.description, 172, y + 72, 700, 26, "21px Trebuchet MS, Arial", "#eef4ff");
-  return y + 130;
+  ctx.font = "800 25px Roboto, Arial";
+  ctx.fillText(ability.name || "Ability", x + 108, y + 41);
+  drawWrappedLines(ctx, descriptionLines, x + 108, y + 70, 26, "21px Roboto, Arial", "#eef4ff");
+  return y + cardHeight;
+}
+
+async function captureLiveCard(character) {
+  if (!window.html2canvas) return null;
+
+  const width = 474;
+  const height = 948;
+  const stage = document.createElement("div");
+  stage.className = "sheet-stage";
+  stage.style.width = `${width}px`;
+  stage.style.height = `${height}px`;
+  stage.style.setProperty("--hud-scale", "1");
+  stage.style.setProperty("--hud-height", "430px");
+
+  const card = document.createElement("section");
+  card.className = "game-screen export-game-screen";
+  stage.appendChild(card);
+  document.body.appendChild(stage);
+  renderCharacterScreen(card, character);
+
+  try {
+    await document.fonts?.ready;
+    await Promise.all(Array.from(card.querySelectorAll("img")).map((image) => {
+      if (image.complete) return Promise.resolve();
+      return new Promise((resolve) => {
+        image.addEventListener("load", resolve, { once: true });
+        image.addEventListener("error", resolve, { once: true });
+      });
+    }));
+    return await window.html2canvas(stage, {
+      backgroundColor: null,
+      useCORS: true,
+      allowTaint: false,
+      scale: 2,
+      logging: false,
+      imageTimeout: 15000,
+      width,
+      height,
+      windowWidth: width,
+      windowHeight: height,
+      scrollX: 0,
+      scrollY: 0
+    });
+  } catch (error) {
+    console.warn("Live V3 card capture failed; using canvas fallback.", error);
+    return null;
+  } finally {
+    stage.remove();
+  }
 }
 
 async function drawPhoneLikeCard(ctx, character, x, y, w, h) {
@@ -279,22 +346,33 @@ async function critCell(ctx, x, y, icon, value, chance) {
 }
 
 function wrapText(ctx, text, x, y, maxWidth, lineHeight, font, color) {
+  const lines = wrappedLines(ctx, text, maxWidth, font);
+  drawWrappedLines(ctx, lines, x, y, lineHeight, font, color);
+  return y + lines.length * lineHeight;
+}
+
+function wrappedLines(ctx, text, maxWidth, font) {
   ctx.font = font;
-  ctx.fillStyle = color;
-  const words = String(text).split(/\s+/);
+  const words = String(text || "").trim().split(/\s+/).filter(Boolean);
+  const lines = [];
   let line = "";
   for (const word of words) {
     const test = line ? `${line} ${word}` : word;
     if (ctx.measureText(test).width > maxWidth && line) {
-      ctx.fillText(line, x, y);
-      y += lineHeight;
+      lines.push(line);
       line = word;
     } else {
       line = test;
     }
   }
-  if (line) ctx.fillText(line, x, y);
-  return y + lineHeight;
+  if (line) lines.push(line);
+  return lines;
+}
+
+function drawWrappedLines(ctx, lines, x, y, lineHeight, font, color) {
+  ctx.font = font;
+  ctx.fillStyle = color;
+  lines.forEach((line, index) => ctx.fillText(line, x, y + index * lineHeight));
 }
 
 function centerText(ctx, text, x, y, font, color) {
@@ -381,10 +459,17 @@ function createRarityGradient(ctx, rarity, x1, x2) {
   return gradient;
 }
 
-async function drawImageSafe(ctx, src, x, y, w, h) {
+async function drawImageSafe(ctx, src, x, y, w, h, preserveAspect = false) {
   try {
     const img = await loadImage(src);
-    ctx.drawImage(img, x, y, w, h);
+    if (preserveAspect) {
+      const scale = Math.min(w / img.width, h / img.height);
+      const dw = img.width * scale;
+      const dh = img.height * scale;
+      ctx.drawImage(img, x + (w - dw) / 2, y + (h - dh) / 2, dw, dh);
+    } else {
+      ctx.drawImage(img, x, y, w, h);
+    }
   } catch {
     ctx.fillStyle = "#172033";
     ctx.fillRect(x, y, w, h);

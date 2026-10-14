@@ -1,7 +1,7 @@
 import { assets } from "./assets.js";
 import { setupEditor } from "./editor.js";
-import { exportReleaseSheet } from "./exporter.js";
-import { renderCharacterScreen } from "./renderer.js";
+import { exportReleaseSheet } from "./exporter.js?v=20261013-11";
+import { renderCharacterScreen } from "./renderer.js?v=20261013-10";
 import { applyPreset, presets, state } from "./state.js";
 
 const appShell = document.querySelector(".app-shell");

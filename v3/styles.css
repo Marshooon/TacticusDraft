@@ -135,11 +135,11 @@ textarea {
 .portrait {
   inset: auto;
   left: 50%;
-  top: 49%;
+  top: calc(49% + var(--portrait-shift-y, 0%));
   width: calc(100% * var(--portrait-zoom, 1.05));
   height: calc(100% * var(--portrait-zoom, 1.05));
   object-fit: contain;
-  object-position: var(--portrait-x, 50%) var(--portrait-y, 50%);
+  object-position: var(--portrait-x, 50%) 50%;
   transform: translate(-50%, -50%);
   filter: drop-shadow(0 20px 16px rgba(0, 0, 0, 0.58));
 }
@@ -158,7 +158,7 @@ textarea {
 .portrait-shadow {
   position: absolute;
   left: 50%;
-  top: 49%;
+  top: calc(49% + var(--portrait-shift-y, 0%));
   width: calc(100% * var(--portrait-zoom, 1.05));
   height: calc(100% * var(--portrait-zoom, 1.05));
   transform: translate(-50%, -50%);
@@ -168,8 +168,8 @@ textarea {
   mask-repeat: no-repeat;
   -webkit-mask-size: contain;
   mask-size: contain;
-  -webkit-mask-position: var(--portrait-x, 50%) var(--portrait-y, 50%);
-  mask-position: var(--portrait-x, 50%) var(--portrait-y, 50%);
+  -webkit-mask-position: var(--portrait-x, 50%) 50%;
+  mask-position: var(--portrait-x, 50%) 50%;
   pointer-events: none;
 }
 
@@ -977,12 +977,26 @@ textarea {
 
 .sheet-stage {
   position: fixed;
-  left: -3000px;
+  left: -10000px;
   top: 0;
-  width: 1920px;
-  height: 1080px;
+  width: 474px;
+  height: 948px;
   overflow: hidden;
-  background: #09111f;
+  background: transparent;
+  pointer-events: none;
+  z-index: -1;
+}
+
+.sheet-stage .export-game-screen {
+  position: absolute;
+  inset: 0;
+}
+
+.sheet-stage *,
+.sheet-stage *::before,
+.sheet-stage *::after {
+  animation: none !important;
+  transition: none !important;
 }
 
 @media (max-height: 740px) {
@@ -997,6 +1011,6 @@ textarea {
 
 @media (min-height: 900px) {
   .portrait {
-    top: 49%;
+    top: calc(49% + var(--portrait-shift-y, 0%));
   }
 }

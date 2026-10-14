@@ -17,7 +17,7 @@ export function renderCharacterScreen(root, character) {
     src: character.customTrait.src || customTraitIcon?.src || ""
   } : null;
   const displayedTraits = customTrait
-    ? [...selectedTraits.slice(0, 5), customTrait]
+    ? [customTrait, ...selectedTraits.slice(0, 5)]
     : selectedTraits.slice(0, 6);
   const rarity = assets.rankIcons[character.identity.rarity] || assets.rankIcons.legendary;
   const allegiance = byId("allegiances", character.identity.allegianceId);
@@ -94,6 +94,7 @@ export function renderCharacterScreen(root, character) {
   root.style.setProperty("--portrait-zoom", character.scene.portrait.zoom / 100);
   root.style.setProperty("--portrait-x", `${character.scene.portrait.focalX}%`);
   root.style.setProperty("--portrait-y", `${character.scene.portrait.focalY}%`);
+  root.style.setProperty("--portrait-shift-y", `${(Number(character.scene.portrait.focalY) - 50) / 2}%`);
   const maskSrc = String(assetUrl(portraitSrc) || "").replaceAll('"', '\\"');
   root.style.setProperty("--portrait-mask", maskSrc ? `url("${maskSrc}")` : "none");
   const lighting = character.scene.lighting || {};
