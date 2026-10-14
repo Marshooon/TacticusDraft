@@ -1,5 +1,4 @@
 import { assetUrl, assets, byId } from "./assets.js";
-import { renderCharacterScreen } from "./renderer.js?v=20261013-10";
 
 export const exportConfig = {
   width: 1920,
@@ -132,37 +131,28 @@ async function abilityCard(ctx, ability, y, x = 64, width = 850) {
   return y + cardHeight;
 }
 
-async function captureLiveCard(character) {
+async function captureLiveCard() {
   if (!window.html2canvas) return null;
 
   const liveCard = document.getElementById("gameScreen");
-  const liveRect = liveCard?.getBoundingClientRect();
-  const width = Math.max(1, Math.round(liveRect?.width || window.innerWidth || 474));
-  const height = Math.max(1, Math.round(liveRect?.height || window.innerHeight || 948));
-  const rootStyles = getComputedStyle(document.documentElement);
-  const stage = document.createElement("div");
-  stage.className = "sheet-stage";
-  stage.style.width = `${width}px`;
-  stage.style.height = `${height}px`;
-  stage.style.setProperty("--hud-scale", rootStyles.getPropertyValue("--hud-scale").trim() || "1");
-  stage.style.setProperty("--hud-height", rootStyles.getPropertyValue("--hud-height").trim() || "430px");
-
-  const card = document.createElement("section");
-  card.className = "game-screen export-game-screen";
-  stage.appendChild(card);
-  document.body.appendChild(stage);
-  renderCharacterScreen(card, character);
+  if (!liveCard) return null;
+  const wasHidden = liveCard.hidden;
+  liveCard.hidden = false;
 
   try {
     await document.fonts?.ready;
-    await Promise.all(Array.from(card.querySelectorAll("img")).map((image) => {
+    await Promise.all(Array.from(liveCard.querySelectorAll("img")).map((image) => {
       if (image.complete) return Promise.resolve();
       return new Promise((resolve) => {
         image.addEventListener("load", resolve, { once: true });
         image.addEventListener("error", resolve, { once: true });
       });
     }));
-    return await window.html2canvas(stage, {
+    await nextPaint();
+    const liveRect = liveCard.getBoundingClientRect();
+    const width = Math.max(1, Math.round(liveRect.width));
+    const height = Math.max(1, Math.round(liveRect.height));
+    return await window.html2canvas(liveCard, {
       backgroundColor: null,
       useCORS: true,
       allowTaint: false,
@@ -171,8 +161,8 @@ async function captureLiveCard(character) {
       imageTimeout: 15000,
       width,
       height,
-      windowWidth: width,
-      windowHeight: height,
+      windowWidth: window.innerWidth,
+      windowHeight: window.innerHeight,
       scrollX: 0,
       scrollY: 0
     });
@@ -180,8 +170,12 @@ async function captureLiveCard(character) {
     console.warn("Live V3 card capture failed; using canvas fallback.", error);
     return null;
   } finally {
-    stage.remove();
+    liveCard.hidden = wasHidden;
   }
+}
+
+function nextPaint() {
+  return new Promise((resolve) => requestAnimationFrame(() => requestAnimationFrame(resolve)));
 }
 
 async function drawPhoneLikeCard(ctx, character, x, y, w, h) {
