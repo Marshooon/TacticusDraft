@@ -3,6 +3,7 @@ import { assetUrl, assets, byId } from "./assets.js";
 export const exportConfig = {
   width: 1920,
   height: 1080,
+  renderScale: 2,
   maxBytes: 20 * 1024 * 1024,
   preferredFormat: "image/png",
   fallbackFormat: "image/jpeg",
@@ -12,13 +13,14 @@ export const exportConfig = {
 
 export async function exportReleaseSheet(character) {
   const canvas = document.createElement("canvas");
-  canvas.width = exportConfig.width;
-  canvas.height = exportConfig.height;
+  canvas.width = exportConfig.width * exportConfig.renderScale;
+  canvas.height = exportConfig.height * exportConfig.renderScale;
   const ctx = canvas.getContext("2d");
+  ctx.scale(exportConfig.renderScale, exportConfig.renderScale);
 
   await drawSheet(ctx, character, exportConfig.width, exportConfig.height);
 
-  let outputCanvas = canvas;
+  let outputCanvas = scaleCanvas(canvas, 1 / exportConfig.renderScale);
   let blob = await canvasToBlob(outputCanvas, exportConfig.preferredFormat);
   let extension = "png";
   if (blob.size > exportConfig.maxBytes) {
@@ -165,9 +167,12 @@ async function drawPhoneLikeCard(ctx, character, x, y, w, h) {
 
 async function renderCanonicalPhone(character) {
   const canvas = document.createElement("canvas");
-  canvas.width = 474;
-  canvas.height = 948;
-  await drawPhoneLikeCard(canvas.getContext("2d"), character, 0, 0, canvas.width, canvas.height);
+  const scale = 2;
+  canvas.width = 474 * scale;
+  canvas.height = 948 * scale;
+  const ctx = canvas.getContext("2d");
+  ctx.scale(scale, scale);
+  await drawPhoneLikeCard(ctx, character, 0, 0, 474, 948);
   return canvas;
 }
 
@@ -250,10 +255,10 @@ async function drawHudCanvas(ctx, character, x, y, w, h, activeSrc, passiveSrc) 
   ctx.font = "18px Trebuchet MS, Arial";
   drawWrappedLines(ctx, unlockLines, x + 45, y + 305, 15, "13px Roboto, Arial", "#fff");
 
-  await attackCell(ctx, x + 242, y + 276, "melee", character.attacks.melee.type, character.attacks.melee.hits, 198);
-  await attackCell(ctx, x + 242, y + 317, "ranged", character.attacks.ranged.type, character.attacks.ranged.hits, 198);
-  await critCell(ctx, x + 242, y + 364, assets.statIcons.crit, character.crit.value, character.crit.chance, 198);
-  await critCell(ctx, x + 242, y + 405, assets.statIcons.block, character.block.value, character.block.chance, 198);
+  await attackCell(ctx, x + 242, y + 272, "melee", character.attacks.melee.type, character.attacks.melee.hits, 198);
+  await attackCell(ctx, x + 242, y + 311, "ranged", character.attacks.ranged.type, character.attacks.ranged.hits, 198);
+  await critCell(ctx, x + 242, y + 352, assets.statIcons.crit, character.crit.value, character.crit.chance, 198);
+  await critCell(ctx, x + 242, y + 391, assets.statIcons.block, character.block.value, character.block.chance, 198);
 }
 
 function hudFramePath(ctx, x, y, w, h, close) {
