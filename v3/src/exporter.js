@@ -57,17 +57,13 @@ async function drawSheet(ctx, character, width, height) {
   ctx.fillStyle = "#101722";
   ctx.fillRect(0, 0, width, height);
   await drawTextBlock(ctx, character);
-  const cardCanvas = await captureLiveCard(character);
-  if (cardCanvas) {
-    const cardHeight = 1016;
-    const cardWidth = Math.round(cardHeight * (cardCanvas.width / cardCanvas.height));
-    const cardX = width - cardWidth - 54;
-    const cardY = Math.round((height - cardHeight) / 2);
-    roundRect(ctx, cardX - 8, cardY - 8, cardWidth + 16, cardHeight + 16, 18, "#05070c", "rgba(255,255,255,.14)");
-    ctx.drawImage(cardCanvas, cardX, cardY, cardWidth, cardHeight);
-  } else {
-    await drawPhoneLikeCard(ctx, character, 1366, 31, 500, 1018);
-  }
+  const cardCanvas = await renderCanonicalPhone(character);
+  const cardHeight = 1016;
+  const cardWidth = Math.round(cardHeight * (cardCanvas.width / cardCanvas.height));
+  const cardX = width - cardWidth - 54;
+  const cardY = Math.round((height - cardHeight) / 2);
+  roundRect(ctx, cardX - 8, cardY - 8, cardWidth + 16, cardHeight + 16, 18, "#05070c", "rgba(255,255,255,.14)");
+  ctx.drawImage(cardCanvas, cardX, cardY, cardWidth, cardHeight);
 }
 
 async function drawTextBlock(ctx, character) {
@@ -131,61 +127,14 @@ async function abilityCard(ctx, ability, y, x = 64, width = 850) {
   return y + cardHeight;
 }
 
-async function captureLiveCard() {
-  if (!window.html2canvas) return null;
-
-  const liveCard = document.getElementById("gameScreen");
-  if (!liveCard) return null;
-  const wasHidden = liveCard.hidden;
-  liveCard.hidden = false;
-
-  try {
-    await document.fonts?.ready;
-    await Promise.all(Array.from(liveCard.querySelectorAll("img")).map((image) => {
-      if (image.complete) return Promise.resolve();
-      return new Promise((resolve) => {
-        image.addEventListener("load", resolve, { once: true });
-        image.addEventListener("error", resolve, { once: true });
-      });
-    }));
-    await nextPaint();
-    const liveRect = liveCard.getBoundingClientRect();
-    const width = Math.max(1, Math.round(liveRect.width));
-    const height = Math.max(1, Math.round(liveRect.height));
-    return await window.html2canvas(liveCard, {
-      backgroundColor: null,
-      useCORS: true,
-      allowTaint: false,
-      scale: 2,
-      logging: false,
-      imageTimeout: 15000,
-      width,
-      height,
-      windowWidth: window.innerWidth,
-      windowHeight: window.innerHeight,
-      scrollX: 0,
-      scrollY: 0
-    });
-  } catch (error) {
-    console.warn("Live V3 card capture failed; using canvas fallback.", error);
-    return null;
-  } finally {
-    liveCard.hidden = wasHidden;
-  }
-}
-
-function nextPaint() {
-  return new Promise((resolve) => requestAnimationFrame(() => requestAnimationFrame(resolve)));
-}
-
 async function drawPhoneLikeCard(ctx, character, x, y, w, h) {
-  roundRect(ctx, x, y, w, h, 22, "#05070c", "#000");
-  const inset = 11;
-  const ix = x + inset;
-  const iy = y + inset;
-  const iw = w - inset * 2;
-  const ih = h - inset * 2;
-  const hudH = 408;
+  const ix = x;
+  const iy = y;
+  const iw = w;
+  const ih = h;
+  const hudH = 430;
+  const overlap = 82;
+  const sceneH = ih - hudH + overlap;
 
   const bg = byId("backgrounds", character.scene.backgroundId);
   const portrait = byId("portraits", character.scene.portraitId);
@@ -197,78 +146,109 @@ async function drawPhoneLikeCard(ctx, character, x, y, w, h) {
   const passiveSrc = character.abilities.passive.src || passive?.src;
 
   ctx.save();
-  roundedClip(ctx, ix, iy, iw, ih, 14);
-  await drawCover(ctx, assetUrl(backgroundSrc), ix, iy, iw, ih - hudH + 70);
-  await drawContain(ctx, assetUrl(portraitSrc), ix + 6, iy + 18, iw - 12, ih - hudH + 30);
-  ctx.fillStyle = "rgba(2, 8, 13, .84)";
-  ctx.fillRect(ix, iy + ih - hudH, iw, hudH);
+  ctx.beginPath();
+  ctx.rect(ix, iy, iw, ih);
+  ctx.clip();
+  await drawCover(ctx, assetUrl(backgroundSrc), ix, iy, iw, sceneH);
+  await drawPortrait(ctx, assetUrl(portraitSrc), character.scene.portrait, ix, iy, iw, sceneH);
   await drawHudCanvas(ctx, character, ix, iy + ih - hudH, iw, hudH, activeSrc, passiveSrc);
   ctx.restore();
 }
 
+async function renderCanonicalPhone(character) {
+  const canvas = document.createElement("canvas");
+  canvas.width = 474;
+  canvas.height = 948;
+  await drawPhoneLikeCard(canvas.getContext("2d"), character, 0, 0, canvas.width, canvas.height);
+  return canvas;
+}
+
 async function drawHudCanvas(ctx, character, x, y, w, h, activeSrc, passiveSrc) {
   const rarityGradient = createRarityGradient(ctx, character.identity.rarity, x, x + w);
+  hudFramePath(ctx, x, y, w, h, true);
+  ctx.fillStyle = "rgba(3, 11, 19, .97)";
+  ctx.fill();
+  ctx.save();
+  ctx.clip();
+  ctx.strokeStyle = "rgba(84, 239, 255, .23)";
+  ctx.lineWidth = 1;
+  for (let lineY = y + 12.5; lineY < y + h; lineY += 14) {
+    ctx.beginPath();
+    ctx.moveTo(x, lineY);
+    ctx.lineTo(x + w, lineY);
+    ctx.stroke();
+  }
+  ctx.restore();
+
   ctx.strokeStyle = rarityGradient;
-  ctx.lineWidth = 5;
-  ctx.beginPath();
-  ctx.moveTo(x + 10, y + h - 4);
-  ctx.lineTo(x + 10, y + 144);
-  ctx.lineTo(x + 54, y + 144);
-  ctx.quadraticCurveTo(x + 96, y + 144, x + 96, y + 102);
-  ctx.lineTo(x + 96, y + 58);
-  ctx.lineTo(x + w - 96, y + 58);
-  ctx.lineTo(x + w - 96, y + 102);
-  ctx.quadraticCurveTo(x + w - 96, y + 144, x + w - 54, y + 144);
-  ctx.lineTo(x + w - 10, y + 144);
-  ctx.lineTo(x + w - 10, y + h - 4);
+  ctx.lineWidth = 2.6;
+  hudFramePath(ctx, x, y, w, h, false);
   ctx.stroke();
 
-  await circleImage(ctx, assetUrl(activeSrc), x + 8, y + 47, 88, 3, rarityGradient);
-  await circleImage(ctx, assetUrl(passiveSrc), x + w - 96, y + 47, 88, 3, rarityGradient);
+  await abilityCircle(ctx, assetUrl(activeSrc), x + 8, y + 56, 78, character.abilities.active.position, rarityGradient);
+  await abilityCircle(ctx, assetUrl(passiveSrc), x + w - 86, y + 56, 78, character.abilities.passive.position, rarityGradient);
 
   ctx.fillStyle = "rgba(48, 95, 156, .86)";
   ctx.strokeStyle = rarityGradient;
-  ctx.lineWidth = 4;
+  ctx.lineWidth = 2.6;
   ctx.fillRect(x + 96, y + 58, w - 192, 58);
   ctx.strokeRect(x + 96, y + 58, w - 192, 58);
   ctx.save();
   ctx.beginPath();
   ctx.rect(x + 96, y + 58, w - 192, 58);
   ctx.clip();
-  centerText(ctx, character.identity.name.toUpperCase(), x + w / 2, y + 86, "800 24px Trebuchet MS, Arial", "#fff");
-  centerText(ctx, character.identity.title, x + w / 2, y + 106, "14px Trebuchet MS, Arial", "#d4d8f5");
+  centerText(ctx, character.identity.name.toUpperCase(), x + w / 2, y + 86, "800 21px Roboto, Arial", "#fff");
+  centerText(ctx, character.identity.title, x + w / 2, y + 106, "11px Roboto, Arial", "#d4d8f5");
   ctx.restore();
 
   const star = assets.rankIcons[character.identity.rarity];
-  if (star) await drawImageSafe(ctx, assetUrl(star.src), x + w / 2 - 20, y + 4, 40, 40);
+  if (star) {
+    const offsets = star.count === 1 ? [0] : star.count === 2 ? [-12, 12] : star.count === 3 ? [-24, 0, 24] : [-36, -12, 12, 36];
+    for (const offset of offsets) await drawImageSafe(ctx, assetUrl(star.src), x + w / 2 - 20 + offset, y + 22, 40, 40, true);
+  }
 
   pointedBar(ctx, x + 32, y + 154, w - 64, 24, character.progress.xpText);
 
   let sx = x + 34;
   for (const slot of character.equipment) {
     const item = byId("equipment", slot.id);
-    await hexSlot(ctx, sx, y + 196, 64, item ? assetUrl(item.src) : "");
-    sx += 78;
+    await hexSlot(ctx, sx, y + 192, 58, item ? assetUrl(item.src) : "");
+    sx += 67;
   }
 
-  await statCell(ctx, x + 272, y + 196, assets.statIcons.health, character.stats.health);
-  await statCell(ctx, x + 384, y + 196, assets.statIcons.armor, character.stats.armor);
-  await statCell(ctx, x + 272, y + 244, assets.statIcons.damage, character.stats.damage);
-  await statCell(ctx, x + 384, y + 244, assets.statIcons.move, character.stats.move);
+  await statCell(ctx, x + 242, y + 192, assets.statIcons.health, character.stats.health, 94);
+  await statCell(ctx, x + 340, y + 192, assets.statIcons.armor, character.stats.armor, 94);
+  await statCell(ctx, x + 242, y + 231, assets.statIcons.damage, character.stats.damage, 94);
+  await statCell(ctx, x + 340, y + 231, assets.statIcons.move, character.stats.move, 94);
 
   ctx.fillStyle = "rgba(28, 43, 74, .9)";
-  ctx.fillRect(x + 34, y + 278, 222, 74);
+  ctx.fillRect(x + 34, y + 259, 198, 72);
   ctx.fillStyle = "#c8d5ff";
   ctx.font = "15px Trebuchet MS, Arial";
-  ctx.fillText("UNLOCK", x + 48, y + 302);
+  ctx.fillText("UNLOCK", x + 45, y + 281);
   ctx.fillStyle = "#fff";
   ctx.font = "18px Trebuchet MS, Arial";
-  ctx.fillText("Unlock requirements", x + 48, y + 330);
+  wrapText(ctx, character.identity.unlock, x + 45, y + 305, 176, 15, "13px Roboto, Arial", "#fff");
 
-  await attackCell(ctx, x + 272, y + 292, "Power", character.attacks.melee.hits);
-  await attackCell(ctx, x + 272, y + 338, "Melta", character.attacks.ranged.hits);
-  await critCell(ctx, x + 272, y + 386, assets.statIcons.crit, character.crit.value, character.crit.chance);
-  await critCell(ctx, x + 272, y + 432, assets.statIcons.block, character.block.value, character.block.chance);
+  await attackCell(ctx, x + 242, y + 276, character.attacks.melee.type, character.attacks.melee.hits, 198);
+  await attackCell(ctx, x + 242, y + 317, character.attacks.ranged.type, character.attacks.ranged.hits, 198);
+  await critCell(ctx, x + 242, y + 364, assets.statIcons.crit, character.crit.value, character.crit.chance, 198);
+  await critCell(ctx, x + 242, y + 405, assets.statIcons.block, character.block.value, character.block.chance, 198);
+}
+
+function hudFramePath(ctx, x, y, w, h, close) {
+  ctx.beginPath();
+  ctx.moveTo(x + 10, y + h);
+  ctx.lineTo(x + 10, y + 144);
+  ctx.lineTo(x + 54, y + 144);
+  ctx.arcTo(x + 96, y + 144, x + 96, y + 102, 42);
+  ctx.lineTo(x + 96, y + 58);
+  ctx.lineTo(x + w - 96, y + 58);
+  ctx.lineTo(x + w - 96, y + 102);
+  ctx.arcTo(x + w - 96, y + 144, x + w - 54, y + 144, 42);
+  ctx.lineTo(x + w - 10, y + 144);
+  ctx.lineTo(x + w - 10, y + h);
+  if (close) ctx.closePath();
 }
 
 function pointedBar(ctx, x, y, w, h, text) {
@@ -307,39 +287,39 @@ async function hexSlot(ctx, x, y, size, src) {
   if (src) await drawImageSafe(ctx, src, x + 12, y + 12, size - 24, size - 24);
 }
 
-async function statCell(ctx, x, y, icon, value) {
+async function statCell(ctx, x, y, icon, value, width = 100) {
   ctx.fillStyle = "rgba(22, 31, 52, .92)";
   ctx.strokeStyle = "rgba(139,171,225,.45)";
   ctx.lineWidth = 1;
-  ctx.fillRect(x, y, 100, 40);
-  ctx.strokeRect(x, y, 100, 40);
+  ctx.fillRect(x, y, width, 35);
+  ctx.strokeRect(x, y, width, 35);
   await drawImageSafe(ctx, assetUrl(icon), x + 8, y + 7, 25, 25);
   ctx.fillStyle = "#fff";
-  ctx.font = "23px Trebuchet MS, Arial";
-  ctx.fillText(String(value), x + 42, y + 27);
+  ctx.font = "17px Roboto, Arial";
+  ctx.fillText(String(value), x + 38, y + 24);
 }
 
-async function attackCell(ctx, x, y, type, hits) {
+async function attackCell(ctx, x, y, type, hits, width = 204) {
   ctx.fillStyle = "rgba(22, 31, 52, .92)";
-  ctx.fillRect(x, y, 204, 38);
+  ctx.fillRect(x, y, width, 35);
   await drawImageSafe(ctx, assetUrl(assets.damageIcons[type]), x + 36, y + 6, 26, 26);
   ctx.fillStyle = type === "Power" ? "#53efff" : "#ffd56d";
-  ctx.font = "28px Trebuchet MS, Arial";
-  ctx.fillText(type.toUpperCase(), x + 69, y + 28);
-  await drawImageSafe(ctx, assetUrl(assets.statIcons.hits), x + 164, y + 8, 20, 20);
+  ctx.font = "19px Roboto, Arial";
+  ctx.fillText(type.toUpperCase(), x + 66, y + 25);
+  await drawImageSafe(ctx, assetUrl(assets.statIcons.hits), x + width - 38, y + 7, 20, 20);
   ctx.fillStyle = "#fff";
-  ctx.fillText(String(hits), x + 186, y + 28);
+  ctx.fillText(String(hits), x + width - 17, y + 25);
 }
 
-async function critCell(ctx, x, y, icon, value, chance) {
+async function critCell(ctx, x, y, icon, value, chance, width = 204) {
   ctx.fillStyle = "rgba(22, 31, 52, .92)";
-  ctx.fillRect(x, y, 204, 38);
+  ctx.fillRect(x, y, width, 35);
   await drawImageSafe(ctx, assetUrl(icon), x + 9, y + 6, 25, 25);
   ctx.fillStyle = "#fff";
-  ctx.font = "24px Trebuchet MS, Arial";
-  ctx.fillText(String(value), x + 42, y + 28);
-  await drawImageSafe(ctx, assetUrl(assets.statIcons.chance), x + 144, y + 8, 23, 23);
-  ctx.fillText(String(chance), x + 170, y + 28);
+  ctx.font = "17px Roboto, Arial";
+  ctx.fillText(String(value), x + 40, y + 24);
+  await drawImageSafe(ctx, assetUrl(assets.statIcons.chance), x + width - 58, y + 7, 21, 21);
+  ctx.fillText(String(chance), x + width - 34, y + 24);
 }
 
 function wrapText(ctx, text, x, y, maxWidth, lineHeight, font, color) {
@@ -417,6 +397,22 @@ async function drawCover(ctx, src, x, y, w, h) {
   ctx.drawImage(img, x + (w - dw) / 2, y + (h - dh) / 2, dw, dh);
 }
 
+async function drawPortrait(ctx, src, position = {}, x, y, w, h) {
+  const img = await loadImage(src);
+  const zoom = Number(position.zoom || 100) / 100;
+  const boxW = w * zoom;
+  const boxH = h * zoom;
+  const boxX = x + (w - boxW) / 2;
+  const shiftY = ((Number(position.focalY ?? 50) - 50) / 200) * h;
+  const boxY = y + (h - boxH) / 2 + shiftY;
+  const scale = Math.min(boxW / img.width, boxH / img.height);
+  const dw = img.width * scale;
+  const dh = img.height * scale;
+  const freeX = boxW - dw;
+  const focalX = Number(position.focalX ?? 50) / 100;
+  ctx.drawImage(img, boxX + freeX * focalX, boxY + (boxH - dh) / 2, dw, dh);
+}
+
 async function drawContain(ctx, src, x, y, w, h) {
   const img = await loadImage(src);
   const scale = Math.min(w / img.width, h / img.height);
@@ -436,6 +432,31 @@ async function circleImage(ctx, src, x, y, size, ringWidth = 4, strokeStyle = "#
   ctx.lineWidth = ringWidth;
   ctx.beginPath();
   ctx.arc(x + size / 2, y + size / 2, size / 2 - 2, 0, Math.PI * 2);
+  ctx.stroke();
+}
+
+async function abilityCircle(ctx, src, x, y, size, position = {}, strokeStyle = "#f5fbff") {
+  ctx.save();
+  ctx.beginPath();
+  ctx.arc(x + size / 2, y + size / 2, size / 2 - 3, 0, Math.PI * 2);
+  ctx.clip();
+  ctx.fillStyle = "#07101a";
+  ctx.fillRect(x, y, size, size);
+  if (src) {
+    const img = await loadImage(src);
+    const zoom = Number(position?.zoom || 100) / 100;
+    const base = size - 8;
+    const dw = base * zoom;
+    const dh = base * zoom;
+    const dx = x + size / 2 - dw / 2 + Number(position?.x || 0);
+    const dy = y + size / 2 - dh / 2 + Number(position?.y || 0);
+    ctx.drawImage(img, dx, dy, dw, dh);
+  }
+  ctx.restore();
+  ctx.strokeStyle = strokeStyle;
+  ctx.lineWidth = 3;
+  ctx.beginPath();
+  ctx.arc(x + size / 2, y + size / 2, size / 2 - 1.5, 0, Math.PI * 2);
   ctx.stroke();
 }
 
