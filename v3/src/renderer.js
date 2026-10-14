@@ -94,6 +94,8 @@ export function renderCharacterScreen(root, character) {
   root.style.setProperty("--portrait-zoom", character.scene.portrait.zoom / 100);
   root.style.setProperty("--portrait-x", `${character.scene.portrait.focalX}%`);
   root.style.setProperty("--portrait-y", `${character.scene.portrait.focalY}%`);
+  const maskSrc = String(assetUrl(portraitSrc) || "").replaceAll('"', '\\"');
+  root.style.setProperty("--portrait-mask", maskSrc ? `url("${maskSrc}")` : "none");
   const lighting = character.scene.lighting || {};
   root.style.setProperty("--tint-color", lighting.tintEnabled === false ? "transparent" : lighting.tintColor || "transparent");
   root.style.setProperty("--tint-strength", `${Number(lighting.tintStrength || 0) / 100}`);

@@ -157,7 +157,19 @@ textarea {
 .portrait-light,
 .portrait-shadow {
   position: absolute;
-  inset: 0;
+  left: 50%;
+  top: 49%;
+  width: calc(100% * var(--portrait-zoom, 1.05));
+  height: calc(100% * var(--portrait-zoom, 1.05));
+  transform: translate(-50%, -50%);
+  -webkit-mask-image: var(--portrait-mask);
+  mask-image: var(--portrait-mask);
+  -webkit-mask-repeat: no-repeat;
+  mask-repeat: no-repeat;
+  -webkit-mask-size: contain;
+  mask-size: contain;
+  -webkit-mask-position: var(--portrait-x, 50%) var(--portrait-y, 50%);
+  mask-position: var(--portrait-x, 50%) var(--portrait-y, 50%);
   pointer-events: none;
 }
 
