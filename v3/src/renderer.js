@@ -168,7 +168,7 @@ function renderEquipment(id) {
   return `
     <div class="equip-slot">
       <svg viewBox="0 0 64 64" aria-hidden="true">
-        <path d="M32 3 L58 18 V46 L32 61 L6 46 V18 Z" fill="#07131f" stroke="#65efff" stroke-width="4" />
+        <path d="M32 3 L58 18 V46 L32 61 L6 46 V18 Z" fill="#07131f" stroke="#65efff" stroke-width="2.5" />
       </svg>
       ${item?.src ? `<img class="equip-icon" src="${assetUrl(item.src)}" alt="${escapeHtml(item.label)}" />` : ""}
     </div>

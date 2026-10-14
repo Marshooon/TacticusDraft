@@ -236,17 +236,19 @@ async function drawHudCanvas(ctx, character, x, y, w, h, activeSrc, passiveSrc) 
   await statCell(ctx, x + 242, y + 231, assets.statIcons.damage, character.stats.damage, 97);
   await statCell(ctx, x + 343, y + 231, assets.statIcons.move, character.stats.move, 97);
 
+  const unlockLines = wrappedLines(ctx, character.identity.unlock, 176, "13px Roboto, Arial");
+  const unlockHeight = Math.max(72, 62 + Math.max(0, unlockLines.length - 1) * 15);
   ctx.fillStyle = "rgba(20, 31, 55, .82)";
-  ctx.fillRect(x + 34, y + 259, 198, 72);
+  ctx.fillRect(x + 34, y + 259, 198, unlockHeight);
   ctx.strokeStyle = "rgba(139, 171, 225, .42)";
   ctx.lineWidth = 1;
-  ctx.strokeRect(x + 34.5, y + 259.5, 197, 71);
+  ctx.strokeRect(x + 34.5, y + 259.5, 197, unlockHeight - 1);
   ctx.fillStyle = "#c8d5ff";
   ctx.font = "15px Trebuchet MS, Arial";
   ctx.fillText("UNLOCK", x + 45, y + 281);
   ctx.fillStyle = "#fff";
   ctx.font = "18px Trebuchet MS, Arial";
-  wrapText(ctx, character.identity.unlock, x + 45, y + 305, 176, 15, "13px Roboto, Arial", "#fff");
+  drawWrappedLines(ctx, unlockLines, x + 45, y + 305, 15, "13px Roboto, Arial", "#fff");
 
   await attackCell(ctx, x + 242, y + 276, "melee", character.attacks.melee.type, character.attacks.melee.hits, 198);
   await attackCell(ctx, x + 242, y + 317, "ranged", character.attacks.ranged.type, character.attacks.ranged.hits, 198);
@@ -299,7 +301,7 @@ async function hexSlot(ctx, x, y, size, src) {
   ctx.closePath();
   ctx.fillStyle = "#06131f";
   ctx.strokeStyle = "#65efff";
-  ctx.lineWidth = 5;
+  ctx.lineWidth = 2.5;
   ctx.fill();
   ctx.stroke();
   if (src) {

@@ -1,7 +1,7 @@
 import { assets } from "./assets.js";
 import { setupEditor } from "./editor.js?v=20261013-17";
-import { exportReleaseSheet } from "./exporter.js?v=20261013-20";
-import { renderCharacterScreen } from "./renderer.js?v=20261013-18";
+import { exportReleaseSheet } from "./exporter.js?v=20261013-21";
+import { renderCharacterScreen } from "./renderer.js?v=20261013-21";
 import { applyPreset, presets, state } from "./state.js";
 
 const appShell = document.querySelector(".app-shell");
@@ -23,6 +23,8 @@ let historyGuardReady = false;
 function updateViewportMetrics() {
   const width = window.innerWidth || HUD_BASE_WIDTH;
   const height = window.innerHeight || 900;
+  const visibleHeight = window.visualViewport?.height || height;
+  document.documentElement.style.setProperty("--app-visible-height", `${Math.floor(visibleHeight)}px`);
   const widthScale = width / HUD_BASE_WIDTH;
   const shortWide = width / height > 0.62;
   const heightLimit = shortWide ? height * 0.58 : Number.POSITIVE_INFINITY;
@@ -232,3 +234,5 @@ window.addEventListener("keydown", handleShortcutKeys, true);
 exportButton.addEventListener("click", () => exportReleaseSheet(state));
 window.addEventListener("resize", render);
 window.addEventListener("orientationchange", render);
+window.visualViewport?.addEventListener("resize", render);
+window.visualViewport?.addEventListener("scroll", updateViewportMetrics);
