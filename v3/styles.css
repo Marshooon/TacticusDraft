@@ -437,18 +437,18 @@ textarea {
 
 .ability-art {
   position: absolute;
-  inset: 0;
+  inset: 3px;
   z-index: 3;
-  overflow: visible;
+  overflow: hidden;
   border-radius: 50%;
 }
 
 .ability-icon {
   position: absolute;
-  inset: 4px;
-  width: calc(100% - 8px);
-  height: calc(100% - 8px);
-  border-radius: 50%;
+  inset: 1px;
+  width: calc(100% - 2px);
+  height: calc(100% - 2px);
+  border-radius: 0;
   clip-path: none;
 }
 
