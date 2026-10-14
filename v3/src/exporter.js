@@ -61,7 +61,7 @@ async function drawSheet(ctx, character, width, height) {
   const cardCanvas = await captureLiveCard(character);
   if (cardCanvas) {
     const cardHeight = 1016;
-    const cardWidth = Math.round(cardHeight * 0.5);
+    const cardWidth = Math.round(cardHeight * (cardCanvas.width / cardCanvas.height));
     const cardX = width - cardWidth - 54;
     const cardY = Math.round((height - cardHeight) / 2);
     roundRect(ctx, cardX - 8, cardY - 8, cardWidth + 16, cardHeight + 16, 18, "#05070c", "rgba(255,255,255,.14)");
@@ -135,14 +135,17 @@ async function abilityCard(ctx, ability, y, x = 64, width = 850) {
 async function captureLiveCard(character) {
   if (!window.html2canvas) return null;
 
-  const width = 474;
-  const height = 948;
+  const liveCard = document.getElementById("gameScreen");
+  const liveRect = liveCard?.getBoundingClientRect();
+  const width = Math.max(1, Math.round(liveRect?.width || window.innerWidth || 474));
+  const height = Math.max(1, Math.round(liveRect?.height || window.innerHeight || 948));
+  const rootStyles = getComputedStyle(document.documentElement);
   const stage = document.createElement("div");
   stage.className = "sheet-stage";
   stage.style.width = `${width}px`;
   stage.style.height = `${height}px`;
-  stage.style.setProperty("--hud-scale", "1");
-  stage.style.setProperty("--hud-height", "430px");
+  stage.style.setProperty("--hud-scale", rootStyles.getPropertyValue("--hud-scale").trim() || "1");
+  stage.style.setProperty("--hud-height", rootStyles.getPropertyValue("--hud-height").trim() || "430px");
 
   const card = document.createElement("section");
   card.className = "game-screen export-game-screen";
