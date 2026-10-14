@@ -174,16 +174,23 @@ async function renderCanonicalPhone(character) {
 async function drawHudCanvas(ctx, character, x, y, w, h, activeSrc, passiveSrc) {
   const rarityGradient = createRarityGradient(ctx, character.identity.rarity, x, x + w);
   hudFramePath(ctx, x, y, w, h, true);
-  ctx.fillStyle = "rgba(3, 11, 19, .97)";
+  ctx.fillStyle = "rgba(3, 14, 26, .98)";
   ctx.fill();
   ctx.save();
   ctx.clip();
-  ctx.strokeStyle = "rgba(84, 239, 255, .23)";
+  ctx.strokeStyle = "rgba(84, 239, 255, .14)";
   ctx.lineWidth = 1;
   for (let lineY = y + 12.5; lineY < y + h; lineY += 14) {
     ctx.beginPath();
     ctx.moveTo(x, lineY);
     ctx.lineTo(x + w, lineY);
+    ctx.stroke();
+  }
+  ctx.strokeStyle = "rgba(78, 167, 200, .11)";
+  for (let gx = x - 100; gx < x + w + 100; gx += 86) {
+    ctx.beginPath();
+    ctx.moveTo(gx, y + 144);
+    ctx.lineTo(gx + 210, y + h);
     ctx.stroke();
   }
   ctx.restore();
@@ -220,8 +227,8 @@ async function drawHudCanvas(ctx, character, x, y, w, h, activeSrc, passiveSrc) 
   let sx = x + 34;
   for (const slot of character.equipment) {
     const item = byId("equipment", slot.id);
-    await hexSlot(ctx, sx, y + 192, 58, item ? assetUrl(item.src) : "");
-    sx += 67;
+    await hexSlot(ctx, sx, y + 192, 62, item ? assetUrl(item.src) : "");
+    sx += 68;
   }
 
   await statCell(ctx, x + 242, y + 192, assets.statIcons.health, character.stats.health, 94);
@@ -292,7 +299,10 @@ async function hexSlot(ctx, x, y, size, src) {
   ctx.lineWidth = 5;
   ctx.fill();
   ctx.stroke();
-  if (src) await drawImageSafe(ctx, src, x + 12, y + 12, size - 24, size - 24);
+  if (src) {
+    const artSize = 36;
+    await drawImageSafe(ctx, src, x + (size - artSize) / 2, y + (size - artSize) / 2, artSize, artSize, true);
+  }
 }
 
 async function statCell(ctx, x, y, icon, value, width = 100) {

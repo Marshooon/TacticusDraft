@@ -129,7 +129,8 @@ function renderHudFrame() {
           <stop offset="1" stop-color="var(--rarity-stop-5)" />
         </linearGradient>
         <pattern id="hudLines" width="474" height="14" patternUnits="userSpaceOnUse">
-          <path d="M0 12.5 H474" stroke="#54efff" stroke-opacity=".23" stroke-width="1" />
+          <path d="M0 12.5 H474" stroke="#54efff" stroke-opacity=".14" stroke-width="1" />
+          <path d="M22 0 L36 14 M106 0 L120 14 M286 0 L300 14 M390 0 L404 14" stroke="#4ea7c8" stroke-opacity=".11" stroke-width="1" />
         </pattern>
       </defs>
       <path class="hud-bg" d="M10 430 V144 H54 A42 42 0 0 0 96 102 V58 H378 V102 A42 42 0 0 0 420 144 H464 V430 Z" />
@@ -168,7 +169,6 @@ function renderEquipment(id) {
     <div class="equip-slot">
       <svg viewBox="0 0 64 64" aria-hidden="true">
         <path d="M32 3 L58 18 V46 L32 61 L6 46 V18 Z" fill="#07131f" stroke="#65efff" stroke-width="4" />
-        <path d="M32 6 L55 20 V44 L32 58 L9 44 V20 Z" fill="none" stroke="#ffe9c3" stroke-width="2" />
       </svg>
       ${item?.src ? `<img class="equip-icon" src="${assetUrl(item.src)}" alt="${escapeHtml(item.label)}" />` : ""}
     </div>

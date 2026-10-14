@@ -298,11 +298,11 @@ textarea {
 }
 
 .hud-bg {
-  fill: rgba(3, 11, 19, 0.97);
+  fill: rgba(3, 14, 26, 0.98);
 }
 
 .hud-texture {
-  opacity: 0.8;
+  opacity: 0.56;
 }
 
 .hud-stroke {
@@ -616,15 +616,15 @@ textarea {
 
 .equip-row {
   display: grid;
-  grid-template-columns: repeat(3, 58px);
-  gap: 9px;
+  grid-template-columns: repeat(3, 62px);
+  gap: 6px;
   margin-bottom: 9px;
 }
 
 .equip-slot {
   position: relative;
-  width: 58px;
-  height: 58px;
+  width: 62px;
+  height: 62px;
   display: grid;
   place-items: center;
 }
@@ -636,8 +636,8 @@ textarea {
 
 .equip-icon {
   position: relative;
-  width: 42px;
-  height: 42px;
+  width: 36px;
+  height: 36px;
   z-index: 1;
 }
 
