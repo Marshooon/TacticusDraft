@@ -151,6 +151,15 @@ async function drawPhoneLikeCard(ctx, character, x, y, w, h) {
   const portraitSrc = character.scene.portraitSrc || portrait?.src;
   const activeSrc = character.abilities.active.src || active?.src;
   const passiveSrc = character.abilities.passive.src || passive?.src;
+  const allegiance = byId("allegiances", character.identity.allegianceId);
+  const selectedTraits = character.traits.map((id) => byId("traits", id)).filter(Boolean);
+  const customTraitIcon = byId("traits", character.customTrait?.iconId);
+  const customTrait = character.customTrait?.enabled
+    ? { src: character.customTrait.src || customTraitIcon?.src || "" }
+    : null;
+  const displayedTraits = customTrait
+    ? [customTrait, ...selectedTraits.slice(0, 5)]
+    : selectedTraits.slice(0, 6);
 
   ctx.save();
   ctx.beginPath();
@@ -166,6 +175,12 @@ async function drawPhoneLikeCard(ctx, character, x, y, w, h) {
     sceneH
   );
   ctx.drawImage(portraitLayer, ix, iy);
+  if (allegiance?.src) await portraitRailBadge(ctx, assetUrl(allegiance.src), ix + 10, iy + 12, 43);
+  for (let index = 0; index < displayedTraits.length; index += 1) {
+    const trait = displayedTraits[index];
+    if (!trait?.src) continue;
+    await portraitRailBadge(ctx, assetUrl(trait.src), ix + iw - 53, iy + 12 + index * 50, 43);
+  }
   await drawHudCanvas(ctx, character, ix, iy + ih - hudH, iw, hudH, activeSrc, passiveSrc);
   ctx.restore();
 }
@@ -604,6 +619,34 @@ async function abilityCircle(ctx, src, x, y, size, position = {}, strokeStyle = 
   ctx.lineWidth = 3;
   ctx.beginPath();
   ctx.arc(x + size / 2, y + size / 2, size / 2 - 1.5, 0, Math.PI * 2);
+  ctx.stroke();
+}
+
+async function portraitRailBadge(ctx, src, x, y, size) {
+  const ring = ctx.createLinearGradient(x, y, x, y + size);
+  ring.addColorStop(0, "#fff8c9");
+  ring.addColorStop(.18, "#d6a33f");
+  ring.addColorStop(.42, "#6f4720");
+  ring.addColorStop(.65, "#ffdfa0");
+  ring.addColorStop(1, "#3b2416");
+  ctx.save();
+  ctx.fillStyle = ring;
+  ctx.beginPath();
+  ctx.arc(x + size / 2, y + size / 2, size / 2, 0, Math.PI * 2);
+  ctx.fill();
+  ctx.fillStyle = "#061018";
+  ctx.beginPath();
+  ctx.arc(x + size / 2, y + size / 2, size / 2 - 3, 0, Math.PI * 2);
+  ctx.fill();
+  ctx.beginPath();
+  ctx.arc(x + size / 2, y + size / 2, size / 2 - 3, 0, Math.PI * 2);
+  ctx.clip();
+  await drawImageSafe(ctx, src, x + 4, y + 4, size - 8, size - 8, true);
+  ctx.restore();
+  ctx.strokeStyle = "#1c120b";
+  ctx.lineWidth = 1;
+  ctx.beginPath();
+  ctx.arc(x + size / 2, y + size / 2, size / 2 - .5, 0, Math.PI * 2);
   ctx.stroke();
 }
 
