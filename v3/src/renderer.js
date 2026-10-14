@@ -37,11 +37,11 @@ export function renderCharacterScreen(root, character) {
         ${renderHudFrame()}
         <div class="rank-row">${renderStars(rarity)}</div>
         <div class="ability-button active" tabindex="0">
-          ${activeSrc ? `<img class="ability-icon" src="${assetUrl(activeSrc)}" alt="${escapeHtml(character.abilities.active.name)}" />` : ""}
+          <span class="ability-art">${activeSrc ? `<img class="ability-icon" src="${assetUrl(activeSrc)}" alt="${escapeHtml(character.abilities.active.name)}" />` : ""}</span>
           ${renderTooltip(character.abilities.active.name, character.abilities.active.description)}
         </div>
         <div class="ability-button passive" tabindex="0">
-          ${passiveSrc ? `<img class="ability-icon" src="${assetUrl(passiveSrc)}" alt="${escapeHtml(character.abilities.passive.name)}" />` : ""}
+          <span class="ability-art">${passiveSrc ? `<img class="ability-icon" src="${assetUrl(passiveSrc)}" alt="${escapeHtml(character.abilities.passive.name)}" />` : ""}</span>
           ${renderTooltip(character.abilities.passive.name, character.abilities.passive.description)}
         </div>
         <div class="hud-sparks" aria-hidden="true">
@@ -145,9 +145,9 @@ function renderStars(rarity) {
 
 function starOffsets(count) {
   if (count === 1) return [{ x: 0, y: 0 }];
-  if (count === 2) return [{ x: -9, y: 0 }, { x: 9, y: 0 }];
-  if (count === 3) return [{ x: -18, y: 0 }, { x: 0, y: 0 }, { x: 18, y: 0 }];
-  return [{ x: -27, y: 0 }, { x: -9, y: 0 }, { x: 9, y: 0 }, { x: 27, y: 0 }];
+  if (count === 2) return [{ x: -12, y: 0 }, { x: 12, y: 0 }];
+  if (count === 3) return [{ x: -24, y: 0 }, { x: 0, y: 0 }, { x: 24, y: 0 }];
+  return [{ x: -36, y: 0 }, { x: -12, y: 0 }, { x: 12, y: 0 }, { x: 36, y: 0 }];
 }
 
 function renderEquipment(id) {
