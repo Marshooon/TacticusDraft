@@ -231,13 +231,16 @@ async function drawHudCanvas(ctx, character, x, y, w, h, activeSrc, passiveSrc) 
     sx += 68;
   }
 
-  await statCell(ctx, x + 242, y + 192, assets.statIcons.health, character.stats.health, 94);
-  await statCell(ctx, x + 340, y + 192, assets.statIcons.armor, character.stats.armor, 94);
-  await statCell(ctx, x + 242, y + 231, assets.statIcons.damage, character.stats.damage, 94);
-  await statCell(ctx, x + 340, y + 231, assets.statIcons.move, character.stats.move, 94);
+  await statCell(ctx, x + 242, y + 192, assets.statIcons.health, character.stats.health, 97);
+  await statCell(ctx, x + 343, y + 192, assets.statIcons.armor, character.stats.armor, 97);
+  await statCell(ctx, x + 242, y + 231, assets.statIcons.damage, character.stats.damage, 97);
+  await statCell(ctx, x + 343, y + 231, assets.statIcons.move, character.stats.move, 97);
 
-  ctx.fillStyle = "rgba(28, 43, 74, .9)";
+  ctx.fillStyle = "rgba(20, 31, 55, .82)";
   ctx.fillRect(x + 34, y + 259, 198, 72);
+  ctx.strokeStyle = "rgba(139, 171, 225, .42)";
+  ctx.lineWidth = 1;
+  ctx.strokeRect(x + 34.5, y + 259.5, 197, 71);
   ctx.fillStyle = "#c8d5ff";
   ctx.font = "15px Trebuchet MS, Arial";
   ctx.fillText("UNLOCK", x + 45, y + 281);
@@ -245,8 +248,8 @@ async function drawHudCanvas(ctx, character, x, y, w, h, activeSrc, passiveSrc) 
   ctx.font = "18px Trebuchet MS, Arial";
   wrapText(ctx, character.identity.unlock, x + 45, y + 305, 176, 15, "13px Roboto, Arial", "#fff");
 
-  await attackCell(ctx, x + 242, y + 276, character.attacks.melee.type, character.attacks.melee.hits, 198);
-  await attackCell(ctx, x + 242, y + 317, character.attacks.ranged.type, character.attacks.ranged.hits, 198);
+  await attackCell(ctx, x + 242, y + 276, "melee", character.attacks.melee.type, character.attacks.melee.hits, 198);
+  await attackCell(ctx, x + 242, y + 317, "ranged", character.attacks.ranged.type, character.attacks.ranged.hits, 198);
   await critCell(ctx, x + 242, y + 364, assets.statIcons.crit, character.crit.value, character.crit.chance, 198);
   await critCell(ctx, x + 242, y + 405, assets.statIcons.block, character.block.value, character.block.chance, 198);
 }
@@ -317,13 +320,21 @@ async function statCell(ctx, x, y, icon, value, width = 100) {
   ctx.fillText(String(value), x + 38, y + 24);
 }
 
-async function attackCell(ctx, x, y, type, hits, width = 204) {
-  ctx.fillStyle = "rgba(22, 31, 52, .92)";
+async function attackCell(ctx, x, y, kind, type, hits, width = 204) {
+  const fill = ctx.createLinearGradient(x, y, x + width, y);
+  fill.addColorStop(0, "rgba(15, 25, 42, .94)");
+  fill.addColorStop(1, "rgba(38, 55, 88, .78)");
+  ctx.fillStyle = fill;
   ctx.fillRect(x, y, width, 35);
-  await drawImageSafe(ctx, assetUrl(assets.damageIcons[type]), x + 36, y + 6, 26, 26);
+  ctx.strokeStyle = "rgba(139, 171, 225, .4)";
+  ctx.lineWidth = 1;
+  ctx.strokeRect(x + .5, y + .5, width - 1, 34);
+  const categoryIcon = kind === "melee" ? assets.statIcons.melee : assets.statIcons.ranged2;
+  await drawImageSafe(ctx, assetUrl(categoryIcon), x + 7, y + 6, 23, 23);
+  await drawImageSafe(ctx, assetUrl(assets.damageIcons[type]), x + 34, y + 6, 23, 23);
   ctx.fillStyle = type === "Power" ? "#53efff" : "#ffd56d";
   ctx.font = "19px Roboto, Arial";
-  ctx.fillText(type.toUpperCase(), x + 66, y + 25);
+  ctx.fillText(type.toUpperCase(), x + 62, y + 25);
   await drawImageSafe(ctx, assetUrl(assets.statIcons.hits), x + width - 38, y + 7, 20, 20);
   ctx.fillStyle = "#fff";
   ctx.fillText(String(hits), x + width - 17, y + 25);
