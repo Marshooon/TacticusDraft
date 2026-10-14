@@ -150,7 +150,15 @@ async function drawPhoneLikeCard(ctx, character, x, y, w, h) {
   ctx.rect(ix, iy, iw, ih);
   ctx.clip();
   await drawCover(ctx, assetUrl(backgroundSrc), ix, iy, iw, sceneH);
-  await drawPortrait(ctx, assetUrl(portraitSrc), character.scene.portrait, ix, iy, iw, sceneH);
+  drawGroundShadow(ctx, character.scene.lighting, ix, iy, iw, sceneH);
+  const portraitLayer = await renderLitPortrait(
+    assetUrl(portraitSrc),
+    character.scene.portrait,
+    character.scene.lighting,
+    iw,
+    sceneH
+  );
+  ctx.drawImage(portraitLayer, ix, iy);
   await drawHudCanvas(ctx, character, ix, iy + ih - hudH, iw, hudH, activeSrc, passiveSrc);
   ctx.restore();
 }
@@ -411,6 +419,112 @@ async function drawPortrait(ctx, src, position = {}, x, y, w, h) {
   const freeX = boxW - dw;
   const focalX = Number(position.focalX ?? 50) / 100;
   ctx.drawImage(img, boxX + freeX * focalX, boxY + (boxH - dh) / 2, dw, dh);
+}
+
+async function renderLitPortrait(src, position, lighting = {}, width, height) {
+  const portrait = document.createElement("canvas");
+  portrait.width = width;
+  portrait.height = height;
+  const portraitCtx = portrait.getContext("2d");
+  await drawPortrait(portraitCtx, src, position, 0, 0, width, height);
+
+  if (lighting.tintEnabled !== false && Number(lighting.tintStrength) > 0) {
+    const tint = solidMaskedLayer(portrait, lighting.tintColor || "#000000", Number(lighting.tintStrength) / 100);
+    compositeLayer(portraitCtx, tint, "color");
+  }
+
+  if (lighting.lightEnabled !== false && Number(lighting.lightStrength) > 0) {
+    const light = gradientMaskedLayer(
+      portrait,
+      lighting.lightColor || "#ffffff",
+      Number(lighting.lightStrength) / 100,
+      Number(lighting.lightAngle || 0),
+      true
+    );
+    compositeLayer(portraitCtx, light, "screen");
+  }
+
+  if (lighting.shadowEnabled !== false && Number(lighting.shadowStrength) > 0) {
+    const shadow = gradientMaskedLayer(
+      portrait,
+      lighting.shadowColor || "#000000",
+      Number(lighting.shadowStrength) / 100,
+      Number(lighting.shadowAngle || 0),
+      false
+    );
+    compositeLayer(portraitCtx, shadow, "multiply");
+  }
+
+  return portrait;
+}
+
+function solidMaskedLayer(mask, color, opacity) {
+  const layer = document.createElement("canvas");
+  layer.width = mask.width;
+  layer.height = mask.height;
+  const ctx = layer.getContext("2d");
+  ctx.globalAlpha = clamp01(opacity);
+  ctx.fillStyle = color;
+  ctx.fillRect(0, 0, layer.width, layer.height);
+  applyAlphaMask(ctx, mask);
+  return layer;
+}
+
+function gradientMaskedLayer(mask, color, opacity, angle, light) {
+  const layer = document.createElement("canvas");
+  layer.width = mask.width;
+  layer.height = mask.height;
+  const ctx = layer.getContext("2d");
+  const radians = (angle - 90) * Math.PI / 180;
+  const distance = Math.abs(layer.width * Math.cos(radians)) + Math.abs(layer.height * Math.sin(radians));
+  const cx = layer.width / 2;
+  const cy = layer.height / 2;
+  const dx = Math.cos(radians) * distance / 2;
+  const dy = Math.sin(radians) * distance / 2;
+  const gradient = ctx.createLinearGradient(cx - dx, cy - dy, cx + dx, cy + dy);
+  gradient.addColorStop(0, "rgba(0,0,0,0)");
+  gradient.addColorStop(light ? 0.25 : 0.3, "rgba(0,0,0,0)");
+  gradient.addColorStop(1, color);
+  ctx.globalAlpha = clamp01(opacity);
+  ctx.fillStyle = gradient;
+  ctx.fillRect(0, 0, layer.width, layer.height);
+  applyAlphaMask(ctx, mask);
+  return layer;
+}
+
+function applyAlphaMask(ctx, mask) {
+  ctx.globalAlpha = 1;
+  ctx.globalCompositeOperation = "destination-in";
+  ctx.drawImage(mask, 0, 0);
+  ctx.globalCompositeOperation = "source-over";
+}
+
+function compositeLayer(ctx, layer, mode) {
+  ctx.save();
+  ctx.globalCompositeOperation = mode;
+  ctx.drawImage(layer, 0, 0);
+  ctx.restore();
+}
+
+function drawGroundShadow(ctx, lighting = {}, x, y, width, height) {
+  if (lighting.groundEnabled === false || Number(lighting.groundStrength) <= 0) return;
+  const size = Math.max(0, Number(lighting.groundSize || 100)) / 100;
+  const ellipseWidth = width * 0.46 * size;
+  const ellipseHeight = Math.max(12, ellipseWidth * 0.16);
+  const centerX = x + width / 2 + Number(lighting.groundOffsetX || 0);
+  const centerY = y + height * 0.91 + Number(lighting.groundOffsetY || 0);
+  ctx.save();
+  ctx.globalAlpha = clamp01(Number(lighting.groundStrength || 0) / 100);
+  ctx.filter = `blur(${Math.max(0, Number(lighting.groundBlur || 0))}px)`;
+  ctx.fillStyle = lighting.groundColor || "#000000";
+  ctx.beginPath();
+  ctx.ellipse(centerX, centerY, ellipseWidth / 2, ellipseHeight / 2, 0, 0, Math.PI * 2);
+  ctx.fill();
+  ctx.restore();
+}
+
+function clamp01(value) {
+  return Math.max(0, Math.min(1, Number(value) || 0));
 }
 
 async function drawContain(ctx, src, x, y, w, h) {

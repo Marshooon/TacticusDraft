@@ -1,6 +1,6 @@
 import { assets } from "./assets.js";
 import { setupEditor } from "./editor.js";
-import { exportReleaseSheet } from "./exporter.js?v=20261013-14";
+import { exportReleaseSheet } from "./exporter.js?v=20261013-15";
 import { renderCharacterScreen } from "./renderer.js?v=20261013-10";
 import { applyPreset, presets, state } from "./state.js";
 
