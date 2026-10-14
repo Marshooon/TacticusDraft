@@ -1,4 +1,4 @@
-import { assets } from "./assets.js";
+import { assets } from "./assets.js?v=20261013-30";
 import { getPath, setPath } from "./state.js";
 
 export function setupEditor(character, onChange, previewHandlers = {}) {

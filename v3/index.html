@@ -123,6 +123,12 @@
             <label>Melee Hits<input data-bind="attacks.melee.hits" type="number" min="1" /></label>
             <label>Ranged Damage Type<select data-bind="attacks.ranged.type" data-damage-type-select></select></label>
             <label>Ranged Hits<input data-bind="attacks.ranged.hits" type="number" min="1" /></label>
+            <label>Ranged Range
+              <select data-bind="attacks.ranged.range">
+                <option value="2">Range 2</option>
+                <option value="3">Range 3</option>
+              </select>
+            </label>
           </div>
           <h2>Critical &amp; Block</h2>
           <div class="editor-grid">
@@ -164,6 +170,6 @@
     </button>
   </main>
 
-  <script type="module" src="src/main.js?v=20261013-28"></script>
+  <script type="module" src="src/main.js?v=20261013-30"></script>
 </body>
 </html>

@@ -1,4 +1,4 @@
-import { assetUrl, assets, byId } from "./assets.js";
+import { assetUrl, assets, byId } from "./assets.js?v=20261013-30";
 
 export function renderCharacterScreen(root, character) {
   const bg = byId("backgrounds", character.scene.backgroundId);
@@ -181,7 +181,11 @@ function renderStat(key, value) {
 
 function renderAttack(kind, attack) {
   if (!attack.type) return `<div class="attack-row attack-row-empty" aria-hidden="true"></div>`;
-  const pattern = kind === "melee" ? assets.statIcons.melee : assets.statIcons.ranged2;
+  const pattern = kind === "melee"
+    ? assets.statIcons.melee
+    : Number(attack.range) === 3
+      ? assets.statIcons.ranged3
+      : assets.statIcons.ranged2;
   const damageIcon = assets.damageIcons[attack.type];
   return `
     <div class="attack-row">

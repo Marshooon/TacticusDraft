@@ -1,4 +1,4 @@
-import { assetUrl, assets, byId } from "./assets.js";
+import { assetUrl, assets, byId } from "./assets.js?v=20261013-30";
 
 export const exportConfig = {
   width: 1920,
@@ -276,7 +276,7 @@ async function drawHudCanvas(ctx, character, x, y, w, h, activeSrc, passiveSrc) 
   drawWrappedLines(ctx, unlockLines, x + 45, y + 305, 15, "13px Roboto, Arial", "#fff");
 
   if (character.attacks.melee.type) await attackCell(ctx, x + 242, y + 272, "melee", character.attacks.melee.type, character.attacks.melee.hits, 198);
-  if (character.attacks.ranged.type) await attackCell(ctx, x + 242, y + 311, "ranged", character.attacks.ranged.type, character.attacks.ranged.hits, 198);
+  if (character.attacks.ranged.type) await attackCell(ctx, x + 242, y + 311, "ranged", character.attacks.ranged.type, character.attacks.ranged.hits, 198, character.attacks.ranged.range);
   await critCell(ctx, x + 242, y + 352, assets.statIcons.crit, character.crit.value, character.crit.chance, 198);
   await critCell(ctx, x + 242, y + 391, assets.statIcons.block, character.block.value, character.block.chance, 198);
 }
@@ -347,7 +347,7 @@ async function statCell(ctx, x, y, icon, value, width = 100) {
   ctx.fillText(String(value), x + 38, y + 24);
 }
 
-async function attackCell(ctx, x, y, kind, type, hits, width = 204) {
+async function attackCell(ctx, x, y, kind, type, hits, width = 204, range = 2) {
   const fill = ctx.createLinearGradient(x, y, x + width, y);
   fill.addColorStop(0, "rgba(15, 25, 42, .94)");
   fill.addColorStop(1, "rgba(38, 55, 88, .78)");
@@ -356,7 +356,11 @@ async function attackCell(ctx, x, y, kind, type, hits, width = 204) {
   ctx.strokeStyle = "rgba(139, 171, 225, .4)";
   ctx.lineWidth = 1;
   ctx.strokeRect(x + .5, y + .5, width - 1, 34);
-  const categoryIcon = kind === "melee" ? assets.statIcons.melee : assets.statIcons.ranged2;
+  const categoryIcon = kind === "melee"
+    ? assets.statIcons.melee
+    : Number(range) === 3
+      ? assets.statIcons.ranged3
+      : assets.statIcons.ranged2;
   await drawImageSafe(ctx, assetUrl(categoryIcon), x + 7, y + 6, 23, 23);
   await drawImageSafe(ctx, assetUrl(assets.damageIcons[type]), x + 34, y + 6, 23, 23);
   ctx.fillStyle = type === "Power" ? "#53efff" : "#ffd56d";

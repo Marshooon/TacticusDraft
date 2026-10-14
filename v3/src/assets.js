@@ -67,6 +67,7 @@ export const assets = {
     move: "statIcons/Move_Icon.png",
     melee: "statIcons/Melee_Icon.png",
     ranged2: "statIcons/Ranged_2_Icon.png",
+    ranged3: "statIcons/Ranged_3_Icon.png",
     hits: "statIcons/hits.png",
     crit: "statIcons/Crit_Icon.png",
     chance: "statIcons/Chance_Icon.png",
@@ -75,6 +76,7 @@ export const assets = {
   damageIcons: {
     Bio: "damageIcons/Bio_Icon.png",
     Blast: "damageIcons/Blast_Icon.png",
+    Bolter: "damageIcons/Bolter_Icon.png",
     Chain: "damageIcons/Chain_Icon.png",
     Direct: "damageIcons/Direct_Icon.png",
     Energy: "damageIcons/Energy_Icon.png",
